@@ -279,7 +279,8 @@ ids 表示绑定哪些id，listeners 表示绑定哪些事件 这两个参数都
 
 ### 1 普通图片下载
 
-		ImageDownloader.download("网络和本地图片链接",mAsyImageView)
+		ImageDownloader.download("网络和本地图片链接",mAsyImageView);
+		
 如果需要配置bitmap的高宽
 
 第一种方式：
@@ -289,8 +290,12 @@ ids 表示绑定哪些id，listeners 表示绑定哪些事件 这两个参数都
 第二种方式：
 
 全局图片配置，所有图片显示默认用此配置
+
+
 		GlobalConfig globalConfig = GlobalConfig.getInstance();
 		globalConfig.setMaxWidth(w);
+		
+		
 来设置
 
 第三种
@@ -310,6 +315,8 @@ ids 表示绑定哪些id，listeners 表示绑定哪些事件 这两个参数都
 其中SingleConfig 优先于GlobalConfig  
 
 ### 支持配置文件配置：
+
+
 		mAsyImageView.setTemplate("one");
 		ImageDownloader.download("url",mAsyImageView);
 
@@ -343,10 +350,12 @@ ids 表示绑定哪些id，listeners 表示绑定哪些事件 这两个参数都
 
 需要显示动画的：
 如果是单独某一个图片
+
 		SingleConfig config = new SingleConfig();
 		config.setDisplayerAnimation(new FadeInAnimation());
 
 如果是全局的
+
 		GlobalConfig config = new GlobalConfig();
 		config.setDisplayerAnimation(new FadeInAnimation());
 
@@ -355,8 +364,11 @@ ids 表示绑定哪些id，listeners 表示绑定哪些事件 这两个参数都
 
 
 ### 2 listview中图片下载
+
+
 		只要在listview的注解@InjectView(isasy=true)中添加了isasy=true(默认为false)
 		那么系统会自动给你注入OnScrollListener滚动事件，以便实现图片飞行停止才加载,缓慢拖动加载的功能。如果你要实现自己的OnScrollListener
+
 
 如下
 
@@ -381,10 +393,14 @@ ids 表示绑定哪些id，listeners 表示绑定哪些事件 这两个参数都
 			ApplicationBean.logger.s("滚动状态");
 			}
 		}
+		
+		
 @InjectBefore 表示在组件初始化以前开始调用，因为滚动监听必须在listview被初始化之前赋值，否则无效 将默认使用框架内的滚动监听
 
 
 ### 3 无需显示的图片下载
+
+
 		ImageDownloader.download("url", new LoaderLister() {
 			@Override
 			public void finishLoader(String url, File file) {
@@ -395,7 +411,11 @@ ids 表示绑定哪些id，listeners 表示绑定哪些事件 这两个参数都
 				System.out.println("下载失败");
 			}
 		});
+		
+		
 如果需要下载进度
+
+
 		ImageDownloader.download("url", new LoaderLister() {
 			
 			@Override
