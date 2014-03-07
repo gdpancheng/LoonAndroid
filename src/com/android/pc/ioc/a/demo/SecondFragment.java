@@ -7,11 +7,16 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.ListView;
 
+import com.android.pc.ioc.app.ApplicationBean;
 import com.android.pc.ioc.event.EventBus;
 import com.android.pc.ioc.image.ImageDownloader;
+import com.android.pc.ioc.image.config.GlobalConfig;
+import com.android.pc.ioc.image.config.OnScrollLoaderListener;
 import com.android.pc.ioc.image.displayer.LoaderLister;
+import com.android.pc.ioc.inject.InjectBefore;
 import com.android.pc.ioc.inject.InjectInit;
 import com.android.pc.ioc.inject.InjectListener;
 import com.android.pc.ioc.inject.InjectMethod;
@@ -33,6 +38,28 @@ public class SecondFragment extends BaseFragment {
 
 	ArrayList<String> image = new ArrayList<String>();
 
+	@InjectBefore
+	void test(){
+		//@InjectView(isasy=true)表示这个listview里面有网络图片下载，并且需要实现滑动停止才加载的功能
+		//@InjectView(isasy=true)框架会给listview自动注入OnScrollListener,如果你自己也要滚动监听
+		//那么请在此配置，如下
+		GlobalConfig config = GlobalConfig.getInstance();
+		config.setOnScrollLoaderListener(new MyOnScrollListener());
+		System.out.println("before");
+	}
+	
+	class MyOnScrollListener extends OnScrollLoaderListener{
+		@Override
+        public void onScrollListener(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+			ApplicationBean.logger.s("滚动监听:"+firstVisibleItem);
+		}
+
+		@Override
+        public void onScrollStateChange(AbsListView view, int scrollState) {
+			ApplicationBean.logger.s("滚动状态");
+        }
+	}
+	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		this.inflater = inflater;

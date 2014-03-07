@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.view.Window;
 import android.view.WindowManager;
 
+import com.android.pc.ioc.inject.InjectBefore;
 import com.android.pc.ioc.inject.InjectOnNewIntent;
 import com.android.pc.ioc.inject.InjectPause;
 import com.android.pc.ioc.inject.InjectRestart;
@@ -22,8 +23,8 @@ import com.android.pc.ioc.invoker.InjectLayers;
 import com.android.pc.ioc.util.ContextUtils;
 
 /**
- * 替换掉系统类
- * TODO(这里用一句话描述这个类的作用)
+ * 替换掉系统类 TODO(这里用一句话描述这个类的作用)
+ * 
  * @author gdpancheng@gmail.com 2014-2-25 下午11:13:31
  */
 public class InstrumentationBean extends Instrumentation {
@@ -31,8 +32,12 @@ public class InstrumentationBean extends Instrumentation {
 	@Override
 	public void callActivityOnCreate(Activity activity, Bundle icicle) {
 		try {
-			//当前类和当前父类的注解
 			long time = System.currentTimeMillis();
+			ContextUtils.getCreateInvokers(activity.getClass());
+			inject(activity, InjectBefore.class, null);
+			ApplicationBean.logger.d(activity.getClass() + " 遍历生命周期和网络请求注解耗时 " + (System.currentTimeMillis() - time));
+			time = System.currentTimeMillis();
+			// 当前类和当前父类的注解
 			ArrayList<InjectInvoker> all_inject = ContextUtils.getViewInvokers(activity.getClass(), activity, Activity.class);
 			ApplicationBean.logger.d(activity.getClass() + " 遍历所有View注解耗时 " + (System.currentTimeMillis() - time));
 			if (all_inject.size() > 0 && all_inject.get(0).getClass() == InjectLayers.class) {
@@ -46,14 +51,11 @@ public class InstrumentationBean extends Instrumentation {
 			}
 			super.callActivityOnCreate(activity, icicle);
 			time = System.currentTimeMillis();
-			ContextUtils.getCreateInvokers(activity.getClass());
-			ApplicationBean.logger.d(activity.getClass() + " 遍历生命周期和网络请求注解耗时 " + (System.currentTimeMillis() - time));
-			time = System.currentTimeMillis();
 			int count = all_inject.size();
 			for (int i = 0; i < count; i++) {
 				InjectInvoker injectInvoker = all_inject.get(i);
 				injectInvoker.invoke(activity);
-            }
+			}
 			ApplicationBean.logger.d(activity.getClass() + " 遍历UI绑定耗时 " + (System.currentTimeMillis() - time));
 		} catch (Exception e) {
 			StringWriter buf = new StringWriter();
@@ -63,8 +65,6 @@ public class InstrumentationBean extends Instrumentation {
 		}
 	}
 
-	
-	
 	private void inject(Activity activity, Class<?> clazz, Intent intent) {
 		ArrayList<InjectInvoker> jArrayList = ContextUtils.getContextInvokers(activity.getClass(), clazz);
 		if (jArrayList == null) {
@@ -126,5 +126,5 @@ public class InstrumentationBean extends Instrumentation {
 	public void callActivityOnDestroy(Activity activity) {
 		super.callActivityOnDestroy(activity);
 	}
-	
+
 }

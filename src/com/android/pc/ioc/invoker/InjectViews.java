@@ -62,6 +62,8 @@ public class InjectViews extends InjectInvoker {
 		}
 		if (isAsy &&ListView.class.isAssignableFrom(view.getClass())) {
 			((ListView) view).setOnScrollListener(GlobalConfig.getInstance().getOnScrollLoaderListener());
+			GlobalConfig config = GlobalConfig.getInstance();
+			config.setOnScrollLoaderListener(null);
 		}
 //		if (isAsy && (view instanceof ListView)) {
 //		}

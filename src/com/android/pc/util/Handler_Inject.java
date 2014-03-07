@@ -1,10 +1,13 @@
 package com.android.pc.util;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 
 import android.view.View;
 
 import com.android.pc.ioc.app.ApplicationBean;
+import com.android.pc.ioc.inject.InjectBefore;
 import com.android.pc.ioc.invoker.InjectInvoker;
 import com.android.pc.ioc.util.ContextUtils;
 
@@ -24,6 +27,25 @@ public class Handler_Inject {
 	 */
 	public static void injectView(Object object, View view) {
 		long time = System.currentTimeMillis();
+		ContextUtils.getCreateInvokers(object.getClass());
+
+		//-------------------------------------------------------------------------------------------------
+		//因为fragment有些参数可能要在组件绑定之前进行初始化
+		ArrayList<InjectInvoker> jArrayList = ContextUtils.getContextInvokers(object.getClass(), InjectBefore.class);
+		if (jArrayList != null) {
+			try {
+				for (InjectInvoker injectInvoker : jArrayList) {
+					injectInvoker.invoke(object);
+				}
+			} catch (Exception e) {
+				StringWriter buf = new StringWriter();
+				PrintWriter w = new PrintWriter(buf);
+				e.printStackTrace(w);
+				ApplicationBean.logger.e(object.getClass().getSimpleName() + "  里面出错了 请检查\n" + buf.toString());
+			}
+		}
+		//-------------------------------------------------------------------------------------------------
+		
 		ArrayList<InjectInvoker> arrayList = ContextUtils.getViewInvokers(object.getClass(), view, null);
 		for (InjectInvoker injectInvoker : arrayList) {
 			injectInvoker.invoke(object);

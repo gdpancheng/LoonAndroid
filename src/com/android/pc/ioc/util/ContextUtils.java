@@ -16,6 +16,7 @@ import android.graphics.drawable.Drawable;
 
 import com.android.pc.ioc.app.ApplicationBean;
 import com.android.pc.ioc.core.kernel.KernelString;
+import com.android.pc.ioc.inject.InjectBefore;
 import com.android.pc.ioc.inject.InjectBinder;
 import com.android.pc.ioc.inject.InjectHttp;
 import com.android.pc.ioc.inject.InjectHttpErr;
@@ -132,7 +133,7 @@ public class ContextUtils {
 		Class<?> template = contextType;
 		while (template != null && template != Object.class) {
 			// 过滤掉基类 因为基类是不包含注解的
-			if (template.getName().equals("android.app.Activity") || template.getName().equals("android.support.v4.app.FragmentActivity") || template.getName().equals("android.support.v4.app.Fragment")) {
+			if (Activity.class.isAssignableFrom(template) || template.getName().equals("android.support.v4.app.FragmentActivity") || template.getName().equals("android.support.v4.app.Fragment") || template.getName().equals("android.app.Fragment")) {
 				break;
 			}
 
@@ -145,8 +146,12 @@ public class ContextUtils {
 			Method[] methods = template.getDeclaredMethods();
 			for (int j = 0; j < methods.length; j++) {
 				Method method = methods[j];
-
-				if (method.getAnnotation(InjectOnNewIntent.class) != null) {
+				if (method.getAnnotation(InjectBefore.class) != null) {
+					if (!aInvokerLists.containsKey(InjectBefore.class)) {
+						aInvokerLists.put(InjectBefore.class, new ArrayList<InjectInvoker>());
+					}
+					aInvokerLists.get(InjectBefore.class).add(new InjectMethods(method, null, null, null));
+				}else if (method.getAnnotation(InjectOnNewIntent.class) != null) {
 					if (!aInvokerLists.containsKey(InjectOnNewIntent.class)) {
 						aInvokerLists.put(InjectOnNewIntent.class, new ArrayList<InjectInvoker>());
 					}

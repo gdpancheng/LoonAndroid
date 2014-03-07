@@ -107,9 +107,9 @@ public class GlobalConfig {
 	 * 列表滚动事件
 	 */
 	private OnScrollLoaderListener onScrollLoaderListener;
-	
+
 	private OnScrollLoaderListener scrollLoaderListener;
-	
+
 	/**
 	 * 图片下载器
 	 */
@@ -213,7 +213,7 @@ public class GlobalConfig {
 			}
 		};
 		onScrollLoaderListener.setOnStop(onStop);
-		
+
 		scrollLoaderListener = onScrollLoaderListener;
 	}
 
@@ -240,9 +240,10 @@ public class GlobalConfig {
 
 	public void setOnScrollLoaderListener(OnScrollLoaderListener onScrollLoaderListener) {
 		if (onScrollLoaderListener == null) {
-			scrollLoaderListener = this.onScrollLoaderListener;
-        }
-		this.scrollLoaderListener = onScrollLoaderListener;
+			this.scrollLoaderListener = this.onScrollLoaderListener;
+		} else {
+			this.scrollLoaderListener = onScrollLoaderListener;
+		}
 		this.scrollLoaderListener.setOnStop(onStop);
 	}
 

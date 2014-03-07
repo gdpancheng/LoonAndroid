@@ -159,7 +159,8 @@ public class ImageDownloader {
 			return;
 		}
 
-		globalConfig.getPool().execute(new Runnable() {
+		new Thread(new Runnable() {
+			@Override
 			public void run() {
 				downloadFile(url, loader);
 				Message message = Message.obtain();
@@ -170,8 +171,7 @@ public class ImageDownloader {
 				message.setData(bundle);
 				handler.sendMessage(message);
 			}
-		});
-
+		}).start();
 	}
 
 	/**

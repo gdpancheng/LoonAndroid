@@ -10,6 +10,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.pc.ioc.inject.InjectBefore;
 import com.android.pc.ioc.inject.InjectBinder;
 import com.android.pc.ioc.inject.InjectInit;
 import com.android.pc.ioc.inject.InjectLayer;
@@ -49,7 +50,12 @@ public class MainActivity extends BaseActivity {
 
 	@InjectResource
 	Drawable ic_launcher;
-
+	
+	@InjectBefore
+	void call(){
+		MeApplication.logger.s("执行在oncreat之前");
+	}
+	
 	// 这个注解是在所有组件自动绑定以后自动调用
 	@InjectInit
 	void init() {
