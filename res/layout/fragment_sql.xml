@@ -1,0 +1,108 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#555555"
+    android:orientation="vertical"
+    tools:context=".CropActivity" >
+
+    <ListView
+        android:id="@+id/sql_list"
+        android:layout_width="match_parent"
+        android:layout_height="0.0dp"
+        android:layout_weight="1"
+        android:background="@android:color/white"
+        android:cacheColorHint="#00000000"
+        android:divider="@android:color/transparent"
+        android:scrollbars="none" >
+    </ListView>
+
+    <RadioGroup
+         android:id="@+id/keys"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="10dp" >
+
+        <RadioButton
+            android:id="@+id/id"
+            android:layout_width="0.0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:button="@drawable/remmeber_pass"
+            android:gravity="left|center_vertical"
+            android:text="id" />
+
+        <RadioButton
+            android:id="@+id/content"
+            android:layout_width="0.0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:button="@drawable/remmeber_pass"
+            android:gravity="left"
+            android:singleLine="true"
+            android:text="content" />
+
+        <RadioButton
+            android:id="@+id/is_answer"
+            android:layout_width="0.0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:button="@drawable/remmeber_pass"
+            android:gravity="left"
+            android:singleLine="true"
+            android:text="is_answer" />
+
+        <RadioButton
+            android:id="@+id/server_id"
+            android:layout_width="0.0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:button="@drawable/remmeber_pass"
+            android:gravity="left"
+            android:singleLine="true"
+            android:text="server_id" />
+    </RadioGroup>
+
+    <EditText
+        android:id="@+id/input"
+        android:hint="请输入关键字"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" />
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="10dp" >
+
+        <Button
+            android:id="@+id/add"
+            android:layout_width="0.0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="增加" />
+
+        <Button
+            android:id="@+id/delete"
+            android:layout_width="0.0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="删除" />
+
+        <Button
+            android:id="@+id/update"
+            android:layout_width="0.0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="修改" />
+
+        <Button
+            android:id="@+id/select"
+            android:layout_width="0.0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="查询" />
+    </LinearLayout>
+
+</LinearLayout>

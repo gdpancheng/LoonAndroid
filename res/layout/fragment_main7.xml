@@ -1,0 +1,57 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:paddingBottom="@dimen/activity_vertical_margin"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:paddingTop="@dimen/activity_vertical_margin" >
+
+        <Button
+            android:id="@+id/down1"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/down1" />
+        
+        <Button
+            android:id="@+id/down2"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/down2" />
+        
+        <Button
+            android:id="@+id/down3"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/down3" />
+        
+        <Button
+            android:id="@+id/down4"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/down4" />
+
+        <Button
+            android:id="@+id/down5"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/down5" />
+        
+        <Button
+            android:id="@+id/down6"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/down6" />
+        
+        <TextView
+            android:id="@+id/content"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"/>
+    </LinearLayout>
+
+</ScrollView>

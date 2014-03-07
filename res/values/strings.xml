@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">IOC_Android</string>
+    <string name="action_settings">这里通过注解获取string</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="err">确认密码错误</string>
+
+    <string name="down1">（支持断点）开始下载 有通知栏</string>
+    <string name="down2">（支持断点）开始下载 无通知栏</string>
+    <string name="down3">（不支持断点）开始下载 有通知栏</string>
+    <string name="down4">（不支持断点）开始下载 无通知栏</string>
+    <string name="down5">显示通知栏</string>
+    <string name="down6">取消通知栏</string>
+    
+    
+    <string name="down7">版本更新开始（有通知栏，下载完成以后需要点击通知栏安装才能跳转到安装界面）</string>
+    <string name="down8">版本更新开始（无通知栏，下载完成以后自动跳转到安装界面）</string>
+</resources>
