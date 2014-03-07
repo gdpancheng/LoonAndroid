@@ -62,7 +62,7 @@
 		
 即可
 　　
-整个ioc框架不需要你继承任何的acitivity，这样就保证了不会在你的代码结构层次上造成影响，因为有的时候你需要自己的BaseActivity来实现你公用的功能。
+		整个ioc框架不需要你继承任何的acitivity，这样就保证了不会在你的代码结构层次上造成影响，因为有的时候你需要自己的BaseActivity来实现你公用的功能。
 　　
 ### 2 支持子父布局
 　　
@@ -75,10 +75,12 @@
 对于这个框架来说很容易实现
 
 1 ActivityGroup  你不需要继承任何activity 和普通activity 实现方式（如上面的例子）
+
 2 BaseActivity 
 
 见代码：
-　　首先是BaseActivity
+
+首先是BaseActivity
 　　
 		@InjectPLayer(R.layout.activity_com)
 		public class BaseActivity extends Activity {}
@@ -88,7 +90,8 @@
 		@InjectLayer(value = R.layout.activity_main, parent = R.id.common)
 		public class MainActivity extends BaseActivity {}
 		
-当然 又会有问题了，那么我上下导航里面的点击事件怎么绑定，怎么去初始化，难道要每一个子activity都要去写吗？
+当然 又会有问题了，那么我上下导航里面的点击事件怎么绑定，怎么去初始化，
+难道要每一个子activity都要去写吗？
 当然不需要
 
 		@InjectPLayer(R.layout.activity_com)
@@ -255,12 +258,14 @@ ids 表示绑定哪些id，listeners 表示绑定哪些事件 这两个参数都
 		第二层是LinkedHashMap
 		第三层是 view标记
 
-*1 当LruCache中的图片超过了规定了内存，那么从LruCache移除一个使用最少的，放到LinkedHashMap中
-*2 当每一张图片的url对应一个count，一旦加载一张图片，那么这个url的count加1
-*3 自定义AsyImageView继承ImageView，重写了onDetachedFromWindow方法，一旦
-*AsyImageView从当前视图移除掉会调用onDetachedFromWindow该方法，此刻该图片所对应的url数目count减1
-*4 因为listview中的imageview如果用了ViewHolder那么第3条就不适合了，此刻每一个imagview的hashCode对应一个url,一旦imagview更换了一个新的url,那么该imagview的hashcode上一个的引用将被移除，那么上一次显示的url所对应的count将减1
-*5 当LinkedHashMap超过了规定限制的时候，那么遍历所有的count一旦count为0 则移除回收
+		1 当LruCache中的图片超过了规定了内存，那么从LruCache移除一个使用最少的，放到LinkedHashMap中
+		2 当每一张图片的url对应一个count，一旦加载一张图片，那么这个url的count加1
+		3 自定义AsyImageView继承ImageView，重写了onDetachedFromWindow方法，一旦
+			AsyImageView从当前视图移除掉会调用onDetachedFromWindow该方法，此刻该图片所对应的url数目count减1
+		4 因为listview中的imageview如果用了ViewHolder那么第3条就不适合了，此刻每一个imagview的hashCode对应一个url,
+			一旦imagview更换了一个新的url,那么该imagview的hashcode上一个的引用将被移除，
+			那么上一次显示的url所对应的count将减1
+		5 当LinkedHashMap超过了规定限制的时候，那么遍历所有的count一旦count为0 则移除回收
 
 ### 图片下载使用
 
