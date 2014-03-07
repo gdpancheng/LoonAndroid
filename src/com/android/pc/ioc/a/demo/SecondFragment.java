@@ -49,10 +49,10 @@ public class SecondFragment extends BaseFragment {
 		listView.setAdapter(new ImageListAdapter(activity, image));
 		
 		//这里是图片后台下载
-		ImageDownloader.download("http://www.yjz9.com/uploadfile/2012/1231/20121231055637429.jpg", new LoaderLister() {
+		ImageDownloader.download("http://www.yjz9.com/uploadfile/2012/1231/20121231055637429.jpg&s=1", new LoaderLister() {
 			@Override
 			public void finishLoader(String url, File file) {
-				System.out.println("下载完成"+file.getPath());
+				System.out.println(url+"下载完成"+file.getPath());
 			}
 			@Override
 			public void failLoader(String url) {

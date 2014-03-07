@@ -14,6 +14,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.BitmapFactory.Options;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -44,8 +45,8 @@ public class ImageDownloader {
 					int percent = bundle.getInt("percent");
 					loader.progressLoader(percent);
 					return;
-                }
-				
+				}
+
 				if (loader != null) {
 					File file = GlobalConfig.getInstance().getFileCache().getFromFileCache(url);
 					if (file.exists()) {
@@ -58,28 +59,33 @@ public class ImageDownloader {
 				return;
 			}
 
-			if (msg.what == Util.ID_PROCESS) {
-				AsyImageView imageView = (AsyImageView) msg.obj;
-				SingleConfig singleConfig = imageView.getSingleConfig();
+			AsyImageView imageView = (AsyImageView) msg.obj;
+			SingleConfig singleConfig = imageView.getSingleConfig();
+			switch (msg.what) {
+			case Util.ID_START:
+				if (singleConfig != null && singleConfig.getDisplayer() != null) {
+					singleConfig.getDisplayer().startLoader(imageView);
+				}
+				return;
+			case Util.ID_PROCESS:
 				if (singleConfig != null && singleConfig.getDisplayer() != null) {
 					singleConfig.getDisplayer().progressLoader(msg.arg1, imageView);
 				}
 				return;
-			}
-
-			if (msg.obj == null) {
+			case Util.ID_FAIL:
+				if (singleConfig != null && singleConfig.getDisplayer() != null) {
+					singleConfig.getDisplayer().failLoader(imageView);
+				}
 				return;
 			}
-			AsyImageView imageView = (AsyImageView) msg.obj;
 			GlobalConfig globalConfig = GlobalConfig.getInstance();
 			LoaderManager loaderManager = globalConfig.getLoaderManager();
 
-			SingleConfig config = imageView.getSingleConfig();
 			// 下载回调
-			DisplayerLister displayer = config == null ? null : config.getDisplayer();
+			DisplayerLister displayer = singleConfig == null ? null : singleConfig.getDisplayer();
 			displayer = displayer == null ? globalConfig.getDisplayer() : displayer;
 			// 显示动画
-			DisplayerAnimation animation = config == null ? null : config.getDisplayerAnimation();
+			DisplayerAnimation animation = singleConfig == null ? null : singleConfig.getDisplayerAnimation();
 			animation = animation == null ? globalConfig.getDisplayerAnimation() : animation;
 
 			HashMap<String, Integer> map = getSize(imageView);
@@ -88,10 +94,18 @@ public class ImageDownloader {
 
 			Bitmap bitmap = loaderManager.getBitmap(FileCache.urlToFileName(imageView.getUrl() + "_" + h + "_" + w), imageView);
 
-			if (displayer != null && bitmap == null) {
-				displayer.failLoader(imageView);
+			if (bitmap == null) {
+				// 失败的图片
+				Drawable drawable = singleConfig == null ? null : singleConfig.getDefDrawable();
+				drawable = drawable == null ? globalConfig.getDef_drawable() : drawable;
+
+				if (displayer != null) {
+					displayer.failLoader(imageView);
+				}
+				imageView.setImageDrawable(drawable);
 				return;
 			}
+
 			// 首先是加载过程然后是加载动画
 			if (displayer != null) {
 				bitmap = displayer.finishLoader(bitmap, imageView);
@@ -331,6 +345,7 @@ public class ImageDownloader {
 		InputStream inputStream = null;
 		HttpURLConnection conn = null;
 		try {
+			// 下载
 			conn = getConnect(asyImageView.getUrl());
 			if (200 == conn.getResponseCode()) {
 				asyImageView.setLength(conn.getContentLength());
@@ -341,17 +356,7 @@ public class ImageDownloader {
 					return getBitmapFromFile(file, globalConfig, asyImageView);
 				}
 			}
-			// 下载失败
-			SingleConfig singleConfig = asyImageView.getSingleConfig();
-			if (singleConfig != null && singleConfig.getLoader() != null) {
-				singleConfig.getLoader().failLoader(asyImageView.getUrl());
-			}
 		} catch (Exception e) {
-			// 异常 则下载失败
-			SingleConfig singleConfig = asyImageView.getSingleConfig();
-			if (singleConfig != null && singleConfig.getLoader() != null) {
-				singleConfig.getLoader().failLoader(asyImageView.getUrl());
-			}
 		} finally {
 			try {
 				if (inputStream != null) {
@@ -382,9 +387,6 @@ public class ImageDownloader {
 				if (file.exists()) {
 					return file;
 				}
-			} else {
-				// 下载失败
-				lister.failLoader(url);
 			}
 		} catch (Exception e) {
 		} finally {

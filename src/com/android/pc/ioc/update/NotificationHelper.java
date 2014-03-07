@@ -78,7 +78,6 @@ public class NotificationHelper {
 	public void downShowNotification(String text) {
 		Intent intent = new Intent();
 		if (clazz != null) {
-			System.out.println(clazz);
 			intent = new Intent(ApplicationBean.getApplication(), clazz);
 			intent.addCategory(Intent.CATEGORY_LAUNCHER);
 			intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED); 

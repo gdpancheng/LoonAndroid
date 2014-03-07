@@ -52,21 +52,24 @@ public class OnePictureFragment extends BaseFragment {
 		config.setDisplayer(new DisplayerLister() {
 			@Override
 			public void startLoader(AsyImageView imageView) {
+				System.out.println("下载进度开始");
 			    super.startLoader(imageView);
 			}
 			@Override
 			public Bitmap finishLoader(Bitmap bitmap, AsyImageView imageView) {
 				pin_progress_1.setVisibility(View.GONE);
+				System.out.println("下载进度结束");
 				return bitmap;
 			}
 			
 			@Override
 			public void progressLoader(int progress, AsyImageView imageView) {
+				System.out.println("下载进度:"+progress);
 				pin_progress_1.setProgress(progress);
 			    super.progressLoader(progress, imageView);
 			}
 		});
 		config.setDisplayerAnimation(new FadeInAnimation());
-		ImageDownloader.download("http://192.168.0.80:8080/okjBus.platform/subBus/page/doDownload/c146c034-2d15-4687-b840-21197f5ccf4a",photo,config);
+		ImageDownloader.download("http://www.yjz9.com/uploadfile/2012/1231/20121231055637429.jpg",photo,config);
 	}
 }

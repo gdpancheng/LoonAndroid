@@ -12,5 +12,9 @@ public class Util {
 	
 	public final static int ID_ZEO = 0;
 	
-	public final static int ID_PROCESS = 2;
+	public final static int ID_START = 2;
+	
+	public final static int ID_PROCESS = 3;
+	
+	public final static int ID_FAIL = 4;
 }

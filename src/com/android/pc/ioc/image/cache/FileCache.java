@@ -138,7 +138,7 @@ public class FileCache {
 				if (imageView.getSingleConfig() != null) {
 					DisplayerLister lister = imageView.getSingleConfig().getDisplayer();
 					if (lister != null) {
-						Message msg = ImageDownloader.getHandler().obtainMessage();
+						Message msg = Message.obtain();
 						msg.what = Util.ID_PROCESS;
 						msg.arg1 = percent;
 						msg.obj = imageView;
@@ -164,8 +164,8 @@ public class FileCache {
 				}
 				n = n + count;
 				int percent = (int) (n * 100 / length);
+				os.write(bytes, 0, count);
 				if (lister != null) {
-					
 					Message message = Message.obtain();
 					message.obj = lister;
 					message.what = Util.ID_NONE;
@@ -174,10 +174,7 @@ public class FileCache {
 					bundle.putInt("percent", percent);
 					message.setData(bundle);
 					ImageDownloader.getHandler().sendMessage(message);
-					
-					lister.progressLoader(percent);
 				}
-				os.write(bytes, 0, count);
 			}
 		} catch (Exception ex) {
 			ex.printStackTrace();
