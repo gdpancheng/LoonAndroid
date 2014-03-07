@@ -318,6 +318,7 @@ ids 表示绑定哪些id，listeners 表示绑定哪些事件 这两个参数都
 支持本地文件加载调用接口不变。
 
 需要进度显示的：
+
 		SingleConfig config = new SingleConfig();
 		config.setDisplayer(new DisplayerLister() {
 			@Override
@@ -337,6 +338,7 @@ ids 表示绑定哪些id，listeners 表示绑定哪些事件 这两个参数都
 			}
 		});
 		ImageDownloader.download("url",photo,config);
+		
 其中url的服务器必须支持获取文件长度
 
 需要显示动画的：
