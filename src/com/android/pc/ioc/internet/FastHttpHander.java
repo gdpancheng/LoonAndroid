@@ -451,8 +451,8 @@ public class FastHttpHander {
 		config.setRequest_type(InternetConfig.request_webserver);
 		new Thread(new TimeTask(url, params, config, object)).start();
 	}
-	
-	private static void http_inject(ResponseEntity entity,Object object,InternetConfig config) {
+
+	private static void http_inject(ResponseEntity entity, Object object, InternetConfig config) {
 		ArrayList<InjectInvoker> ok = ContextUtils.getHttpOkInvokers(object.getClass(), config.getKey());
 		if (ok == null) {
 			ok = ContextUtils.getHttpOkInvokers(object.getClass(), ContextUtils.ID_NONE);
@@ -465,42 +465,46 @@ public class FastHttpHander {
 		if (arrayList == null) {
 			arrayList = ContextUtils.getHttpAllInvokers(object.getClass(), ContextUtils.ID_NONE);
 		}
-		
+
 		if (entity.getStatus() == FastHttp.result_ok) {
-			if (ok == null&&arrayList == null) {
+			if (ok == null && arrayList == null) {
 				ApplicationBean.logger.e(object.getClass().getSimpleName() + " 的网络请求没有增加回调方法注释 请检查\n");
-            }
+			}
 			if (ok == null) {
-				for (InjectInvoker injectInvoker : arrayList) {
-					injectInvoker.invoke(object, entity);
+				if (arrayList != null) {
+					for (InjectInvoker injectInvoker : arrayList) {
+						injectInvoker.invoke(object, entity);
+					}
 				}
 				return;
-            }
+			}
 			for (InjectInvoker injectInvoker : ok) {
 				injectInvoker.invoke(object, entity);
 			}
-        }else {
-        	if (err == null&&arrayList == null) {
+		} else {
+			if (err == null && arrayList == null) {
 				ApplicationBean.logger.e(object.getClass().getSimpleName() + " 的网络请求没有增加回调方法注释 请检查\n");
-            }
+			}
 			if (err == null) {
-				for (InjectInvoker injectInvoker : arrayList) {
-					injectInvoker.invoke(object, entity);
+				if (arrayList != null) {
+					for (InjectInvoker injectInvoker : arrayList) {
+						injectInvoker.invoke(object, entity);
+					}
 				}
 				return;
-            }
+			}
 			for (InjectInvoker injectInvoker : err) {
 				injectInvoker.invoke(object, entity);
 			}
 		}
-    }
-	
-	private static boolean isDestory(Object object){
+	}
+
+	private static boolean isDestory(Object object) {
 		if (Activity.class.isAssignableFrom(object.getClass())) {
-			return ((Activity)object).isFinishing();
+			return ((Activity) object).isFinishing();
 		}
 		if (Fragment.class.isAssignableFrom(object.getClass())) {
-			return ((Fragment)object).isDetached()|| ((Fragment)object).isRemoving();
+			return ((Fragment) object).isDetached() || ((Fragment) object).isRemoving();
 		}
 		return false;
 	}
