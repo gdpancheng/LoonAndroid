@@ -1,6 +1,6 @@
 package com.android.pc.ioc.invoker;
 
-import com.android.pc.ioc.view.InjectExcutor;
+import com.android.pc.ioc.util.InjectExcutor;
 
 public class InjectPLayers extends InjectInvoker {
 

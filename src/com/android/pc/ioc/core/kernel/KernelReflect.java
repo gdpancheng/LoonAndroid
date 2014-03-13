@@ -329,9 +329,9 @@ public abstract class KernelReflect {
 	public static boolean set(Object obj, Field field, Object value) {
 		if (field != null) {
 			try {
+				field.setAccessible(true);
 				field.set(obj, value);
 				return true;
-
 			} catch (IllegalArgumentException e) {
 			} catch (IllegalAccessException e) {
 			}

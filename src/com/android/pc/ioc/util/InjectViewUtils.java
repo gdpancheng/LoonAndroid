@@ -13,7 +13,6 @@ import com.android.pc.ioc.app.ApplicationBean;
 import com.android.pc.ioc.core.kernel.KernelClass;
 import com.android.pc.ioc.core.kernel.KernelObject;
 import com.android.pc.ioc.core.kernel.KernelString;
-import com.android.pc.ioc.view.InjectExcutor;
 
 public class InjectViewUtils {
 

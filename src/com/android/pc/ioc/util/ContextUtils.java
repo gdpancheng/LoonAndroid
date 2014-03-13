@@ -28,6 +28,7 @@ import com.android.pc.ioc.inject.InjectMethod;
 import com.android.pc.ioc.inject.InjectOnNewIntent;
 import com.android.pc.ioc.inject.InjectPLayer;
 import com.android.pc.ioc.inject.InjectPause;
+import com.android.pc.ioc.inject.InjectPullRefresh;
 import com.android.pc.ioc.inject.InjectResource;
 import com.android.pc.ioc.inject.InjectRestart;
 import com.android.pc.ioc.inject.InjectResume;
@@ -151,7 +152,7 @@ public class ContextUtils {
 						aInvokerLists.put(InjectBefore.class, new ArrayList<InjectInvoker>());
 					}
 					aInvokerLists.get(InjectBefore.class).add(new InjectMethods(method, null, null, null));
-				}else if (method.getAnnotation(InjectOnNewIntent.class) != null) {
+				} else if (method.getAnnotation(InjectOnNewIntent.class) != null) {
 					if (!aInvokerLists.containsKey(InjectOnNewIntent.class)) {
 						aInvokerLists.put(InjectOnNewIntent.class, new ArrayList<InjectInvoker>());
 					}
@@ -263,11 +264,16 @@ public class ContextUtils {
 		}
 		// ----------------------------------------------------------------------------------------------------------
 		template = clazz;
+		// 为了记录存在下拉刷新的组件,也就是说一个页面只支持一个下拉刷新
+		InjectViews pull_down;
+
 		while (template != null && template != Object.class && template != superClass) {
 			// 过滤掉基类 因为基类是不包含注解的
 			if (template.getName().equals("android.app.Activity") || template.getName().equals("android.support.v4.app.FragmentActivity") || template.getName().equals("android.support.v4.app.Fragment")) {
 				break;
 			}
+			// 重置为空
+			pull_down = null;
 			// 用来存储每一个类的注解
 			ArrayList<InjectInvoker> local_list = new ArrayList<InjectInvoker>();
 			ArrayList<InjectInvoker> localview_list = new ArrayList<InjectInvoker>();
@@ -311,9 +317,9 @@ public class ContextUtils {
 			for (int i = 0; i < fields.length; i++) {
 				Field field = fields[i];
 				// 获取view注解
-				InjectView injectMethod = field.getAnnotation(InjectView.class);
-				if (injectMethod != null) {
-					int id = injectMethod.value();
+				InjectView injectView = field.getAnnotation(InjectView.class);
+				if (injectView != null) {
+					int id = injectView.value();
 					// 如果注解为空 那么我们就根据名字取获取其id
 					if (id == ContextUtils.ID_NONE) {
 						try {
@@ -324,9 +330,14 @@ public class ContextUtils {
 						}
 					}
 					// 判断listview 是否添加图片滑动停止加载 如果InjectView含有此参数 则表示使用
-					boolean isAsy = injectMethod.isasy();
-					InjectViews injectViews = new InjectViews(id, isActivity ? InjectViewUtils.Inject_Excutors[0] : InjectViewUtils.Inject_Excutors[1].setObject(obj), field, isAsy);
-					InjectBinder[] injectBinders = injectMethod.binders();
+					boolean isAsy = injectView.isasy();
+					boolean pull = injectView.pull();
+					boolean down = injectView.down();
+					InjectViews injectViews = new InjectViews(id, isActivity ? InjectViewUtils.Inject_Excutors[0] : InjectViewUtils.Inject_Excutors[1].setObject(obj), field, isAsy, injectView.pull(), injectView.down());
+					if (pull || down) {
+						pull_down = injectViews;
+					}
+					InjectBinder[] injectBinders = injectView.binders();
 					if (injectBinders != null) {
 						for (InjectBinder injectBinder : injectBinders) {
 							String method = injectBinder.method();
@@ -372,6 +383,12 @@ public class ContextUtils {
 			Method[] methods = template.getDeclaredMethods();
 			for (int i = 0; i < methods.length; i++) {
 				Method method = methods[i];
+				if (pull_down != null) {
+					InjectPullRefresh injectPullRefresh = method.getAnnotation(InjectPullRefresh.class);
+					if (injectPullRefresh != null) {
+						pull_down.setMethod(method);
+					}
+				}
 				InjectMethod injectMethod = method.getAnnotation(InjectMethod.class);
 				if (injectMethod != null) {
 					InjectListener[] injectListener = injectMethod.value();

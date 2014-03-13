@@ -264,7 +264,7 @@ public class Handler_System {
 	 * @param width
 	 * @return float
 	 */
-	public static float getWidthRoate(int width) {
+	public static float getWidthRoate() {
 		if (map == null) {
 			map = new HashMap<String, Integer>();
 			Display display = ((WindowManager) ApplicationBean.getApplication().getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
@@ -273,10 +273,10 @@ public class Handler_System {
 			map.put(systemWidth, screenWidth);
 			map.put(systemHeight, screenHeight);
 		}
-		return (map.get(systemWidth) * 1.00f) / width;
+		return (map.get(systemWidth) * 1.00f) / ApplicationBean.getApplication().getMode_w();
 	}
 	
-	public static float getRoate(int width,int height) {
+	public static float getRoate() {
 		if (map == null) {
 			map = new HashMap<String, Integer>();
 			Display display = ((WindowManager) ApplicationBean.getApplication().getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
@@ -285,8 +285,8 @@ public class Handler_System {
 			map.put(systemWidth, screenWidth);
 			map.put(systemHeight, screenHeight);
 		} 
-		float w = (map.get(systemWidth) * 1.00f) / width;
-		float h = (map.get(systemHeight) * 1.00f) / height;
+		float w = (map.get(systemWidth) * 1.00f) / ApplicationBean.getApplication().getMode_w();
+		float h = (map.get(systemHeight) * 1.00f) / ApplicationBean.getApplication().getMode_h();
 		return w>h?w:h;
 	}
 
@@ -296,7 +296,7 @@ public class Handler_System {
 	 * @param height
 	 * @return float
 	 */
-	public static float getHeightRoate(int height) {
+	public static float getHeightRoate() {
 		if (map == null) {
 			map = new HashMap<String, Integer>();
 			Display display = ((WindowManager) ApplicationBean.getApplication().getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
@@ -305,7 +305,7 @@ public class Handler_System {
 			map.put(systemWidth, screenWidth);
 			map.put(systemHeight, screenHeight);
 		} 
-		return (map.get(systemHeight) * 1.00f) / height;
+		return (map.get(systemHeight) * 1.00f) /  ApplicationBean.getApplication().getMode_h();
 	}
 
 	/**

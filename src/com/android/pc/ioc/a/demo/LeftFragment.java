@@ -58,6 +58,7 @@ public class LeftFragment extends BaseFragment {
 		menu.add("数据库 Demo");
 		menu.add("文件多线程断点下载");
 		menu.add("版本更新");
+		menu.add("下拉刷新上拉加载更多");
 		home_list.setAdapter(new LeftAdapter(activity, menu));
 		// ------------------------------------------------------------------------
 		eventBus.register(this);
@@ -94,6 +95,9 @@ public class LeftFragment extends BaseFragment {
 			break;
 		case 8:
 			fragment = new NinthFragment();
+			break;
+		case 9:
+			fragment = new TenthFragment();
 			break;
 		}
 		FragmentEntity entity = new FragmentEntity();

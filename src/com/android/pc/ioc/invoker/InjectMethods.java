@@ -8,7 +8,7 @@ import android.app.Activity;
 import android.view.View;
 
 import com.android.pc.ioc.app.ApplicationBean;
-import com.android.pc.ioc.view.InjectExcutor;
+import com.android.pc.ioc.util.InjectExcutor;
 import com.android.pc.ioc.view.listener.OnListener;
 
 public class InjectMethods extends InjectInvoker {

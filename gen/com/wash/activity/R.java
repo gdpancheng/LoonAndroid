@@ -156,7 +156,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
     }
     public static final class id {
         public static final int a=0x7f040025;
-        public static final int action_settings=0x7f04004a;
+        public static final int action_settings=0x7f04004b;
         public static final int add=0x7f040041;
         public static final int b=0x7f040026;
         public static final int bean=0x7f040030;
@@ -185,7 +185,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
         public static final int h=0x7f04002c;
         public static final int home_list=0x7f04000b;
         public static final int id=0x7f04003d;
-        public static final int image=0x7f040045;
+        public static final int image=0x7f040046;
         public static final int input=0x7f040040;
         public static final int is_answer=0x7f04003e;
         public static final int json=0x7f04002e;
@@ -196,7 +196,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
         public static final int listView=0x7f040021;
         public static final int map=0x7f04002f;
         public static final int margin=0x7f040002;
-        public static final int menu_frame=0x7f040046;
+        public static final int menu_frame=0x7f040047;
         public static final int msg=0x7f04000a;
         public static final int next=0x7f04000d;
         public static final int next2=0x7f04000e;
@@ -226,10 +226,11 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
         public static final int test2=0x7f040020;
         public static final int top=0x7f040006;
         public static final int touch=0x7f04001f;
+        public static final int tv=0x7f040045;
         public static final int update=0x7f040043;
-        public static final int updatehelper_notification_progress_icon=0x7f040047;
-        public static final int updatehelper_notification_progress_pb=0x7f040048;
-        public static final int updatehelper_notification_progress_tv=0x7f040049;
+        public static final int updatehelper_notification_progress_icon=0x7f040048;
+        public static final int updatehelper_notification_progress_pb=0x7f040049;
+        public static final int updatehelper_notification_progress_tv=0x7f04004a;
     }
     public static final class integer {
         public static final int num_cols=0x7f060000;
@@ -253,9 +254,11 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
         public static final int fragment_main8=0x7f03000f;
         public static final int fragment_onepicture=0x7f030010;
         public static final int fragment_sql=0x7f030011;
-        public static final int list_item=0x7f030012;
-        public static final int menu_frame=0x7f030013;
-        public static final int updatehelper_notification_progress=0x7f030014;
+        public static final int grid_item=0x7f030012;
+        public static final int list_item=0x7f030013;
+        public static final int menu_frame=0x7f030014;
+        public static final int test_listview=0x7f030015;
+        public static final int updatehelper_notification_progress=0x7f030016;
     }
     public static final class menu {
         public static final int main=0x7f090000;

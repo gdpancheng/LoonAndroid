@@ -5,8 +5,8 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import com.android.pc.ioc.util.ContextUtils;
+import com.android.pc.ioc.util.InjectExcutor;
 import com.android.pc.ioc.util.InjectViewUtils;
-import com.android.pc.ioc.view.InjectExcutor;
 
 public class InjectLayers extends InjectInvoker {
 

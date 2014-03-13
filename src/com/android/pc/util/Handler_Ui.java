@@ -102,7 +102,7 @@ public class Handler_Ui {
 	}
 
 	public static void resetRL(View... view) {
-		float rote = Handler_System.getWidthRoate(ApplicationBean.getApplication().getMode_w());
+		float rote = Handler_System.getWidthRoate();
 		if (view == null || rote == 1) {
 			return;
 		}
@@ -124,7 +124,7 @@ public class Handler_Ui {
 	 * @return void
 	 */
 	public static void resetRLBack(View... view) {
-		float rote = Handler_System.getWidthRoate(ApplicationBean.getApplication().getMode_w());
+		float rote = Handler_System.getWidthRoate();
 		if (view == null || rote == 1) {
 			return;
 		}
@@ -137,7 +137,7 @@ public class Handler_Ui {
 	}
 
 	public static void resetLL(View... view) {
-		float rote = Handler_System.getWidthRoate(ApplicationBean.getApplication().getMode_w());
+		float rote = Handler_System.getWidthRoate();
 		if (view == null || rote == 1) {
 			return;
 		}
@@ -159,7 +159,7 @@ public class Handler_Ui {
 	 * @return void
 	 */
 	public static void resetLLBack(View... view) {
-		float rote = Handler_System.getWidthRoate(ApplicationBean.getApplication().getMode_w());
+		float rote = Handler_System.getWidthRoate();
 		if (view == null || rote == 1) {
 			return;
 		}
@@ -172,7 +172,7 @@ public class Handler_Ui {
 	}
 
 	public static void resetFL(View... view) {
-		float rote = Handler_System.getWidthRoate(ApplicationBean.getApplication().getMode_w());
+		float rote = Handler_System.getWidthRoate();
 		if (view == null || rote == 1) {
 			return;
 		}
@@ -194,7 +194,7 @@ public class Handler_Ui {
 	 * @return void
 	 */
 	public static void resetFLBack(View... view) {
-		float rote = Handler_System.getWidthRoate(ApplicationBean.getApplication().getMode_w());
+		float rote = Handler_System.getWidthRoate();
 		if (view == null || rote == 1) {
 			return;
 		}
