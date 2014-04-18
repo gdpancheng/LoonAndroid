@@ -13,9 +13,11 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.drawable.Drawable;
+import android.view.View;
 
 import com.android.pc.ioc.app.ApplicationBean;
 import com.android.pc.ioc.core.kernel.KernelString;
+import com.android.pc.ioc.inject.InjectAll;
 import com.android.pc.ioc.inject.InjectBefore;
 import com.android.pc.ioc.inject.InjectBinder;
 import com.android.pc.ioc.inject.InjectHttp;
@@ -134,7 +136,7 @@ public class ContextUtils {
 		Class<?> template = contextType;
 		while (template != null && template != Object.class) {
 			// 过滤掉基类 因为基类是不包含注解的
-			if (Activity.class.isAssignableFrom(template) || template.getName().equals("android.support.v4.app.FragmentActivity") || template.getName().equals("android.support.v4.app.Fragment") || template.getName().equals("android.app.Fragment")) {
+			if (template.getName().equals("android.app.Activity") || template.getName().equals("android.support.v4.app.FragmentActivity") || template.getName().equals("android.support.v4.app.Fragment") || template.getName().equals("android.app.Fragment")) {
 				break;
 			}
 
@@ -182,11 +184,6 @@ public class ContextUtils {
 						aInvokerLists.put(InjectStop.class, new ArrayList<InjectInvoker>());
 					}
 					aInvokerLists.get(InjectStop.class).add(new InjectMethods(method, null, null, null));
-					// } else if (method.getAnnotation(InjectDestroy.class) != null) {
-					// if (!aInvokerLists.containsKey(InjectDestroy.class)) {
-					// aInvokerLists.put(InjectDestroy.class, new ArrayList<InjectInvoker>());
-					// }
-					// aInvokerLists.get(InjectDestroy.class).add(new InjectMethods(method, null, null, null));
 				} else if (method.getAnnotation(InjectHttp.class) != null) {
 					InjectHttp injectHttp = method.getAnnotation(InjectHttp.class);
 					int[] keys = injectHttp.value();
@@ -215,7 +212,6 @@ public class ContextUtils {
 						https_err.get(keys[i]).add(new InjectHttps(method));
 					}
 				}
-
 			}
 			// ---------------------------------------------------------------------------------------------
 			template = template.getSuperclass();
@@ -333,7 +329,7 @@ public class ContextUtils {
 					boolean isAsy = injectView.isasy();
 					boolean pull = injectView.pull();
 					boolean down = injectView.down();
-					InjectViews injectViews = new InjectViews(id, isActivity ? InjectViewUtils.Inject_Excutors[0] : InjectViewUtils.Inject_Excutors[1].setObject(obj), field, isAsy, injectView.pull(), injectView.down());
+					InjectViews injectViews = new InjectViews(id, isActivity ? InjectViewUtils.Inject_Excutors[0] : InjectViewUtils.Inject_Excutors[1].setObject(obj), field, isAsy, injectView.pull(), injectView.down(), null);
 					if (pull || down) {
 						pull_down = injectViews;
 					}
@@ -370,12 +366,67 @@ public class ContextUtils {
 						}
 					}
 					if (field.getType() == Drawable.class) {
-						InjectResources injectResources = new InjectResources(id, field, InjectResouceSupply.injectResouceTypes[2]);
+						InjectResources injectResources = new InjectResources(id, field, InjectResouceSupply.injectResouceTypes[2], null);
 						local_list.add(injectResources);
 					}
 					if (field.getType() == String.class) {
-						InjectResources injectResources = new InjectResources(id, field, InjectResouceSupply.injectResouceTypes[0]);
+						InjectResources injectResources = new InjectResources(id, field, InjectResouceSupply.injectResouceTypes[0], null);
 						local_list.add(injectResources);
+					}
+				}
+			}
+
+			Class<?>[] classes = template.getDeclaredClasses();
+			if (classes != null) {
+				int id = 0;
+				for (int i = 0; i < classes.length; i++) {
+					InjectAll allInject = classes[i].getAnnotation(InjectAll.class);
+					if (allInject == null) {
+						continue;
+					}
+					InjectBinder inBinder = allInject.value();
+					Field[] allFields = classes[i].getDeclaredFields();
+					for (int j = 0; j < allFields.length; j++) {
+						if (View.class.isAssignableFrom(allFields[j].getType())) {
+							try {
+								id = 0;
+								id = InjectViewUtils.getResouceId("id", allFields[j].getName());
+							} catch (Exception e) {
+								ApplicationBean.logger.e("内部类 " + template + " 变量 " + allFields[j].getName() + " 无法获取到对应的ID 请检查InjectView的参数\n");
+								e.printStackTrace();
+							}
+							InjectViews injectViews = new InjectViews(id, isActivity ? InjectViewUtils.Inject_Excutors[0] : InjectViewUtils.Inject_Excutors[1].setObject(obj), allFields[j], false, false, false, classes[i]);
+
+							InjectBinder injectBinder = allFields[j].getAnnotation(InjectBinder.class);
+							if (injectBinder != null) {
+								Views views = injectViews.new Views(injectBinder.method(), injectBinder.listeners());
+								injectViews.setViews(views);
+							}else if (inBinder.method().length()>0) {
+								Views views = injectViews.new Views(inBinder.method(), inBinder.listeners());
+								injectViews.setViews(views);
+							}
+							if (clazz != template) {
+								localview_list.add(0, injectViews);
+							} else {
+								localview_list.add(injectViews);
+							}
+							continue;
+						}
+						
+						try {
+							id = InjectViewUtils.getResouceId(KernelString.capitalize(allFields[j].getType().getSimpleName()), allFields[j].getName());
+						} catch (Exception e) {
+							ApplicationBean.logger.e(template + " 变量" + allFields[j].getName() + "无法获取到对应的ID 请检查InjectView的参数\n");
+							e.printStackTrace();
+						}
+						if (allFields[j].getType() == Drawable.class) {
+							InjectResources injectResources = new InjectResources(id, allFields[j], InjectResouceSupply.injectResouceTypes[2], classes[i]);
+							local_list.add(injectResources);
+						}
+						if (allFields[j].getType() == String.class) {
+							InjectResources injectResources = new InjectResources(id, allFields[j], InjectResouceSupply.injectResouceTypes[0], classes[i]);
+							local_list.add(injectResources);
+						}
 					}
 				}
 			}

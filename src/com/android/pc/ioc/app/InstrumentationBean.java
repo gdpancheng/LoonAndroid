@@ -127,4 +127,9 @@ public class InstrumentationBean extends Instrumentation {
 		super.callActivityOnDestroy(activity);
 	}
 
+	@Override
+	public boolean onException(Object obj, Throwable e) {
+		return super.onException(obj, e);
+	}
+
 }

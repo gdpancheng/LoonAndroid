@@ -12,19 +12,20 @@
         android:text="顶部按钮(展示公用模块)" />
 
     <TextView
+        android:id="@+id/tv_top"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="#ff0000"
         android:gravity="center_horizontal"
         android:text="公共顶部导航 始终在顶部" />
 
-    <LinearLayout
+    <RelativeLayout
         android:id="@+id/common"
         android:layout_width="match_parent"
         android:layout_height="0.0dp"
         android:layout_weight="1"
         android:orientation="vertical" >
-    </LinearLayout>
+    </RelativeLayout>
 
     <Button
         android:id="@+id/bottom"

@@ -29,7 +29,7 @@ public class NotificationHelper {
 	private int id;
 	private Class clazz;
 
-	public NotificationHelper(Context ctx, int layout_id, int icon_id, int progress_id, int progress_txt_id,Class clazz) {
+	public NotificationHelper(Context ctx, int layout_id, int icon_id, int progress_id, int progress_txt_id, Class clazz) {
 		this.mContext = ctx;
 		this.mPackageHelper = new PackageHelper();
 		this.mContextNotificationManager = (NotificationManager) ctx.getSystemService(Context.NOTIFICATION_SERVICE);
@@ -55,7 +55,7 @@ public class NotificationHelper {
 			intent = new Intent(ApplicationBean.getApplication(), clazz);
 		}
 		mDownProgrNotif.contentIntent = PendingIntent.getService(mContext, 0, intent == null ? new Intent() : intent, 0);
-//		mContextNotificationManager.notify(id, mDownProgrNotif);
+		// mContextNotificationManager.notify(id, mDownProgrNotif);
 	}
 
 	private Notification getDownFinishedNotification(File file) {
@@ -72,6 +72,7 @@ public class NotificationHelper {
 
 	/**
 	 * 下载成功或者失败以后 刷新顶部通知栏
+	 * 
 	 * @author gdpancheng@gmail.com 2014-3-2 下午11:33:43
 	 * @return Notification
 	 */
@@ -80,7 +81,7 @@ public class NotificationHelper {
 		if (clazz != null) {
 			intent = new Intent(ApplicationBean.getApplication(), clazz);
 			intent.addCategory(Intent.CATEGORY_LAUNCHER);
-			intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED); 
+			intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
 		}
 		PendingIntent pendingIntent = PendingIntent.getActivity(mContext, 0, intent, 0);
 		Notification noti = new Notification();
@@ -89,9 +90,10 @@ public class NotificationHelper {
 		noti.flags = Notification.FLAG_AUTO_CANCEL | Notification.DEFAULT_SOUND | Notification.DEFAULT_LIGHTS;
 		mContextNotificationManager.notify(id, noti);
 	}
-	
+
 	/**
 	 * 下载中 这个是不支持断点下载的 所以无法显示进度
+	 * 
 	 * @author gdpancheng@gmail.com 2014-3-2 下午11:33:43
 	 * @return Notification
 	 */
@@ -108,19 +110,19 @@ public class NotificationHelper {
 		mContextNotificationManager.notify(id, notfi);
 	}
 
-	public void cancel(){
+	public void cancel() {
 		mContextNotificationManager.cancel(id);
 	}
-	
+
 	/**
 	 * 更新下载进度
 	 * 
 	 * @param percent
 	 */
 	public void refreshProgress(float percent) {
-		mContextNotificationManager.notify(id, mDownProgrNotif);
 		mRemoteViews.setProgressBar(progress_id, 100, (int) percent, false);
 		mRemoteViews.setTextViewText(progress_txt_id, String.format("%.1f", percent));
+		mContextNotificationManager.notify(id, mDownProgrNotif);
 	}
 
 	/**

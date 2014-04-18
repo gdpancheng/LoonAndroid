@@ -2,12 +2,13 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:background="@android:color/white" >
+    android:background="@android:color/white" 
+    android:orientation="horizontal">
 
-    <ListView
+<ListView
         android:id="@+id/list"
-        android:layout_width="fill_parent"
+        android:layout_width="0.0dp"
         android:layout_height="fill_parent"
+        android:layout_weight="1"
         android:cacheColorHint="#00000000" />
-
 </LinearLayout>

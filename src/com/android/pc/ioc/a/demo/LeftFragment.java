@@ -31,7 +31,7 @@ import com.wash.activity.R;
 public class LeftFragment extends BaseFragment {
 
 	// 单击和长按都添加了事件
-	@InjectView(binders = { @InjectBinder(method = "clicks", listeners = { OnItemClick.class, OnItemLongClick.class }) })
+	@InjectView(binders = @InjectBinder(method = "clicks", listeners = { OnItemClick.class, OnItemLongClick.class }))
 	ListView home_list;
 	@InjectView
 	TextView msg;
@@ -62,7 +62,6 @@ public class LeftFragment extends BaseFragment {
 		home_list.setAdapter(new LeftAdapter(activity, menu));
 		// ------------------------------------------------------------------------
 		eventBus.register(this);
-		
 		// eventBus.register(this, "onGet");
 	}
 
@@ -112,6 +111,7 @@ public class LeftFragment extends BaseFragment {
 	}
 
 	int num;
+
 	// 主线程的监听（另外四种方式如下）
 	public void onEventMainThread(SendEntity sendEntity) {
 		num++;

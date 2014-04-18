@@ -7,6 +7,8 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.android.pc.ioc.inject.InjectAll;
+import com.android.pc.ioc.inject.InjectBinder;
 import com.android.pc.ioc.inject.InjectHttp;
 import com.android.pc.ioc.inject.InjectHttpErr;
 import com.android.pc.ioc.inject.InjectHttpOk;
@@ -16,6 +18,7 @@ import com.android.pc.ioc.internet.FastHttp;
 import com.android.pc.ioc.internet.FastHttpHander;
 import com.android.pc.ioc.internet.InternetConfig;
 import com.android.pc.ioc.internet.ResponseEntity;
+import com.android.pc.ioc.view.listener.OnClick;
 import com.android.pc.util.Handler_Inject;
 import com.wash.activity.R;
 
@@ -25,11 +28,12 @@ import com.wash.activity.R;
  * @author gdpancheng@gmail.com 2014-1-22 下午10:08:12
  */
 public class ThirdFragment extends BaseFragment {
-
-	@InjectView
-	TextView result;
-	@InjectView
-	ProgressBar progress;
+	
+	@InjectAll(@InjectBinder(method="click",listeners = OnClick.class))
+	static class Views{
+		static TextView result;
+		static ProgressBar progress;
+	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -47,7 +51,7 @@ public class ThirdFragment extends BaseFragment {
 	 */
 	@InjectInit
 	private void init() {
-		FastHttpHander.ajaxGet("http://211.152.52.119:8080/app/api.php?act=category", this);
+		FastHttpHander.ajaxGet("http://211.152.52.1119:8080/app/api.php?act=category", this);
 
 		InternetConfig config = new InternetConfig();
 		config.setKey(1);
@@ -58,12 +62,11 @@ public class ThirdFragment extends BaseFragment {
 		FastHttpHander.ajaxGet("http://211.152.52.119:8080/app/api.php?act=category", config2, this);
 	}
 	
-	@Override
-	public void onActivityCreated(Bundle savedInstanceState) {
-	    // TODO Auto-generated method stub
-	    super.onActivityCreated(savedInstanceState);
+	
+	void click(){
+		System.out.println("点击");
 	}
-
+	
 	// 手动区分返回状态
 	@InjectHttp
 	private void result(ResponseEntity r) {
@@ -75,22 +78,22 @@ public class ThirdFragment extends BaseFragment {
 
 			break;
 		}
-		result.append("我是result 当前key为:" + r.getKey() + "回调了\n");
-		result.setVisibility(View.VISIBLE);
-		progress.setVisibility(View.GONE);
+		Views.result.append("我是result 当前key为:" + r.getKey() + "回调了\n");
+		Views.result.setVisibility(View.VISIBLE);
+		Views.progress.setVisibility(View.GONE);
 	}
 
 	@InjectHttpOk(1)
 	private void resultOk(ResponseEntity r) {
-		result.append("我是result 当前key为:" + r.getKey() + "回调了\n");
-		result.setVisibility(View.VISIBLE);
-		progress.setVisibility(View.GONE);
+		Views.result.append("我是resultOk 当前key为:" + r.getKey() + "回调了\n");
+		Views.result.setVisibility(View.VISIBLE);
+		Views.progress.setVisibility(View.GONE);
 	}
 
 	@InjectHttpErr(value = { 1, 2 })
 	private void resultErr(ResponseEntity r) {
-		result.append("我是result 当前key为:" + r.getKey() + "回调了\n");
-		result.setVisibility(View.VISIBLE);
-		progress.setVisibility(View.GONE);
+		Views.result.append("我是resultErr 当前key为:" + r.getKey() + "回调了\n");
+		Views.result.setVisibility(View.VISIBLE);
+		Views.progress.setVisibility(View.GONE);
 	}
 }

@@ -35,6 +35,7 @@ public class ImageListAdapter extends CommonAdapter {
 
 	@Override
 	public View view(int position, View convertView, ViewGroup parent) {
+		System.out.println("走了这里了吗:"+position);
 		ViewHolder holder;
 		final String info = data.get(position);
 		if (convertView == null) {

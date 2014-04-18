@@ -1,7 +1,5 @@
 package com.android.pc.ioc.a.demo;
 
-import java.util.HashMap;
-
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
@@ -10,17 +8,15 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.pc.ioc.inject.InjectAll;
 import com.android.pc.ioc.inject.InjectBefore;
 import com.android.pc.ioc.inject.InjectBinder;
 import com.android.pc.ioc.inject.InjectInit;
 import com.android.pc.ioc.inject.InjectLayer;
 import com.android.pc.ioc.inject.InjectListener;
 import com.android.pc.ioc.inject.InjectMethod;
-import com.android.pc.ioc.inject.InjectResource;
 import com.android.pc.ioc.inject.InjectResume;
-import com.android.pc.ioc.inject.InjectView;
 import com.android.pc.ioc.view.listener.OnClick;
-import com.android.pc.ioc.view.listener.OnLongClick;
 import com.android.pc.util.Handler_TextStyle;
 import com.wash.activity.R;
 
@@ -31,36 +27,26 @@ import com.wash.activity.R;
  */
 @InjectLayer(value = R.layout.activity_main, parent = R.id.common)
 public class MainActivity extends BaseActivity {
-
-	// 这里是第一种按钮点击事件注入方式 这里注入了单击和长按事件
-	@InjectView(binders = { @InjectBinder(method = "click", listeners = { OnClick.class, OnLongClick.class }) })
-	Button next, next3, next4;
-	// 这里是第二种按钮点击事件注入方式 这里注入了单击事件
-	@InjectView(value = R.id.next2, binders = { @InjectBinder(method = "click", listeners = { OnClick.class }) })
-	Button button;
-
-	// 第三种
-	// @InjectView(binders = { @InjectBinder(method = "click", listeners = { OnClick.class, OnLongClick.class }) })
-	// Button next, next2;
-	@InjectView
-	TextView test;
-
-	@InjectResource
-	String action_settings;
-
-	@InjectResource
-	Drawable ic_launcher;
 	
+	@InjectAll(@InjectBinder(method = "click", listeners = { OnClick.class }))
+	static class Views {
+		static Button next, next3, next4;
+		static Button next2;
+		static TextView test;
+		static String action_settings;
+		static Drawable ic_launcher;
+	}
+
 	@InjectBefore
-	void call(){
+	void call() {
 		MeApplication.logger.s("执行在oncreat之前");
 	}
-	
+
 	// 这个注解是在所有组件自动绑定以后自动调用
 	@InjectInit
 	void init() {
 		MeApplication.logger.s("子类的初始化");
-		test.setText("初始化完成，第一个页面");
+		Views.test.setText("初始化完成，第一个页面");
 	}
 
 	// 支持由参数和无参数 即click(View view)或者click() 当然click名字必须对于变量注解中的method = "click"
@@ -94,4 +80,9 @@ public class MainActivity extends BaseActivity {
 	private void resume() {
 		System.out.println("activity生命周期会走这里哦");
 	}
+
+	@Override
+    public void list() {
+	    System.out.println("---------------------------");
+    }
 }

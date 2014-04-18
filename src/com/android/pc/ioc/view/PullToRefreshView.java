@@ -16,7 +16,9 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.animation.LinearInterpolator;
 import android.view.animation.RotateAnimation;
+import android.widget.AbsoluteLayout;
 import android.widget.AdapterView;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -193,7 +195,7 @@ public class PullToRefreshView extends LinearLayout {
 		} catch (IOException e) {
 		}
 		
-		float rote = Handler_System.getWidthRoate();
+		float rote = Handler_System.getPadRoate();
 		downBitmap = Handler_Bitmap.scaleImg(downBitmap,(int)(downBitmap.getWidth()*rote), (int)(downBitmap.getHeight()*rote));
 		upBitmap = Handler_Bitmap.scaleImg(upBitmap,(int)(upBitmap.getWidth()*rote), (int)(upBitmap.getHeight()*rote));
 		
@@ -262,7 +264,7 @@ public class PullToRefreshView extends LinearLayout {
 	private void addFooterView() {
 
 		mFooterView = new RelativeLayout(getContext());
-		float rote = Handler_System.getWidthRoate();
+		float rote = Handler_System.getPadRoate();
 		LayoutParams layoutParams = new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT);
 		layoutParams.bottomMargin =  (int) (15*rote);
 		layoutParams.topMargin =  (int) (10*rote);
@@ -336,10 +338,31 @@ public class PullToRefreshView extends LinearLayout {
 				if (mAdapterView != null) {
 					LayoutParams layoutParams = (LayoutParams) mAdapterView.getLayoutParams();
 					layoutParams.height = mAdapterView.getHeight();
+					if (layoutParams.height <=2) {
+						layoutParams.height = PullToRefreshView.this.getHeight();
+                    }
+					
 					mAdapterView.setLayoutParams(layoutParams);
-					layoutParams = (LayoutParams) PullToRefreshView.this.getLayoutParams();
-					layoutParams.height = mAdapterView.getHeight();
-					PullToRefreshView.this.setLayoutParams(layoutParams);
+					if (LinearLayout.LayoutParams.class.isAssignableFrom(PullToRefreshView.this.getLayoutParams().getClass())) {
+						LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) PullToRefreshView.this.getLayoutParams();
+						params.height = layoutParams.height;
+						PullToRefreshView.this.setLayoutParams(params);
+                    }
+					if (AbsoluteLayout.LayoutParams.class.isAssignableFrom(PullToRefreshView.this.getLayoutParams().getClass())) {
+						AbsoluteLayout.LayoutParams params = (AbsoluteLayout.LayoutParams) PullToRefreshView.this.getLayoutParams();
+						params.height = layoutParams.height;
+						PullToRefreshView.this.setLayoutParams(params);
+                    }
+					if (RelativeLayout.LayoutParams.class.isAssignableFrom(PullToRefreshView.this.getLayoutParams().getClass())) {
+						RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) PullToRefreshView.this.getLayoutParams();
+						params.height = layoutParams.height;
+						PullToRefreshView.this.setLayoutParams(params);
+                    }
+					if (FrameLayout.LayoutParams.class.isAssignableFrom(PullToRefreshView.this.getLayoutParams().getClass())) {
+						FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) PullToRefreshView.this.getLayoutParams();
+						params.height = layoutParams.height;
+						PullToRefreshView.this.setLayoutParams(params);
+                    }
 				}
 				return true;
 			}

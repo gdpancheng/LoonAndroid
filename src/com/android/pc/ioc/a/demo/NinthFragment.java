@@ -32,7 +32,7 @@ public class NinthFragment extends BaseFragment {
 
 	EventBus eventBus = EventBus.getDefault();
 
-	@InjectView(binders = { @InjectBinder(method = "click", listeners = { OnClick.class }) })
+	@InjectView(binders = @InjectBinder(method = "click", listeners = { OnClick.class }))
 	Button down1, down2, down5, down6;
 
 	@Override

@@ -1,5 +1,6 @@
 package com.android.pc.ioc.invoker;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -34,14 +35,16 @@ public class InjectViews extends InjectInvoker implements OnHeaderRefreshListene
 	Method method;
 	private Object object;
 	private PullToRefreshView mPullToRefreshView;
+	private Class<?> inClass;
 
-	public InjectViews(int id, InjectExcutor<Activity> injectExcutor, Field field, boolean isAsy, boolean pull, boolean down) {
+	public InjectViews(int id, InjectExcutor<Activity> injectExcutor, Field field, boolean isAsy, boolean pull, boolean down, Class<?> inClass) {
 		this.id = id;
 		this.injectExcutor = injectExcutor;
 		this.field = field;
 		this.isAsy = isAsy;
 		this.pull = pull;
 		this.down = down;
+		this.inClass = inClass;
 	}
 
 	public void setViews(Views views) {
@@ -89,8 +92,6 @@ public class InjectViews extends InjectInvoker implements OnHeaderRefreshListene
 		if ((down || pull) && ListView.class.isAssignableFrom(view.getClass())) {
 			applyTo((ListView) view);
 		}
-		// if (isAsy && (view instanceof ListView)) {
-		// }
 		for (Views clazz : arrayList) {
 			for (Class<? extends OnListener> listenerClass : clazz.listeners) {
 				try {
@@ -107,7 +108,14 @@ public class InjectViews extends InjectInvoker implements OnHeaderRefreshListene
 		}
 		try {
 			field.setAccessible(true);
-			field.set(beanObject, view);
+			if (inClass != null) {
+				Constructor<?> c = inClass.getDeclaredConstructors()[0];
+				c.setAccessible(true);
+				Object object = c.newInstance();
+				field.set(object, view);
+			} else {
+				field.set(beanObject, view);
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

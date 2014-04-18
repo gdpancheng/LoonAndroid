@@ -16,7 +16,7 @@ import com.android.pc.ioc.util.InjectViewUtils;
 import com.android.pc.util.Handler_Properties;
 import com.android.pc.util.Logger;
 
-public abstract class ApplicationBean extends Application {
+public  class ApplicationBean extends Application {
 
 	/**
 	 * Application对象
@@ -31,6 +31,7 @@ public abstract class ApplicationBean extends Application {
 	private InstrumentationBean instrumentation;
 	private DbUtils db;
 	private String dbDirs;
+	private String dbName = "db";
 
 	public static ApplicationBean getApplication() {
 		return Application;
@@ -39,6 +40,11 @@ public abstract class ApplicationBean extends Application {
 	@Override
 	public void onCreate() {
 		long time = System.currentTimeMillis();
+
+		// 用来获取错误报告
+		// -------------------------------------------------------------------------------------------------
+//		ExceptionHandler handler = ExceptionHandler.getInstance(this);
+//		Thread.setDefaultUncaughtExceptionHandler(handler);
 		// -------------------------------------------------------------------------------------------------
 		Application = this;
 		// 读取配置文件
@@ -83,13 +89,13 @@ public abstract class ApplicationBean extends Application {
 		// --------------------------------------------------------------------------------------------------
 		super.onCreate();
 		// --------------------------------------------------------------------------------------------------
-		//判断开启框架内的图片下载
+		// 判断开启框架内的图片下载
 		boolean isImageLoad = false;
 		if (properties != null && properties.containsKey("imageload_open")) {
-			isImageLoad = Boolean.valueOf(properties.get("imageload_open").toString()) ;
+			isImageLoad = Boolean.valueOf(properties.get("imageload_open").toString());
 		}
 		// --------------------------------------------------------------------------------------------------
-		//开启框架内的图片下载控件
+		// 开启框架内的图片下载控件
 		if (isImageLoad) {
 			// 初始化图片下载控件 全局配置
 			GlobalConfig globalConfig = GlobalConfig.getInstance();
@@ -114,16 +120,16 @@ public abstract class ApplicationBean extends Application {
 					globalConfig.setFailed_drawable(getResources().getDrawable(id));
 				}
 			}
-			//本地图片加载线程池
+			// 本地图片加载线程池
 			if (properties != null && properties.containsKey("local_cpu")) {
 				globalConfig.setLocal_cpu(Integer.valueOf(properties.get("local_cpu").toString()));
 			}
-			//网络图片加载线程池
+			// 网络图片加载线程池
 			if (properties != null && properties.containsKey("internet_cpu")) {
 				globalConfig.setInternet_cpu(Integer.valueOf(properties.get("internet_cpu").toString()));
 			}
 			globalConfig.init(this);
-        }
+		}
 		// --------------------------------------------------------------------------------------------------
 		logger.d("appliaction 加载时间为:" + (System.currentTimeMillis() - time));
 		init();
@@ -151,7 +157,9 @@ public abstract class ApplicationBean extends Application {
 		this.mode_h = mode_h;
 	}
 
-	public abstract void init();
+	public  void init(){
+		
+	};
 
 	public void keypress(View view, final int key) {
 		view.setFocusable(true);
@@ -169,19 +177,39 @@ public abstract class ApplicationBean extends Application {
 			return db;
 		}
 		if (dbDirs == null) {
-			db = DbUtils.create(this, "db");
+			db = DbUtils.create(this, dbName);
 		} else {
 			File file = new File(dbDirs);
 			if (!file.exists()) {
 				file.mkdirs();
-            }
-			db = DbUtils.create(this, dbDirs, "db");
+			}
+			db = DbUtils.create(this, dbDirs, dbName);
 		}
 		db.configDebug(true);
 		db.configAllowTransaction(true);
 		return db;
 	}
 
+	public String getDbName() {
+		return dbName;
+	}
+
+	public void closeDB(){
+		if (db!=null) {
+			db = null;
+        } 
+	}
+	
+	/**
+	 * 设置 数据库名称
+	 * @author gdpancheng@gmail.com 2014-4-14 下午2:41:59
+	 * @param dbName
+	 * @return void
+	 */
+	public void setDbName(String dbName) {
+		this.dbName = dbName;
+	}
+	
 	/**
 	 * 设置数据库在
 	 * 

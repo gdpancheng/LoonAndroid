@@ -20,7 +20,7 @@ public class OnLongClick extends OnListener implements OnLongClickListener {
 
 	@Override
 	public boolean onLongClick(View v) {
-		return KernelDyna.to(invoke(v), boolean.class);
+		return KernelDyna.to(invoke(v), Boolean.class);
 	}
 
 	@Override

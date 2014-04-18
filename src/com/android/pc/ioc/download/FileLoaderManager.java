@@ -24,7 +24,6 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Base64;
 
-import com.android.pc.ioc.a.demo.MeApplication;
 import com.android.pc.ioc.app.ApplicationBean;
 import com.android.pc.ioc.db.sqlite.WhereBuilder;
 import com.android.pc.ioc.event.EventBus;
@@ -72,7 +71,7 @@ public class FileLoaderManager {
 				// 因为这种情况下 得显示通知栏
 				if (entity.getNotfi() != null) {
 					NotfiEntity notfiEntity = entity.getNotfi();
-					NotificationHelper helper = new NotificationHelper(MeApplication.app, notfiEntity.getLayout_id(), notfiEntity.getIcon_id(), notfiEntity.getProgress_id(), notfiEntity.getProgress_txt_id(), notfiEntity.getClazz());
+					NotificationHelper helper = new NotificationHelper(ApplicationBean.getApplication(), notfiEntity.getLayout_id(), notfiEntity.getIcon_id(), notfiEntity.getProgress_id(), notfiEntity.getProgress_txt_id(), notfiEntity.getClazz());
 					helper.initNotif();
 					entity.setHelper(helper);
 				}
@@ -351,7 +350,7 @@ public class FileLoaderManager {
 		}
 		FileEntity entity = fileEntities.get(url);
 		entity.setNotfi(notfi);
-		NotificationHelper helper = new NotificationHelper(MeApplication.app, notfi.getLayout_id(), notfi.getIcon_id(), notfi.getProgress_id(), notfi.getProgress_txt_id(), notfi.getClazz());
+		NotificationHelper helper = new NotificationHelper(ApplicationBean.getApplication(), notfi.getLayout_id(), notfi.getIcon_id(), notfi.getProgress_id(), notfi.getProgress_txt_id(), notfi.getClazz());
 		entity.setHelper(helper);
 		if (entity.isRange()) {
 			helper.initNotif();
@@ -601,7 +600,7 @@ public class FileLoaderManager {
 			} catch (Exception e) {
 				if (fileEntity.getNotfi() != null) {
 					NotfiEntity notfiEntity = fileEntity.getNotfi();
-					NotificationHelper helper = new NotificationHelper(MeApplication.app, notfiEntity.getLayout_id(), notfiEntity.getIcon_id(), notfiEntity.getProgress_id(), notfiEntity.getProgress_txt_id(), notfiEntity.getClazz());
+					NotificationHelper helper = new NotificationHelper(ApplicationBean.getApplication(), notfiEntity.getLayout_id(), notfiEntity.getIcon_id(), notfiEntity.getProgress_id(), notfiEntity.getProgress_txt_id(), notfiEntity.getClazz());
 					helper.initNotif();
 					fileEntity.setHelper(helper);
 				}
@@ -696,7 +695,7 @@ public class FileLoaderManager {
 		public void start() {
 			if (entity.getNotfi() != null) {
 				NotfiEntity notfiEntity = entity.getNotfi();
-				NotificationHelper helper = new NotificationHelper(MeApplication.app, notfiEntity.getLayout_id(), notfiEntity.getIcon_id(), notfiEntity.getProgress_id(), notfiEntity.getProgress_txt_id(), notfiEntity.getClazz());
+				NotificationHelper helper = new NotificationHelper(ApplicationBean.getApplication(), notfiEntity.getLayout_id(), notfiEntity.getIcon_id(), notfiEntity.getProgress_id(), notfiEntity.getProgress_txt_id(), notfiEntity.getClazz());
 				helper.initNotif();
 				entity.setHelper(helper);
 			}
@@ -800,7 +799,7 @@ public class FileLoaderManager {
 
 				if (entity.getNotfi() != null) {
 					NotfiEntity notfiEntity = entity.getNotfi();
-					NotificationHelper helper = new NotificationHelper(MeApplication.app, notfiEntity.getLayout_id(), notfiEntity.getIcon_id(), notfiEntity.getProgress_id(), notfiEntity.getProgress_txt_id(), notfiEntity.getClazz());
+					NotificationHelper helper = new NotificationHelper(ApplicationBean.getApplication(), notfiEntity.getLayout_id(), notfiEntity.getIcon_id(), notfiEntity.getProgress_id(), notfiEntity.getProgress_txt_id(), notfiEntity.getClazz());
 					helper.downNotification("下载中...");
 					entity.setHelper(helper);
 				}

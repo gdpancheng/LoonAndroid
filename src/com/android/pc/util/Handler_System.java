@@ -289,6 +289,20 @@ public class Handler_System {
 		float h = (map.get(systemHeight) * 1.00f) / ApplicationBean.getApplication().getMode_h();
 		return w>h?w:h;
 	}
+	
+	public static float getPadRoate() {
+		if (map == null) {
+			map = new HashMap<String, Integer>();
+			Display display = ((WindowManager) ApplicationBean.getApplication().getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
+			int screenWidth = display.getWidth();
+			int screenHeight = display.getHeight();
+			map.put(systemWidth, screenWidth);
+			map.put(systemHeight, screenHeight);
+		} 
+		float w = (map.get(systemWidth) * 1.00f) / ApplicationBean.getApplication().getMode_w();
+		float h = (map.get(systemHeight) * 1.00f) / ApplicationBean.getApplication().getMode_h();
+		return w<h?w:h;
+	}
 
 	/**
 	 * 获取屏幕高度缩放率

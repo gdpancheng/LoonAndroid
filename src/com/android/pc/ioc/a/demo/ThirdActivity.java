@@ -6,5 +6,8 @@ import com.wash.activity.R;
 
 @InjectLayer(R.layout.activity_main3)
 public class ThirdActivity extends BaseActivity {
-
+	@Override
+    public void list() {
+	    System.out.println("---------------------------");
+    }
 }

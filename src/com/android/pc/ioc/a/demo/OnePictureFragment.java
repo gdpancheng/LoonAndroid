@@ -45,8 +45,6 @@ public class OnePictureFragment extends BaseFragment {
 
 	@InjectInit
 	private void init() {
-
-
 		Handler_Ui.startAnim(photo2, R.drawable.progress);
 		SingleConfig config = new SingleConfig();
 		config.setDisplayer(new DisplayerLister() {

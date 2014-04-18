@@ -248,19 +248,19 @@ public class ImageDownloader {
 		int h = map.get("h");
 		Bitmap bitmap = bitMapLru.getBitmap(FileCache.urlToFileName(url + "_" + h + "_" + w), imageView);
 
-		// -----------------------------------------------------------------------------------------
-		// 设置默认图片
-		if (config != null && config.getDefDrawable() != null) {
-			// 单个配置优先显示
-			imageView.setImageDrawable(config.getDefDrawable());
-		} else if (globalConfig.getDef_drawable() != null) {
-			// 单个配置不存在默认图片的时候 显示全局设置中的默认图片
-			imageView.setImageDrawable(globalConfig.getDef_drawable());
-		} else {
-			imageView.setImageDrawable(new ColorDrawable(Color.TRANSPARENT));
-		}
-
 		if (bitmap == null) {
+			// -----------------------------------------------------------------------------------------
+			// 设置默认图片
+			if (config != null && config.getDefDrawable() != null) {
+				// 单个配置优先显示
+				imageView.setImageDrawable(config.getDefDrawable());
+			} else if (globalConfig.getDef_drawable() != null) {
+				// 单个配置不存在默认图片的时候 显示全局设置中的默认图片
+				imageView.setImageDrawable(globalConfig.getDef_drawable());
+			} else {
+				imageView.setImageDrawable(new ColorDrawable(Color.TRANSPARENT));
+			}
+			
 			// 说明是listview
 			if (imageView.getPostion() != Util.ID_NONE && !globalConfig.getOnScrollLoaderListener().isLoader()) {
 				globalConfig.getList_data().put(imageView.getPostion(), imageView);

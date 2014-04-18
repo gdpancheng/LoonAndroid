@@ -468,7 +468,8 @@ public class FastHttpHander {
 
 		if (entity.getStatus() == FastHttp.result_ok) {
 			if (ok == null && arrayList == null) {
-				ApplicationBean.logger.e(object.getClass().getSimpleName() + " 的网络请求没有增加回调方法注释 请检查\n");
+				ApplicationBean.logger.e(object.getClass().getSimpleName() + " 的网络请求"+entity.getUrl()+"\nkey为"+entity.getKey()+"没有增加回调方法注释 请检查\n");
+				return;
 			}
 			if (ok == null) {
 				if (arrayList != null) {
@@ -483,7 +484,8 @@ public class FastHttpHander {
 			}
 		} else {
 			if (err == null && arrayList == null) {
-				ApplicationBean.logger.e(object.getClass().getSimpleName() + " 的网络请求没有增加回调方法注释 请检查\n");
+				ApplicationBean.logger.e(object.getClass().getSimpleName() + " 的网络请求"+entity.getUrl()+"\nkey为"+entity.getKey()+"没有增加回调方法注释 请检查\n");
+				return;
 			}
 			if (err == null) {
 				if (arrayList != null) {
@@ -501,7 +503,7 @@ public class FastHttpHander {
 
 	private static boolean isDestory(Object object) {
 		if (Activity.class.isAssignableFrom(object.getClass())) {
-			return ((Activity) object).isFinishing();
+			return ((Activity) object).isFinishing() || !((Activity) object).hasWindowFocus();
 		}
 		if (Fragment.class.isAssignableFrom(object.getClass())) {
 			return ((Fragment) object).isDetached() || ((Fragment) object).isRemoving();

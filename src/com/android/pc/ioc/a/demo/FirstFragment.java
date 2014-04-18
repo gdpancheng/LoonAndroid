@@ -45,7 +45,7 @@ public class FirstFragment extends BaseFragment {
 	@InjectView(binders = { @InjectBinder(method = "clicks", listeners = { OnItemClick.class }), @InjectBinder(method = "itemLongclick", listeners = { OnItemLongClick.class }) })
 	ListView list;
 
-	@InjectView(binders = { @InjectBinder(method = "itemSelected", listeners = { OnItemSelected.class }) })
+	@InjectView(binders =@InjectBinder(method = "itemSelected", listeners =OnItemSelected.class))
 	Spinner spinner;
 
 	@Override
