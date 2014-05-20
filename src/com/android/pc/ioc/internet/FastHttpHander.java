@@ -1,6 +1,7 @@
 package com.android.pc.ioc.internet;
 
 import java.io.File;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -505,9 +506,19 @@ public class FastHttpHander {
 		if (Activity.class.isAssignableFrom(object.getClass())) {
 			return ((Activity) object).isFinishing() || !((Activity) object).hasWindowFocus();
 		}
-		if (Fragment.class.isAssignableFrom(object.getClass())) {
-			return ((Fragment) object).isDetached() || ((Fragment) object).isRemoving();
-		}
+		try {
+	        Class<?> clazz = Class.forName("android.support.v4.app.Fragment");
+	        Class<?> clazz2 = Class.forName("android.app.Fragment");
+	        if (clazz.isAssignableFrom(object.getClass())||clazz2.isAssignableFrom(object.getClass())) {
+	        	Method isDetached = object.getClass().getMethod("isDetached", null);
+	        	Method isRemoving = object.getClass().getMethod("isRemoving", null);
+	        	System.out.println(Boolean.valueOf(isDetached.invoke(object).toString()));
+	        	System.out.println(Boolean.valueOf(isRemoving.invoke(object).toString()));
+	        	return Boolean.valueOf(isDetached.invoke(object).toString())&&Boolean.valueOf(isRemoving.invoke(object).toString());
+	        }
+        } catch (Exception e) {
+        }
+		
 		return false;
 	}
 }

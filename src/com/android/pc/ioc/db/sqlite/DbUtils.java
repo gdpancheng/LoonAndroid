@@ -593,7 +593,7 @@ public class DbUtils {
 			int oldVersion = result.getVersion();
 			int newVersion = config.getDbVersion();
 			if (oldVersion != newVersion) {
-				if (dbFileExists) {
+				if (dbFileExists&&config.getDbUpgradeListener()!=null) {
 					config.getDbUpgradeListener().onUpgrade(result, oldVersion, newVersion);
 				}
 				result.setVersion(newVersion);

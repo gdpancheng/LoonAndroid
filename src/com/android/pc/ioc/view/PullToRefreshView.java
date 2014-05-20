@@ -777,11 +777,15 @@ public class PullToRefreshView extends LinearLayout {
 		case View.GONE:
 			eventBus.unregister(this);
 			break;
-		default:
+		case View.INVISIBLE:
+			eventBus.unregister(this);
+			break;
+		case View.VISIBLE:
 			eventBus.register(this);
 			break;
 		}
 	}
+	
 
 	public AdapterView<?> getAdapterView() {
 		return mAdapterView;

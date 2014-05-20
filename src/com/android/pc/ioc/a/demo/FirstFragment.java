@@ -53,7 +53,7 @@ public class FirstFragment extends BaseFragment {
 		this.inflater = inflater;
 		View rootView = inflater.inflate(R.layout.fragment_main1, container, false);
 		// fragment注解必须走这里
-		Handler_Inject.injectView(this, rootView);
+		Handler_Inject.injectFragment(this, rootView);
 		return rootView;
 	}
 
@@ -104,7 +104,7 @@ public class FirstFragment extends BaseFragment {
 	@InjectMethod(@InjectListener(ids = { R.id.onlongclick }, listeners = { OnLongClick.class }))
 	private boolean onLongClick(View v) {
 		MakeToast("长按了");
-		return true;
+		return false;
 	}
 
 	@InjectMethod(@InjectListener(ids = { R.id.radio }, listeners = { OnRadioChecked.class }))

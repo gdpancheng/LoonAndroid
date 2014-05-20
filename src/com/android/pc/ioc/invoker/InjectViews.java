@@ -6,6 +6,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 import android.app.Activity;
 import android.view.View;
@@ -15,7 +17,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 
 import com.android.pc.ioc.app.ApplicationBean;
-import com.android.pc.ioc.image.config.GlobalConfig;
+import com.android.pc.ioc.core.kernel.KernelReflect;
 import com.android.pc.ioc.inject.InjectView;
 import com.android.pc.ioc.util.InjectExcutor;
 import com.android.pc.ioc.view.PullToRefreshView;
@@ -32,12 +34,13 @@ public class InjectViews extends InjectInvoker implements OnHeaderRefreshListene
 	private ArrayList<Views> arrayList = new ArrayList<InjectViews.Views>();
 	private InjectExcutor<Activity> injectExcutor;
 	private Field field;
+	private Field injectAllfield;
 	Method method;
 	private Object object;
 	private PullToRefreshView mPullToRefreshView;
 	private Class<?> inClass;
 
-	public InjectViews(int id, InjectExcutor<Activity> injectExcutor, Field field, boolean isAsy, boolean pull, boolean down, Class<?> inClass) {
+	public InjectViews(int id, InjectExcutor<Activity> injectExcutor, Field field, boolean isAsy, boolean pull, boolean down, Class<?> inClass, Field field2) {
 		this.id = id;
 		this.injectExcutor = injectExcutor;
 		this.field = field;
@@ -45,6 +48,7 @@ public class InjectViews extends InjectInvoker implements OnHeaderRefreshListene
 		this.pull = pull;
 		this.down = down;
 		this.inClass = inClass;
+		this.injectAllfield = field2;
 	}
 
 	public void setViews(Views views) {
@@ -85,9 +89,9 @@ public class InjectViews extends InjectInvoker implements OnHeaderRefreshListene
 			return;
 		}
 		if (isAsy && ListView.class.isAssignableFrom(view.getClass())) {
-			((ListView) view).setOnScrollListener(GlobalConfig.getInstance().getOnScrollLoaderListener());
-			GlobalConfig config = GlobalConfig.getInstance();
-			config.setOnScrollLoaderListener(null);
+//			((ListView) view).setOnScrollListener(GlobalConfig.getInstance().getOnScrollLoaderListener());
+//			GlobalConfig config = GlobalConfig.getInstance();
+//			config.setOnScrollLoaderListener(null);
 		}
 		if ((down || pull) && ListView.class.isAssignableFrom(view.getClass())) {
 			applyTo((ListView) view);
@@ -107,18 +111,60 @@ public class InjectViews extends InjectInvoker implements OnHeaderRefreshListene
 			return;
 		}
 		try {
-			field.setAccessible(true);
-			if (inClass != null) {
-				Constructor<?> c = inClass.getDeclaredConstructors()[0];
-				c.setAccessible(true);
-				Object object = c.newInstance();
-				field.set(object, view);
-			} else {
+
+			if (injectAllfield==null) {
+				field.setAccessible(true);
 				field.set(beanObject, view);
-			}
+	            return;
+            }
+			injectAllfield.setAccessible(true);
+			Object values = injectAllfield.get(this.object);
+			if (null==values) {
+				if (inClass.getDeclaringClass() == null) {
+					values =inClass.newInstance();
+                }else {
+                	Constructor<?>[] c = inClass.getDeclaredConstructors();
+                	c[0].setAccessible(true);
+                	values = c[0].newInstance(this.object);
+				}
+				KernelReflect.set(this.object, injectAllfield, values);
+            }
+			field.setAccessible(true);
+			field.set(values, view);
+			
+			// field.setAccessible(true);
+			// if (inClass != null) {
+			// Constructor<?> c = inClass.getDeclaredConstructors()[0];
+			// c.setAccessible(true);
+			// Object object = c.newInstance();
+			// field.set(object, view);
+			// } else {
+			// field.set(beanObject, view);
+			// }
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	public static Map<String, String> readClassAttr(Object tb) throws Exception {
+		Field[] fields = tb.getClass().getDeclaredFields();
+		String keyList = "";
+		String valueList = "";
+		for (Field field : fields) {
+			field.setAccessible(true);
+			if (field.get(tb) != null && !"".equals(field.get(tb).toString())) {
+				keyList += "," + field.getName();
+				if ("a".equals(field.getName())) {
+					valueList += "," + "特殊格式哦";
+				} else {
+					valueList += "," + field.get(tb);
+				}
+			}
+		}
+		Map<String, String> maps = new HashMap<String, String>();
+		maps.put("keys", keyList);
+		maps.put("values", valueList);
+		return maps;
 	}
 
 	private void applyTo(View target) {

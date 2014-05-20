@@ -6,25 +6,23 @@
     android:orientation="vertical" >
 
     <RelativeLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" >
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent" >
 
-        <com.android.pc.ioc.image.view.AsyImageView
+        <com.android.pc.ioc.image.RecyclingImageView
             android:id="@+id/photo"
-            android:layout_width="200dp"
-            android:layout_height="200dp" />
+            android:layout_centerInParent="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
 
         <com.android.pc.ioc.a.demo.PinProgressButton
             android:id="@+id/pin_progress_1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignBottom="@id/photo"
-            android:layout_alignRight="@+id/photo" />
-    </RelativeLayout>
+            android:layout_alignRight="@+id/photo"
+            android:visibility="gone" />
 
-    <ImageView
-        android:id="@+id/photo2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+    </RelativeLayout>
 
 </LinearLayout>

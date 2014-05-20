@@ -15,27 +15,60 @@ import com.android.pc.ioc.inject.InjectInit;
 import com.android.pc.ioc.inject.InjectLayer;
 import com.android.pc.ioc.inject.InjectListener;
 import com.android.pc.ioc.inject.InjectMethod;
+import com.android.pc.ioc.inject.InjectResource;
 import com.android.pc.ioc.inject.InjectResume;
+import com.android.pc.ioc.inject.InjectView;
 import com.android.pc.ioc.view.listener.OnClick;
 import com.android.pc.util.Handler_TextStyle;
 import com.wash.activity.R;
 
 /**
- * 
- * 
  * @author gdpancheng@gmail.com 2014-2-21 下午5:34:26
  */
 @InjectLayer(value = R.layout.activity_main, parent = R.id.common)
 public class MainActivity extends BaseActivity {
-	
+
+	//四种写法任选一种
+	// --------------------------------------------------------------------------------------
+	// 第一种写法(内部类 全局定义点击事件)
+	@InjectView(binders=@InjectBinder(method = "click", listeners = { OnClick.class }))
+	Button next, next3, next4, next2;
+	@InjectView
+	TextView test;
+	@InjectResource
+	String action_settings;
+	@InjectResource
+	Drawable ic_launcher;
+	// --------------------------------------------------------------------------------------
+	// 第二种写法(内部类 全局定义点击事件)
 	@InjectAll(@InjectBinder(method = "click", listeners = { OnClick.class }))
-	static class Views {
-		static Button next, next3, next4;
-		static Button next2;
-		static TextView test;
-		static String action_settings;
-		static Drawable ic_launcher;
+	Views v;
+
+	class Views {
+		Button next, next3, next4, next2,next5;
+		TextView test;
+		String action_settings;
+		Drawable ic_launcher;
 	}
+
+	// --------------------------------------------------------------------------------------
+	// injectAll第三种写法(内部类 单独设置点击事件)
+	@InjectAll
+	Views2 v2;
+
+	class Views2 {
+		@InjectBinder(method = "click", listeners = { OnClick.class })
+		Button next, next3, next4, next2;
+		TextView test;
+		String action_settings;
+		Drawable ic_launcher;
+	}
+
+	// --------------------------------------------------------------------------------------
+	// injectAll第四种写法(外部类)
+	// 如果需要单独设置
+	@InjectAll(@InjectBinder(method = "click", listeners = { OnClick.class }))
+	MainView v3;
 
 	@InjectBefore
 	void call() {
@@ -45,9 +78,11 @@ public class MainActivity extends BaseActivity {
 	// 这个注解是在所有组件自动绑定以后自动调用
 	@InjectInit
 	void init() {
-		MeApplication.logger.s("子类的初始化");
-		Views.test.setText("初始化完成，第一个页面");
+		MeApplication.logger.s("子类的初始化" + v2.ic_launcher);
+		v.test.setText("初始化完成，第一个页面");
+		System.out.println("activity生命周期oncreat" + super.v.tv_top);
 	}
+	
 
 	// 支持由参数和无参数 即click(View view)或者click() 当然click名字必须对于变量注解中的method = "click"
 	private void click(View view) {
@@ -64,6 +99,11 @@ public class MainActivity extends BaseActivity {
 		case R.id.next4:
 			startActivity(new Intent(this, FourActivity.class));
 			break;
+		case R.id.test:
+			Toast.makeText(this, "文本点击事件", Toast.LENGTH_LONG).show();
+		case R.id.next5:
+			startActivity(new Intent(this, FifthActivity.class));
+			break;
 		}
 	}
 
@@ -78,11 +118,6 @@ public class MainActivity extends BaseActivity {
 
 	@InjectResume
 	private void resume() {
-		System.out.println("activity生命周期会走这里哦");
+		System.out.println("activity生命周期会走这里哦"+ super.v.tv_top);
 	}
-
-	@Override
-    public void list() {
-	    System.out.println("---------------------------");
-    }
 }

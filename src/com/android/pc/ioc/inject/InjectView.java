@@ -26,13 +26,6 @@ public @interface InjectView {
 	 * @return
 	 */
 	public int value() default ContextUtils.ID_NONE;
-
-	/**
-	 * 是否添加滑动停止 才加载图片的监听
-	 * @author gdpancheng@gmail.com 2014-3-11 下午10:13:14
-	 * @return boolean
-	 */
-	public boolean isasy() default false;
 	
 	/**
 	 * 上拉加载更多
@@ -52,4 +45,6 @@ public @interface InjectView {
 	 * @return
 	 */
 	public InjectBinder[] binders() default {};
+	
+	public String load() default "";
 }

@@ -12,19 +12,18 @@
         android:layout_height="wrap_content"
         android:textColor="@android:color/black"
         android:text="列表展示图片,这里图片一样但连接不一样" />
-
-    <ListView
-        android:id="@+id/listView"
-        android:layout_width="fill_parent"
-        android:layout_height="0.0dp"
-        android:layout_weight="1"
-        android:cacheColorHint="#00000000" >
-    </ListView>
-
     <Button
         android:id="@+id/next"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:text="单个图片展示" />
+    <ListView
+        android:id="@+id/listView"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:cacheColorHint="#00000000" >
+    </ListView>
+
+
 
 </LinearLayout>

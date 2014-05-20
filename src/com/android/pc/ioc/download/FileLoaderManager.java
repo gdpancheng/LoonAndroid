@@ -15,7 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
+import android.annotation.SuppressLint;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
@@ -23,7 +23,6 @@ import android.net.Uri;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Base64;
-
 import com.android.pc.ioc.app.ApplicationBean;
 import com.android.pc.ioc.db.sqlite.WhereBuilder;
 import com.android.pc.ioc.event.EventBus;
@@ -528,6 +527,7 @@ public class FileLoaderManager {
 			this.fileEntity = fileEntity;
 		}
 
+		@SuppressLint("NewApi")
 		@Override
 		public void run() {
 			try {
@@ -655,10 +655,11 @@ public class FileLoaderManager {
 			public void run() {
 				super.run();
 				while (DownloadThreadGroup.this.activeCount() > 0) {
-					sendMsg(entity, FileResultEntity.status_loading, (int) (getSize() * 100 / entity.getLength()));
+					entity.setLoadedLength(getSize());
+					sendMsg(entity, FileResultEntity.status_loading, (int) (entity.getLoadedLength() * 100 / entity.getLength()));
 					ApplicationBean.getApplication().getDb().saveOrUpdateAll(entitysList);
 					try {
-						Thread.sleep(2000);
+						Thread.sleep(1000);
 					} catch (Exception e) {
 					}
 				}
@@ -797,7 +798,7 @@ public class FileLoaderManager {
 				HttpURLConnection httpConnection = getHttpConnection(-1, entity.getReal_url() != null ? entity.getReal_url() : entity.getUrl());
 				inputStream = new BufferedInputStream(httpConnection.getInputStream());
 
-				if (entity.getNotfi() != null) {
+				if (entity.getNotfi() != null&&entity.getLength()==0) {
 					NotfiEntity notfiEntity = entity.getNotfi();
 					NotificationHelper helper = new NotificationHelper(ApplicationBean.getApplication(), notfiEntity.getLayout_id(), notfiEntity.getIcon_id(), notfiEntity.getProgress_id(), notfiEntity.getProgress_txt_id(), notfiEntity.getClazz());
 					helper.downNotification("下载中...");
@@ -821,6 +822,9 @@ public class FileLoaderManager {
 					}
 					readCount = readCount + read;
 					destFile.write(b, 0, read);
+					
+					entity.setLoadedLength(readCount);
+					sendMsg(entity, FileResultEntity.status_loading, (int) (entity.getLoadedLength() * 100 / entity.getLength()));
 				}
 				// 发送下载完成通知
 				sendMsg(entity, FileResultEntity.status_sucess, 100);
@@ -868,8 +872,10 @@ public class FileLoaderManager {
 		FileResultEntity resultEntity = new FileResultEntity();
 		resultEntity.setRange(entity.isRange());
 		resultEntity.setUrl(entity.getUrl());
+		resultEntity.setLoadedLength(entity.getLoadedLength());
 		resultEntity.setFile(new File(entity.getPath()));
 		resultEntity.setStatus(status);
+		resultEntity.setLength(entity.getLength());
 		resultEntity.setProgress(progress);
 		eventBus.post(resultEntity);
 

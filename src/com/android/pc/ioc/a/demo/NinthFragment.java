@@ -39,7 +39,7 @@ public class NinthFragment extends BaseFragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		this.inflater = inflater;
 		View rootView = inflater.inflate(R.layout.fragment_main8, container, false);
-		Handler_Inject.injectView(this, rootView);
+		Handler_Inject.injectFragment(this, rootView);
 		return rootView;
 	}
 

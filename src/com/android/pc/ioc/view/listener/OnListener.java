@@ -66,14 +66,13 @@ public abstract class OnListener {
 				}
 				method = null;
 			}
-
+		
 			if (targetMethod != null) {
-
 				targetMethod.setAccessible(true);
 				if (noArgs) {
-					targetMethod.invoke(target);
+					return targetMethod.invoke(target);
 				} else {
-					targetMethod.invoke(target, args);
+					return targetMethod.invoke(target, args);
 				}
 			}
 		} catch (Exception e) {

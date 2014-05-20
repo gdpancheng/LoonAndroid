@@ -276,7 +276,7 @@ public class ContextUtils {
 			// 此变量是用来标注当前类是否是Activity的子类，因为只有Activity才需要setContentView
 			// 另一种就是Fragment 这种情况下是不需要setContentView 所以要单独区分开来
 			boolean isActivity = false;
-			if (Activity.class.isAssignableFrom(clazz)) {
+			if (obj == null || Activity.class.isAssignableFrom(obj.getClass())) {
 				isActivity = true;
 			}
 			InjectLayer injectLayer = template.getAnnotation(InjectLayer.class);
@@ -307,11 +307,64 @@ public class ContextUtils {
 					ApplicationBean.logger.d(template + " 无法获取到对应layout的ID 请检查injectLayer或者injectPLayer是否设置\n");
 				}
 			}
-
 			// 获得当前类的所有的字段
 			Field[] fields = template.getDeclaredFields();
 			for (int i = 0; i < fields.length; i++) {
 				Field field = fields[i];
+				// 获取allview注解
+				InjectAll injectAll = field.getAnnotation(InjectAll.class);
+				if (injectAll != null) {
+					int id = 0;
+					Class<?> type = field.getType();
+					InjectBinder inBinder = injectAll.value();
+					Field[] allFields = type.getDeclaredFields();
+					for (int j = 0; j < allFields.length; j++) {
+						allFields[j].setAccessible(true);
+						if (View.class.isAssignableFrom(allFields[j].getType())) {
+							try {
+								id = 0;
+								id = InjectViewUtils.getResouceId("id", allFields[j].getName());
+							} catch (Exception e) {
+								ApplicationBean.logger.e("内部类 " + template + " 变量 " + allFields[j].getName() + " 无法获取到对应的ID 请检查InjectView的参数\n");
+							}
+							InjectViews injectViews = new InjectViews(id, isActivity ? InjectViewUtils.Inject_Excutors[0] : InjectViewUtils.Inject_Excutors[1].setObject(obj), allFields[j], false, false, false, type, field);
+
+							InjectBinder injectBinder = allFields[j].getAnnotation(InjectBinder.class);
+							if (injectBinder != null) {
+								Views views = injectViews.new Views(injectBinder.method(), injectBinder.listeners());
+								injectViews.setViews(views);
+							} else if (inBinder.method().length() > 0) {
+								Views views = injectViews.new Views(inBinder.method(), inBinder.listeners());
+								injectViews.setViews(views);
+							}
+							if (clazz != template) {
+								localview_list.add(0, injectViews);
+							} else {
+								localview_list.add(injectViews);
+							}
+							continue;
+						}
+
+						try {
+							if (allFields[j].getType() == Drawable.class || allFields[j].getType() == String.class) {
+								id = InjectViewUtils.getResouceId(KernelString.capitalize(allFields[j].getType().getSimpleName()), allFields[j].getName());
+
+								if (allFields[j].getType() == Drawable.class) {
+									InjectResources injectResources = new InjectResources(id, allFields[j], InjectResouceSupply.injectResouceTypes[2], type, field);
+									local_list.add(injectResources);
+								}
+								if (allFields[j].getType() == String.class) {
+									InjectResources injectResources = new InjectResources(id, allFields[j], InjectResouceSupply.injectResouceTypes[0], type, field);
+									local_list.add(injectResources);
+								}
+							}
+						} catch (Exception e) {
+							ApplicationBean.logger.e(template + " 变量" + allFields[j].getName() + "|" + allFields[j].getType() + "无法获取到对应的ID 请检查InjectView的参数\n");
+							e.printStackTrace();
+						}
+					}
+				}
+
 				// 获取view注解
 				InjectView injectView = field.getAnnotation(InjectView.class);
 				if (injectView != null) {
@@ -326,10 +379,11 @@ public class ContextUtils {
 						}
 					}
 					// 判断listview 是否添加图片滑动停止加载 如果InjectView含有此参数 则表示使用
-					boolean isAsy = injectView.isasy();
+					boolean isAsy = false;
 					boolean pull = injectView.pull();
 					boolean down = injectView.down();
-					InjectViews injectViews = new InjectViews(id, isActivity ? InjectViewUtils.Inject_Excutors[0] : InjectViewUtils.Inject_Excutors[1].setObject(obj), field, isAsy, injectView.pull(), injectView.down(), null);
+					System.out.println("字段:"+field+injectView+isActivity);
+					InjectViews injectViews = new InjectViews(id, isActivity ? InjectViewUtils.Inject_Excutors[0] : InjectViewUtils.Inject_Excutors[1].setObject(obj), field, isAsy, injectView.pull(), injectView.down(), null, null);
 					if (pull || down) {
 						pull_down = injectViews;
 					}
@@ -366,67 +420,12 @@ public class ContextUtils {
 						}
 					}
 					if (field.getType() == Drawable.class) {
-						InjectResources injectResources = new InjectResources(id, field, InjectResouceSupply.injectResouceTypes[2], null);
+						InjectResources injectResources = new InjectResources(id, field, InjectResouceSupply.injectResouceTypes[2], null, null);
 						local_list.add(injectResources);
 					}
 					if (field.getType() == String.class) {
-						InjectResources injectResources = new InjectResources(id, field, InjectResouceSupply.injectResouceTypes[0], null);
+						InjectResources injectResources = new InjectResources(id, field, InjectResouceSupply.injectResouceTypes[0], null, null);
 						local_list.add(injectResources);
-					}
-				}
-			}
-
-			Class<?>[] classes = template.getDeclaredClasses();
-			if (classes != null) {
-				int id = 0;
-				for (int i = 0; i < classes.length; i++) {
-					InjectAll allInject = classes[i].getAnnotation(InjectAll.class);
-					if (allInject == null) {
-						continue;
-					}
-					InjectBinder inBinder = allInject.value();
-					Field[] allFields = classes[i].getDeclaredFields();
-					for (int j = 0; j < allFields.length; j++) {
-						if (View.class.isAssignableFrom(allFields[j].getType())) {
-							try {
-								id = 0;
-								id = InjectViewUtils.getResouceId("id", allFields[j].getName());
-							} catch (Exception e) {
-								ApplicationBean.logger.e("内部类 " + template + " 变量 " + allFields[j].getName() + " 无法获取到对应的ID 请检查InjectView的参数\n");
-								e.printStackTrace();
-							}
-							InjectViews injectViews = new InjectViews(id, isActivity ? InjectViewUtils.Inject_Excutors[0] : InjectViewUtils.Inject_Excutors[1].setObject(obj), allFields[j], false, false, false, classes[i]);
-
-							InjectBinder injectBinder = allFields[j].getAnnotation(InjectBinder.class);
-							if (injectBinder != null) {
-								Views views = injectViews.new Views(injectBinder.method(), injectBinder.listeners());
-								injectViews.setViews(views);
-							}else if (inBinder.method().length()>0) {
-								Views views = injectViews.new Views(inBinder.method(), inBinder.listeners());
-								injectViews.setViews(views);
-							}
-							if (clazz != template) {
-								localview_list.add(0, injectViews);
-							} else {
-								localview_list.add(injectViews);
-							}
-							continue;
-						}
-						
-						try {
-							id = InjectViewUtils.getResouceId(KernelString.capitalize(allFields[j].getType().getSimpleName()), allFields[j].getName());
-						} catch (Exception e) {
-							ApplicationBean.logger.e(template + " 变量" + allFields[j].getName() + "无法获取到对应的ID 请检查InjectView的参数\n");
-							e.printStackTrace();
-						}
-						if (allFields[j].getType() == Drawable.class) {
-							InjectResources injectResources = new InjectResources(id, allFields[j], InjectResouceSupply.injectResouceTypes[2], classes[i]);
-							local_list.add(injectResources);
-						}
-						if (allFields[j].getType() == String.class) {
-							InjectResources injectResources = new InjectResources(id, allFields[j], InjectResouceSupply.injectResouceTypes[0], classes[i]);
-							local_list.add(injectResources);
-						}
 					}
 				}
 			}
@@ -472,6 +471,21 @@ public class ContextUtils {
 		all_list.addAll(views_list);
 		all_list.addAll(orther_list);
 		return all_list;
+	}
+
+	public static void getAdapterViewInvokers(final Class<?> clazz, final Object obj, final Class<?> superClass) {
+		ArrayList<InjectInvoker> all_list = new ArrayList<InjectInvoker>();
+		Class<?> template = clazz;
+		if (all_inject_views.containsKey(template) && Activity.class.isAssignableFrom(template)) {
+			all_list.addAll(all_inject_views.get(template));
+		}
+		if (orther_inject_invokes.containsKey(template) && Activity.class.isAssignableFrom(template)) {
+			all_list.addAll(orther_inject_invokes.get(template));
+		}
+		template = template.getSuperclass();
+		if (all_list.size() > 0) {
+		}
+		ArrayList<InjectInvoker> views_list = new ArrayList<InjectInvoker>();
 	}
 
 	public static void getFactoryProvider() {

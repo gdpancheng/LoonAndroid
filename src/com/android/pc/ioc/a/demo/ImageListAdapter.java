@@ -7,9 +7,8 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
-import com.android.pc.ioc.image.ImageDownloader;
-import com.android.pc.ioc.image.view.AsyImageView;
 import com.wash.activity.R;
 
 public class ImageListAdapter extends CommonAdapter {
@@ -23,25 +22,21 @@ public class ImageListAdapter extends CommonAdapter {
 	}
 
 	static class ViewHolder {
-		AsyImageView image;
+		ImageView image;
 	}
 
-	private void getDrawable(String url, AsyImageView imageView, int position) {
-		imageView.setPostion(position);
-		//设置这个参数 则对应assert里面的one配置
-//		imageView.setTemplate("one");
-		ImageDownloader.download(url, imageView);
+	private void getDrawable(String url, ImageView imageView, int position) {
+		SecondFragment.mImageFetcher.loadImage(url, imageView);
 	}
 
 	@Override
 	public View view(int position, View convertView, ViewGroup parent) {
-		System.out.println("走了这里了吗:"+position);
 		ViewHolder holder;
 		final String info = data.get(position);
 		if (convertView == null) {
 			convertView = inflater.inflate(R.layout.list_item, null);
 			holder = new ViewHolder();
-			holder.image = (AsyImageView) convertView.findViewById(R.id.image);
+			holder.image = (ImageView) convertView.findViewById(R.id.image);
 			convertView.setTag(holder);
 		} else {
 			holder = (ViewHolder) convertView.getTag();

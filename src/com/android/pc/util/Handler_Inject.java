@@ -25,7 +25,7 @@ public class Handler_Inject {
 	 * @param view
 	 * @return void
 	 */
-	public static void injectView(Object object, View view) {
+	public static void injectFragment(Object object, View view) {
 		long time = System.currentTimeMillis();
 		ContextUtils.getCreateInvokers(object.getClass());
 
@@ -50,7 +50,15 @@ public class Handler_Inject {
 		for (InjectInvoker injectInvoker : arrayList) {
 			injectInvoker.invoke(object);
 		}
-		ContextUtils.getCreateInvokers(object.getClass());
+		ApplicationBean.logger.d(object.getClass() + " UI加载耗时 " + (System.currentTimeMillis() - time));
+	}
+	
+	public static void injectOrther(Object object, View view) {
+		long time = System.currentTimeMillis();
+		ArrayList<InjectInvoker> arrayList = ContextUtils.getViewInvokers(object.getClass(), view, null);
+		for (InjectInvoker injectInvoker : arrayList) {
+			injectInvoker.invoke(object);
+		}
 		ApplicationBean.logger.d(object.getClass() + " UI加载耗时 " + (System.currentTimeMillis() - time));
 	}
 }

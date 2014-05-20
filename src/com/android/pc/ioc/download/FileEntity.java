@@ -18,7 +18,7 @@ import com.android.pc.ioc.update.NotificationHelper;
  * History:
  */
 public class FileEntity {
-	
+
 	protected int id;
 	/** 下载的url **/
 	protected String url;
@@ -39,6 +39,8 @@ public class FileEntity {
 	private boolean isUpdate;
 	@Transient
 	private NotfiEntity notfi;
+	@Transient
+	private long loadedLength;
 	@Transient
 	private String real_url;
 	@Finder(valueColumn = "id", targetColumn = "ThreadId")
@@ -123,6 +125,15 @@ public class FileEntity {
 		return "FileEntity [id=" + id + ", url=" + url + ", path=" + path + ", length=" + length + ", threads=" + threads + ", range=" + range + ", isSucess=" + isSucess + ", again=" + again + ", threadsEntities=" + threadsEntities + "]";
 	}
 
+	
+	public long getLoadedLength() {
+		return loadedLength;
+	}
+
+	public void setLoadedLength(long loadedLength) {
+		this.loadedLength = loadedLength;
+	}
+	
 	public static FileEntity getEntityByUrl(String url) {
 
 		Selector selector = Selector.from(FileEntity.class);

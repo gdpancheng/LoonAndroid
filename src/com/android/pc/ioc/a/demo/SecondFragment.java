@@ -1,6 +1,5 @@
 package com.android.pc.ioc.a.demo;
 
-import java.io.File;
 import java.util.ArrayList;
 
 import android.os.Bundle;
@@ -10,12 +9,9 @@ import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.ListView;
 
-import com.android.pc.ioc.app.ApplicationBean;
 import com.android.pc.ioc.event.EventBus;
 import com.android.pc.ioc.image.ImageDownloader;
-import com.android.pc.ioc.image.config.GlobalConfig;
-import com.android.pc.ioc.image.config.OnScrollLoaderListener;
-import com.android.pc.ioc.image.displayer.LoaderLister;
+import com.android.pc.ioc.image.Utils;
 import com.android.pc.ioc.inject.InjectBefore;
 import com.android.pc.ioc.inject.InjectInit;
 import com.android.pc.ioc.inject.InjectListener;
@@ -34,63 +30,56 @@ import com.wash.activity.R;
  */
 public class SecondFragment extends BaseFragment {
 
-	@InjectView(isasy = true,pull = true,down = true)
+	@InjectView(pull = true,down = true)
 	ListView listView;
 
 	ArrayList<String> image = new ArrayList<String>();
+	public static ImageDownloader mImageFetcher = null;
 
 	@InjectBefore
 	void test() {
 		// @InjectView(isasy=true)表示这个listview里面有网络图片下载，并且需要实现滑动停止才加载的功能
 		// @InjectView(isasy=true)框架会给listview自动注入OnScrollListener,如果你自己也要滚动监听
 		// 那么请在此配置，如下
-		GlobalConfig config = GlobalConfig.getInstance();
-		config.setOnScrollLoaderListener(new MyOnScrollListener());
 		System.out.println("before");
 	}
 
-	class MyOnScrollListener extends OnScrollLoaderListener {
-		@Override
-		public void onScrollListener(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-//			ApplicationBean.logger.s("滚动监听:" + firstVisibleItem);
-		}
-
-		@Override
-		public void onScrollStateChange(AbsListView view, int scrollState) {
-//			ApplicationBean.logger.s("滚动状态");
-		}
-	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		this.inflater = inflater;
 		View rootView = inflater.inflate(R.layout.fragment_main2, container, false);
-		Handler_Inject.injectView(this, rootView);
+		Handler_Inject.injectFragment(this, rootView);
 		return rootView;
 	}
 
 	@InjectInit
 	private void init() {
+
+		// The ImageFetcher takes care of loading images into our ImageView children asynchronously
+		mImageFetcher = new ImageDownloader(getActivity(),300);
+		mImageFetcher.setLoadingImage(R.drawable.ic_launcher);
+		
 		for (int i = 0; i < 1000; i++) {
-			image.add("http://panchengoyo.cf/test.jpg?b=a" + i);
+			image.add("http://bcs.duapp.com/question-image/201212310556374291.jpg?b=a" + i);
 		}
 		listView.setAdapter(new ImageListAdapter(activity, image));
-
-		// 这里是图片后台下载
-		ImageDownloader.download("http://www.yjz9.com/uploadfile/2012/1231/20121231055637429.jpg&s=1", new LoaderLister() {
+		listView.setOnScrollListener(new AbsListView.OnScrollListener() {
 			@Override
-			public void finishLoader(String url, File file) {
-				System.out.println(url + "下载完成" + file.getPath());
+			public void onScrollStateChanged(AbsListView absListView, int scrollState) {
+				// Pause fetcher to ensure smoother scrolling when flinging
+				if (scrollState == AbsListView.OnScrollListener.SCROLL_STATE_FLING) {
+					// Before Honeycomb pause image loading on scroll to help with performance
+					if (!Utils.hasHoneycomb()) {
+						mImageFetcher.setPauseWork(true);
+					}
+				} else {
+					mImageFetcher.setPauseWork(false);
+				}
 			}
 
 			@Override
-			public void failLoader(String url) {
-				System.out.println("下载失败");
-			}
-
-			@Override
-			public void progressLoader(int progress) {
-				System.out.println("下载进度:" + progress);
+			public void onScroll(AbsListView absListView, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
 			}
 		});
 	}

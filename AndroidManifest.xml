@@ -51,6 +51,10 @@
             android:name="com.android.pc.ioc.a.demo.FourActivity"
             android:label="@string/app_name" >
         </activity>
+        <activity
+            android:name="com.android.pc.ioc.a.demo.FifthActivity"
+            android:label="@string/app_name" >
+        </activity>
          <activity
             android:name="com.android.pc.ioc.a.demo.MyFragmentActivity"
             android:label="@string/app_name" >

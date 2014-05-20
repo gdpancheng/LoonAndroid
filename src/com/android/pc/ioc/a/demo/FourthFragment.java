@@ -21,7 +21,7 @@ public class FourthFragment extends BaseFragment {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View rootView = inflater.inflate(R.layout.fragment_main4, container, false);
-		Handler_Inject.injectView(this, rootView);
+		Handler_Inject.injectFragment(this, rootView);
 		return rootView;
 	}
 

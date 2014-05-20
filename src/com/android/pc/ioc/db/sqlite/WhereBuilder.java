@@ -69,6 +69,11 @@ public class WhereBuilder {
         appendCondition(whereItems.size() == 0 ? null : "OR", columnName, op, value);
         return this;
     }
+    
+    public WhereBuilder append(String columnName) {
+    	whereItems.add(columnName);
+        return this;
+    }
 
     @Override
     public String toString() {

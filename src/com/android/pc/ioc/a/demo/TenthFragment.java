@@ -36,7 +36,7 @@ public class TenthFragment extends BaseFragment {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View rootView = inflater.inflate(R.layout.test_listview, container, false);
-		Handler_Inject.injectView(this, rootView);
+		Handler_Inject.injectFragment(this, rootView);
 		return rootView;
 	}
 	

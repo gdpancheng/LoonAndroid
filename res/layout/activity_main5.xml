@@ -2,23 +2,23 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:paddingBottom="@dimen/activity_vertical_margin"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
+    android:orientation="vertical"
     tools:context=".CropActivity" >
 
     <TextView
         android:id="@+id/test"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="这个界面是有通用的顶部和底部\n并且它是全屏的 可以在@InjectLayer中设置\n这里是list懒人适配器" />
+        android:text="这个activity中没有注解， 这个activity中的布局是在另一个类中生成好view添加到当前activity,注解在非activity中" />
 
-    <ListView
-        android:id="@+id/lt_demo"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" >
-    </ListView>
+    <Button
+        android:id="@+id/button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="点击" />
 
 </LinearLayout>

@@ -1,8 +1,12 @@
 package com.android.pc.util;
 
+import java.lang.reflect.Field;
 import java.util.Hashtable;
 
 import android.util.Log;
+
+import com.android.pc.ioc.app.ApplicationBean;
+import com.android.pc.ioc.core.kernel.KernelClass;
 
 /**
  * 日志工具类
@@ -18,6 +22,16 @@ public class Logger {
 
 	private Logger(String name) {
 		this.name = name;
+		Class clazz = KernelClass.forName(ApplicationBean.getApplication().getPackageName() + "." + "BuildConfig");
+		if (null == clazz) {
+			debug = false;
+			return;
+        }
+		 try {
+	        Field filed = clazz.getDeclaredField("DEBUG");
+	        debug = Boolean.valueOf(filed.get(null).toString());
+        } catch (Exception e) {
+        }
 	}
 
 	/**
@@ -61,10 +75,6 @@ public class Logger {
 
 	public static boolean isDebug() {
 		return debug;
-	}
-
-	public static void setDebug(boolean debug) {
-		Logger.debug = debug;
 	}
 
 	/**

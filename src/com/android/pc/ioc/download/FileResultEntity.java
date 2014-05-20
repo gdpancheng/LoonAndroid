@@ -20,6 +20,8 @@ public class FileResultEntity {
 	private String url;
 	private int progress;
 	private int status;
+	private long length;
+	private long loadedLength;
 	private File file;
 	protected boolean range;
 
@@ -61,6 +63,22 @@ public class FileResultEntity {
 
 	public void setRange(boolean range) {
 		this.range = range;
+	}
+
+	public long getLength() {
+		return length;
+	}
+
+	public void setLength(long length) {
+		this.length = length;
+	}
+
+	public long getLoadedLength() {
+		return loadedLength;
+	}
+
+	public void setLoadedLength(long loadedLength) {
+		this.loadedLength = loadedLength;
 	}
 	@Override
 	public String toString() {

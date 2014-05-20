@@ -1,5 +1,6 @@
 package com.android.pc.ioc.a.demo;
 
+import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,7 +14,6 @@ import com.android.pc.ioc.inject.InjectHttp;
 import com.android.pc.ioc.inject.InjectHttpErr;
 import com.android.pc.ioc.inject.InjectHttpOk;
 import com.android.pc.ioc.inject.InjectInit;
-import com.android.pc.ioc.inject.InjectView;
 import com.android.pc.ioc.internet.FastHttp;
 import com.android.pc.ioc.internet.FastHttpHander;
 import com.android.pc.ioc.internet.InternetConfig;
@@ -30,16 +30,18 @@ import com.wash.activity.R;
 public class ThirdFragment extends BaseFragment {
 	
 	@InjectAll(@InjectBinder(method="click",listeners = OnClick.class))
-	static class Views{
-		static TextView result;
-		static ProgressBar progress;
+	Views v;
+	
+	class Views{
+		TextView result;
+		ProgressBar progress;
 	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		this.inflater = inflater;
 		View rootView = inflater.inflate(R.layout.fragment_main3, container, false);
-		Handler_Inject.injectView(this, rootView);
+		Handler_Inject.injectFragment(this, rootView);
 		return rootView;
 	}
 
@@ -78,22 +80,22 @@ public class ThirdFragment extends BaseFragment {
 
 			break;
 		}
-		Views.result.append("我是result 当前key为:" + r.getKey() + "回调了\n");
-		Views.result.setVisibility(View.VISIBLE);
-		Views.progress.setVisibility(View.GONE);
+		v.result.append("我是result 当前key为:" + r.getKey() + "回调了\n");
+		v.result.setVisibility(View.VISIBLE);
+		v.progress.setVisibility(View.GONE);
 	}
 
 	@InjectHttpOk(1)
 	private void resultOk(ResponseEntity r) {
-		Views.result.append("我是resultOk 当前key为:" + r.getKey() + "回调了\n");
-		Views.result.setVisibility(View.VISIBLE);
-		Views.progress.setVisibility(View.GONE);
+		v.result.append("我是resultOk 当前key为:" + r.getKey() + "回调了\n");
+		v.result.setVisibility(View.VISIBLE);
+		v.progress.setVisibility(View.GONE);
 	}
 
 	@InjectHttpErr(value = { 1, 2 })
 	private void resultErr(ResponseEntity r) {
-		Views.result.append("我是resultErr 当前key为:" + r.getKey() + "回调了\n");
-		Views.result.setVisibility(View.VISIBLE);
-		Views.progress.setVisibility(View.GONE);
+		v.result.append("我是resultErr 当前key为:" + r.getKey() + "回调了\n");
+		v.result.setVisibility(View.VISIBLE);
+		v.progress.setVisibility(View.GONE);
 	}
 }

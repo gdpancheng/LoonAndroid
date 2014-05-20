@@ -23,7 +23,7 @@ import com.android.pc.ioc.invoker.InjectLayers;
 import com.android.pc.ioc.util.ContextUtils;
 
 /**
- * 替换掉系统类 TODO(这里用一句话描述这个类的作用)
+ * 替换掉系统类
  * 
  * @author gdpancheng@gmail.com 2014-2-25 下午11:13:31
  */
@@ -35,11 +35,11 @@ public class InstrumentationBean extends Instrumentation {
 			long time = System.currentTimeMillis();
 			ContextUtils.getCreateInvokers(activity.getClass());
 			inject(activity, InjectBefore.class, null);
-			ApplicationBean.logger.d(activity.getClass() + " 遍历生命周期和网络请求注解耗时 " + (System.currentTimeMillis() - time));
+			ApplicationBean.logger.d(activity.getClass() + " 遍历生命周期和网络请求注解耗时 " + (System.currentTimeMillis() - time)+"ms");
 			time = System.currentTimeMillis();
 			// 当前类和当前父类的注解
 			ArrayList<InjectInvoker> all_inject = ContextUtils.getViewInvokers(activity.getClass(), activity, Activity.class);
-			ApplicationBean.logger.d(activity.getClass() + " 遍历所有View注解耗时 " + (System.currentTimeMillis() - time));
+			ApplicationBean.logger.d(activity.getClass() + " 遍历所有View注解耗时 " + (System.currentTimeMillis() - time)+"ms");
 			if (all_inject.size() > 0 && all_inject.get(0).getClass() == InjectLayers.class) {
 				InjectLayers injectLayers = (InjectLayers) all_inject.get(0);
 				if (injectLayers.isFull()) {// 全屏
@@ -56,7 +56,7 @@ public class InstrumentationBean extends Instrumentation {
 				InjectInvoker injectInvoker = all_inject.get(i);
 				injectInvoker.invoke(activity);
 			}
-			ApplicationBean.logger.d(activity.getClass() + " 遍历UI绑定耗时 " + (System.currentTimeMillis() - time));
+			ApplicationBean.logger.d(activity.getClass() + " 遍历UI绑定耗时 " + (System.currentTimeMillis() - time)+"ms");
 		} catch (Exception e) {
 			StringWriter buf = new StringWriter();
 			PrintWriter w = new PrintWriter(buf);
@@ -131,5 +131,4 @@ public class InstrumentationBean extends Instrumentation {
 	public boolean onException(Object obj, Throwable e) {
 		return super.onException(obj, e);
 	}
-
 }

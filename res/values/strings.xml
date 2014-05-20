@@ -13,7 +13,7 @@
     <string name="down5">显示通知栏</string>
     <string name="down6">取消通知栏</string>
     
-    
+    <string name="no_network_connection_toast">无网络</string>
     <string name="down7">版本更新开始（有通知栏，下载完成以后需要点击通知栏安装才能跳转到安装界面）</string>
     <string name="down8">版本更新开始（无通知栏，下载完成以后自动跳转到安装界面）</string>
 </resources>

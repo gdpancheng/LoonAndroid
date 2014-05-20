@@ -26,14 +26,15 @@ public class InternetConfig {
 	final public static int result_String = 2;
 
 	final public static String UA = "Mozilla/4.0 (compatible; MSIE 5.0; Windows XP; DigExt)";
-	final public static String content_type = "application/x-www-form-urlencoded";
+	final public static String content_type_map = "application/x-www-form-urlencoded";
+	final public static String content_type_json = "application/json;charset=utf-8";
 	final public static String content_type_xml = "text/xml; charset=utf-8";
 
 	private  int result_type = result_String;
 	/**
 	 * 协议
 	 */
-	private String content_type_web = content_type;
+	private String content_type_web = content_type_map;
 	/**
 	 * 判断是否是https
 	 */

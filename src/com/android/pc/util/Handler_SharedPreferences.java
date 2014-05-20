@@ -47,7 +47,7 @@ public class Handler_SharedPreferences {
 		return map;
 	}
 
-	public static Object getValueByName(Context context, String dataBasesName, String key, int type) {
+	public static <T> T getValueByName(Context context, String dataBasesName, String key, int type) {
 		SharedPreferences user = context.getSharedPreferences(dataBasesName, 0);
 		Object value = null;
 		switch (type) {
@@ -61,7 +61,7 @@ public class Handler_SharedPreferences {
 			value = user.getBoolean(key, false);
 			break;
 		}
-		return value;
+		return (T)value;
 	}
 
 	public static void WriteSharedPreferences(Context context, String dataBasesName, String name, Object value) {
