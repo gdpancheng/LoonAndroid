@@ -2,6 +2,8 @@
 package com.android.pc.ioc.image;
 
 import java.io.FileDescriptor;
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.util.HashMap;
 
 import android.annotation.TargetApi;
@@ -13,6 +15,7 @@ import android.os.Build;
 import android.widget.ImageView;
 
 import com.android.pc.ioc.app.ApplicationBean;
+import com.android.pc.ioc.image.ImageLoadManager.Coding;
 import com.android.pc.util.Handler_System;
 import com.wash.activity.BuildConfig;
 
@@ -142,7 +145,19 @@ public class ImageResizer extends ImageWorker {
 		}
 
 		options.inJustDecodeBounds = false;
-		return BitmapFactory.decodeFile(filename, options);
+		
+		Coding coding = ImageLoadManager.instance().getCoding();
+		if (coding == null) {
+			return BitmapFactory.decodeFile(filename, options);
+        }
+		try {
+	        InputStream in = new FileInputStream(filename);
+	        byte[] buffer = coding.decodeJPG(in.available(), in);
+	        return BitmapFactory.decodeByteArray(buffer, 0, buffer.length, options);
+        } catch (Exception e) {
+        	e.printStackTrace();
+        }
+		return null;
 	}
 
 	public static Bitmap decodeSampledBitmapFromDescriptor(FileDescriptor fileDescriptor, int reqWidth, int reqHeight, ImageCache cache) {

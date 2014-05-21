@@ -512,8 +512,6 @@ public class FastHttpHander {
 	        if (clazz.isAssignableFrom(object.getClass())||clazz2.isAssignableFrom(object.getClass())) {
 	        	Method isDetached = object.getClass().getMethod("isDetached", null);
 	        	Method isRemoving = object.getClass().getMethod("isRemoving", null);
-	        	System.out.println(Boolean.valueOf(isDetached.invoke(object).toString()));
-	        	System.out.println(Boolean.valueOf(isRemoving.invoke(object).toString()));
 	        	return Boolean.valueOf(isDetached.invoke(object).toString())&&Boolean.valueOf(isRemoving.invoke(object).toString());
 	        }
         } catch (Exception e) {

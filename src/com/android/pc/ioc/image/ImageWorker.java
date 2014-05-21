@@ -179,7 +179,6 @@ public abstract class ImageWorker {
 	};
 
 	protected void start(ImageView imageView) {
-		System.out.println("------------------开始下载");
 		if (lister==null) {
 	        return;
         }

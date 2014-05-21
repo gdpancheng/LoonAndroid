@@ -382,7 +382,6 @@ public class ContextUtils {
 					boolean isAsy = false;
 					boolean pull = injectView.pull();
 					boolean down = injectView.down();
-					System.out.println("字段:"+field+injectView+isActivity);
 					InjectViews injectViews = new InjectViews(id, isActivity ? InjectViewUtils.Inject_Excutors[0] : InjectViewUtils.Inject_Excutors[1].setObject(obj), field, isAsy, injectView.pull(), injectView.down(), null, null);
 					if (pull || down) {
 						pull_down = injectViews;

@@ -305,7 +305,6 @@ public class ImageCache {
 			mDiskCacheStarting = true;
 			
 			File file = mCacheParams.diskCacheDir;
-			System.out.println("缓存路径:"+file.getPath());
 			if (file.exists()) {
 				File[] files = file.listFiles();
 				for (int i = 0; i < files.length; i++) {
