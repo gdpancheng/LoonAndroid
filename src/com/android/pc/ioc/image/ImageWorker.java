@@ -10,14 +10,11 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.TransitionDrawable;
-import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.view.View;
 import android.widget.ImageView;
 
 import com.android.pc.ioc.app.ApplicationBean;
-import com.wash.activity.BuildConfig;
 
 /**
  * 图片下载工具类
@@ -130,17 +127,17 @@ public abstract class ImageWorker {
 	 */
 	protected abstract Bitmap processBitmap(Object data, ImageView imageView);
 
-	private class Entity{
+	private class Entity {
 		public int process;
 		public ImageView imageView;
 		public Bitmap bitmap;
 		public DisplayerLister lister;
 	}
-	
+
 	protected void process(int process, ImageView imageView) {
-		if (lister==null) {
-	        return;
-        }
+		if (lister == null) {
+			return;
+		}
 		Message msg = handler.obtainMessage();
 		Entity entity = new Entity();
 		entity.process = process;
@@ -152,9 +149,9 @@ public abstract class ImageWorker {
 	};
 
 	protected void finish(Bitmap bitmap, ImageView imageView) {
-		if (lister==null) {
-	        return;
-        }
+		if (lister == null) {
+			return;
+		}
 		Message msg = handler.obtainMessage();
 		Entity entity = new Entity();
 		entity.bitmap = bitmap;
@@ -166,9 +163,9 @@ public abstract class ImageWorker {
 	};
 
 	protected void fail(ImageView imageView) {
-		if (lister==null) {
-	        return;
-        }
+		if (lister == null) {
+			return;
+		}
 		Message msg = handler.obtainMessage();
 		Entity entity = new Entity();
 		entity.imageView = imageView;
@@ -179,9 +176,9 @@ public abstract class ImageWorker {
 	};
 
 	protected void start(ImageView imageView) {
-		if (lister==null) {
-	        return;
-        }
+		if (lister == null) {
+			return;
+		}
 		Message msg = handler.obtainMessage();
 		Entity entity = new Entity();
 		entity.imageView = imageView;
@@ -227,10 +224,8 @@ public abstract class ImageWorker {
 		final BitmapWorkerTask bitmapWorkerTask = getBitmapWorkerTask(imageView);
 		if (bitmapWorkerTask != null) {
 			bitmapWorkerTask.cancel(true);
-			if (BuildConfig.DEBUG) {
-				final Object bitmapData = bitmapWorkerTask.mData;
-				ApplicationBean.logger.d("cancelWork - cancelled work for " + bitmapData);
-			}
+			final Object bitmapData = bitmapWorkerTask.mData;
+			ApplicationBean.logger.d("cancelWork - cancelled work for " + bitmapData);
 		}
 	}
 
@@ -250,9 +245,7 @@ public abstract class ImageWorker {
 			// 判断当前的Url和之前的url是否一样
 			if (bitmapData == null || !bitmapData.equals(data)) {
 				bitmapWorkerTask.cancel(true);
-				if (BuildConfig.DEBUG) {
-					ApplicationBean.logger.d("cancelPotentialWork - cancelled work for " + data);
-				}
+				ApplicationBean.logger.d("cancelPotentialWork - cancelled work for " + data);
 			} else {
 				return false;
 			}
@@ -295,9 +288,7 @@ public abstract class ImageWorker {
 		 */
 		@Override
 		protected BitmapDrawable doInBackground(Void... params) {
-			if (BuildConfig.DEBUG) {
-				ApplicationBean.logger.d("doInBackground - starting work");
-			}
+			ApplicationBean.logger.d("doInBackground - starting work");
 
 			final String dataString = String.valueOf(mData);
 			Bitmap bitmap = null;
@@ -339,9 +330,7 @@ public abstract class ImageWorker {
 				}
 			}
 
-			if (BuildConfig.DEBUG) {
-				ApplicationBean.logger.d("doInBackground - finished work");
-			}
+			ApplicationBean.logger.d("doInBackground - finished work");
 
 			return drawable;
 		}
@@ -358,9 +347,7 @@ public abstract class ImageWorker {
 
 			final ImageView imageView = getAttachedImageView();
 			if (value != null && imageView != null) {
-				if (BuildConfig.DEBUG) {
-					ApplicationBean.logger.d("onPostExecute - setting bitmap");
-				}
+				ApplicationBean.logger.d("onPostExecute - setting bitmap");
 				setImageDrawable(imageView, value);
 			}
 		}
@@ -418,7 +405,7 @@ public abstract class ImageWorker {
 	private void setImageDrawable(ImageView imageView, Drawable drawable) {
 		if (mFadeInBitmap) {
 			final TransitionDrawable td = new TransitionDrawable(new Drawable[] { new ColorDrawable(android.R.color.transparent), drawable });
-//			imageView.setBackgroundDrawable(new BitmapDrawable(mResources, mLoadingBitmap));
+			// imageView.setBackgroundDrawable(new BitmapDrawable(mResources, mLoadingBitmap));
 			imageView.setImageDrawable(td);
 			td.startTransition(FADE_IN_TIME);
 		} else {

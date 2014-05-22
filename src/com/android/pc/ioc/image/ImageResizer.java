@@ -1,4 +1,3 @@
-
 package com.android.pc.ioc.image;
 
 import java.io.FileDescriptor;
@@ -17,14 +16,9 @@ import android.widget.ImageView;
 import com.android.pc.ioc.app.ApplicationBean;
 import com.android.pc.ioc.image.ImageLoadManager.Coding;
 import com.android.pc.util.Handler_System;
-import com.wash.activity.BuildConfig;
 
 /**
- * 其中实现了一系列图片加载的方法
- * <h1>第一条</h1>
- *  实现了设置高宽的方法
- *  <h1>第二条</h1>
- *  实现了从本地文件或者从draw文件夹加载图片的犯法
+ * 其中实现了一系列图片加载的方法 <h1>第一条</h1> 实现了设置高宽的方法 <h1>第二条</h1> 实现了从本地文件或者从draw文件夹加载图片的犯法
  */
 public class ImageResizer extends ImageWorker {
 	protected int mImageWidth;
@@ -44,6 +38,7 @@ public class ImageResizer extends ImageWorker {
 
 	/**
 	 * 初始化的时候 需要设置大小
+	 * 
 	 * @param context
 	 * @param imageSize
 	 */
@@ -60,12 +55,12 @@ public class ImageResizer extends ImageWorker {
 	 */
 	public void setImageSize(int width, int height) {
 		HashMap<String, Integer> data = Handler_System.getDisplayMetrics();
-		if (width == 0 ) {
+		if (width == 0) {
 			width = data.get(Handler_System.systemWidth);
-        }
-		if (height == 0 ) {
+		}
+		if (height == 0) {
 			height = data.get(Handler_System.systemHeight);
-        }
+		}
 		mImageWidth = width;
 		mImageHeight = height;
 	}
@@ -82,23 +77,23 @@ public class ImageResizer extends ImageWorker {
 	/**
 	 * 图片解析的主方法<br>
 	 * 参数为资源ID
+	 * 
 	 * @param resId
 	 * @return
 	 */
 	private Bitmap processBitmap(int resId) {
-		if (BuildConfig.DEBUG) {
-			ApplicationBean.logger.d("图片下载开始 - " + resId);
-		}
+		ApplicationBean.logger.d("图片下载开始 - " + resId);
 		return decodeSampledBitmapFromResource(mResources, resId, mImageWidth, mImageHeight, getImageCache());
 	}
 
 	@Override
-	protected Bitmap processBitmap(Object data,ImageView imageView) {
+	protected Bitmap processBitmap(Object data, ImageView imageView) {
 		return processBitmap(Integer.parseInt(String.valueOf(data)));
 	}
 
 	/**
 	 * 从资源文件加载图片
+	 * 
 	 * @author gdpancheng@gmail.com 2014-5-19 下午2:14:13
 	 * @param res
 	 * @param resId
@@ -125,6 +120,7 @@ public class ImageResizer extends ImageWorker {
 
 	/**
 	 * 从本地文件加载图片
+	 * 
 	 * @author gdpancheng@gmail.com 2014-5-19 下午2:15:23
 	 * @param filename
 	 * @param reqWidth
@@ -145,18 +141,18 @@ public class ImageResizer extends ImageWorker {
 		}
 
 		options.inJustDecodeBounds = false;
-		
+
 		Coding coding = ImageLoadManager.instance().getCoding();
 		if (coding == null) {
 			return BitmapFactory.decodeFile(filename, options);
-        }
+		}
 		try {
-	        InputStream in = new FileInputStream(filename);
-	        byte[] buffer = coding.decodeJPG(in.available(), in);
-	        return BitmapFactory.decodeByteArray(buffer, 0, buffer.length, options);
-        } catch (Exception e) {
-        	e.printStackTrace();
-        }
+			InputStream in = new FileInputStream(filename);
+			byte[] buffer = coding.decodeJPG(in.available(), in);
+			return BitmapFactory.decodeByteArray(buffer, 0, buffer.length, options);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		return null;
 	}
 
@@ -189,8 +185,8 @@ public class ImageResizer extends ImageWorker {
 	}
 
 	/**
-	 * 根据需要的高宽，对图片进行缩放
-	 * TODO(这里用一句话描述这个方法的作用)
+	 * 根据需要的高宽，对图片进行缩放 TODO(这里用一句话描述这个方法的作用)
+	 * 
 	 * @author gdpancheng@gmail.com 2014-5-19 下午2:19:56
 	 * @param options
 	 * @param reqWidth
@@ -211,7 +207,6 @@ public class ImageResizer extends ImageWorker {
 				inSampleSize *= 2;
 			}
 
-
 			long totalPixels = width * height / inSampleSize;
 
 			final long totalReqPixelsCap = reqWidth * reqHeight * 2;
@@ -225,12 +220,12 @@ public class ImageResizer extends ImageWorker {
 	}
 
 	@Override
-    protected int getW() {
-	    return mImageWidth;
-    }
+	protected int getW() {
+		return mImageWidth;
+	}
 
 	@Override
-    protected int getH() {
-	    return mImageHeight;
-    }
+	protected int getH() {
+		return mImageHeight;
+	}
 }

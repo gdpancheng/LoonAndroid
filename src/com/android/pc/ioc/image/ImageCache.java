@@ -39,8 +39,8 @@ import android.os.StatFs;
 import android.widget.Toast;
 
 import com.android.pc.ioc.app.ApplicationBean;
+import com.android.pc.ioc.image.ImageCache.ImageCacheParams;
 import com.android.pc.util.LruCache;
-import com.wash.activity.BuildConfig;
 
 /**
  * This class handles disk and memory caching of bitmaps in conjunction with the {@link ImageWorker} class and its subclasses. Use {@link ImageCache#getInstance(android.support.v4.app.FragmentManager, ImageCacheParams)} to get an instance of this class, although usually a cache should be added directly to an {@link ImageWorker} by calling {@link ImageWorker#addImageCache(android.support.v4.app.FragmentManager, ImageCacheParams)}.
@@ -62,7 +62,7 @@ public class ImageCache {
 	private static final boolean DEFAULT_DISK_CACHE_ENABLED = true;
 	private static final boolean DEFAULT_INIT_DISK_CACHE_ON_CREATE = false;
 
-//	private DiskLruCache mDiskLruCache;
+	// private DiskLruCache mDiskLruCache;
 	private LruCache<String, BitmapDrawable> mMemoryCache;
 	private ImageCacheParams mCacheParams;
 	private final Object mDiskCacheLock = new Object();
@@ -71,7 +71,7 @@ public class ImageCache {
 	private Set<SoftReference<Bitmap>> mReusableBitmaps;
 
 	private static ImageCache imageCache;
-	
+
 	/**
 	 * Create a new ImageCache object using the specified parameters. This should not be called directly by other classes, instead use {@link ImageCache#getInstance(android.support.v4.app.FragmentManager, ImageCacheParams)} to fetch an ImageCache instance.
 	 * 
@@ -105,14 +105,12 @@ public class ImageCache {
 	 *            The cache parameters to initialize the cache
 	 */
 	private void init(ImageCacheParams cacheParams) {
-		
+
 		mCacheParams = cacheParams;
 
 		// Set up memory cache
 		if (mCacheParams.memoryCacheEnabled) {
-			if (BuildConfig.DEBUG) {
-				ApplicationBean.logger.d("Memory cache created (size = " + mCacheParams.memCacheSize + ")");
-			}
+			ApplicationBean.logger.d("Memory cache created (size = " + mCacheParams.memCacheSize + ")");
 
 			// If we're running on Honeycomb or newer, create a set of reusable bitmaps that can be
 			// populated into the inBitmap field of BitmapFactory.Options. Note that the set is
@@ -168,18 +166,18 @@ public class ImageCache {
 	public ImageCacheParams getmCacheParams() {
 		return mCacheParams;
 	}
-	
+
 	public void initDiskCache() {
 		synchronized (mDiskCacheLock) {
 			// 初始化 创建目录
 			File file = mCacheParams.diskCacheDir;
 			if (!file.exists()) {
 				file.mkdirs();
-            }
+			}
 			if (ImageCache.getUsableSpace(mCacheParams.diskCacheDir) < HTTP_CACHE_SIZE) {
-				 Looper.prepare();
-				 Toast.makeText(ApplicationBean.getApplication(), "存储空间不足,请检查", Toast.LENGTH_LONG).show();
-				 Looper.loop();
+				Looper.prepare();
+				Toast.makeText(ApplicationBean.getApplication(), "存储空间不足,请检查", Toast.LENGTH_LONG).show();
+				Looper.loop();
 			}
 			mDiskCacheStarting = false;
 			mDiskCacheLock.notifyAll();
@@ -233,7 +231,7 @@ public class ImageCache {
 	 *            Unique identifier for which item to get
 	 * @return The bitmap if found in cache, null otherwise
 	 */
-	public Bitmap getBitmapFromDiskCache(String data,int w,int h) {
+	public Bitmap getBitmapFromDiskCache(String data, int w, int h) {
 		final String key = hashKeyForDisk(data);
 
 		synchronized (mDiskCacheLock) {
@@ -245,7 +243,7 @@ public class ImageCache {
 			}
 			File file = getFromFileCache(key);
 			Bitmap bitmap = null;
-			if (file != null&&file.exists()) {
+			if (file != null && file.exists()) {
 				bitmap = ImageResizer.decodeSampledBitmapFromFile(file.getPath(), w, h, this);
 			}
 			return bitmap;
@@ -296,28 +294,25 @@ public class ImageCache {
 	public void clearCache() {
 		if (mMemoryCache != null) {
 			mMemoryCache.evictAll();
-			if (BuildConfig.DEBUG) {
-				ApplicationBean.logger.d("缓存清理成功");
-			}
+			ApplicationBean.logger.d("缓存清理成功");
 		}
 
 		synchronized (mDiskCacheLock) {
 			mDiskCacheStarting = true;
-			
+
 			File file = mCacheParams.diskCacheDir;
 			if (file.exists()) {
 				File[] files = file.listFiles();
 				for (int i = 0; i < files.length; i++) {
 					files[i].delete();
-	                files[i].deleteOnExit();
-                }
-            } 
-			//删除缓存
+					files[i].deleteOnExit();
+				}
+			}
+			// 删除缓存
 			ApplicationBean.logger.d("本地磁盘清理成功");
 			initDiskCache();
 		}
 	}
-
 
 	/**
 	 * A holder class that contains cache parameters.
@@ -334,6 +329,7 @@ public class ImageCache {
 
 		/**
 		 * 缓存目录
+		 * 
 		 * @param context
 		 * @param diskCacheDirectoryName
 		 */
@@ -342,8 +338,8 @@ public class ImageCache {
 		}
 
 		/**
-		 * 设置内存缓存大小根据应用可用虚拟内存的百分比
-		 * TODO(这里用一句话描述这个方法的作用)
+		 * 设置内存缓存大小根据应用可用虚拟内存的百分比 TODO(这里用一句话描述这个方法的作用)
+		 * 
 		 * @author gdpancheng@gmail.com 2014-5-19 下午4:03:21
 		 * @param percent
 		 * @return void
@@ -382,6 +378,7 @@ public class ImageCache {
 
 	/**
 	 * 返回每个像素所占的字节
+	 * 
 	 * @author gdpancheng@gmail.com 2014-5-19 下午4:05:08
 	 * @param config
 	 * @return int
@@ -401,6 +398,7 @@ public class ImageCache {
 
 	/**
 	 * 获取缓存目录
+	 * 
 	 * @author gdpancheng@gmail.com 2014-5-19 下午4:05:28
 	 * @param context
 	 * @param uniqueName
@@ -414,6 +412,7 @@ public class ImageCache {
 
 	/**
 	 * url转md5的key
+	 * 
 	 * @author gdpancheng@gmail.com 2014-5-19 下午4:05:50
 	 * @param key
 	 * @return String
@@ -498,7 +497,7 @@ public class ImageCache {
 		return new File(Environment.getExternalStorageDirectory().getPath() + cacheDir);
 	}
 
-	public static File getFromFileCache(String fileName){
+	public static File getFromFileCache(String fileName) {
 		File file = imageCache.getmCacheParams().diskCacheDir;
 		if (!file.exists()) {
 			file.mkdirs();
@@ -506,7 +505,7 @@ public class ImageCache {
 		// 获取文件“file.txt”对应的“文件描述符”
 		return new File(file, fileName);
 	}
-	
+
 	/**
 	 * Check how much usable space is available at a given path.
 	 * 
