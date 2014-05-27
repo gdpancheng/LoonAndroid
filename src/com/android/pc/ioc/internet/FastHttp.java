@@ -1,5 +1,6 @@
 package com.android.pc.ioc.internet;
 
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.File;
@@ -29,7 +30,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Xml;
 
-import com.android.pc.ioc.app.ApplicationBean;
+import com.android.pc.ioc.app.Ioc;
 
 /**
  * ----------------------同步----------------------<br>
@@ -431,7 +432,7 @@ public class FastHttp {
 		public void progress(int progress);
 	}
 
-	public static ResponseEntity form(String url, HashMap<String, String> params, HashMap<String, File> files, InternetConfig config, Progress progress) {
+	public static ResponseEntity formProgress(String url, HashMap<String, String> params, HashMap<String, File> files, InternetConfig config, Progress progress) {
 		params = params == null ? new HashMap<String, String>() : params;
 
 		config.setRequest_type(InternetConfig.request_form);
@@ -440,11 +441,17 @@ public class FastHttp {
 		responseEntity.setParams(params);
 
 		try {
+			long all_count =getOrtherLength(params,files,config);
+
+			long read_count = 0;
+			
+			config.setAll_length(all_count);
 			HttpURLConnection conn = getDefaultHttpClient(url, config);
 			conn.setDoOutput(true);
 			conn.setDoInput(true);
 			conn.setUseCaches(false); // 不允许使用缓存
 
+			
 			StringBuilder sb = new StringBuilder();
 			for (Map.Entry<String, String> entry : params.entrySet()) {
 				sb.append(PREFIX);
@@ -457,10 +464,15 @@ public class FastHttp {
 				sb.append(entry.getValue());
 				sb.append(LINEND);
 			}
-
-			DataOutputStream outStream = new DataOutputStream(conn.getOutputStream());
+			
+			BufferedOutputStream outStream = new BufferedOutputStream(conn.getOutputStream());
 			if (sb.length() > 0) {
 				outStream.write(sb.toString().getBytes());
+				
+				if (progress != null) {
+					read_count = read_count+ sb.toString().getBytes().length;
+					progress.progress((int) (read_count * 100 / all_count));
+				}
 			}
 
 			InputStream in = null;
@@ -477,27 +489,38 @@ public class FastHttp {
 					sb1.append(LINEND);
 					outStream.write(sb1.toString().getBytes());
 
+					if (progress != null) {
+						read_count = read_count+ sb1.toString().getBytes().length;
+						progress.progress((int) (read_count * 100 / all_count));
+					}
+					
 					InputStream is = new FileInputStream(file.getValue());
 					byte[] buffer = new byte[1024];
 					int len = 0;
-					int count = 0;
-					int length = is.available();
 					while ((len = is.read(buffer)) != -1) {
 						outStream.write(buffer, 0, len);
-						count = count + len;
+						read_count = read_count + len;
 						if (progress != null) {
-							progress.progress(count * 100 / length);
+							progress.progress((int) (read_count * 100 / all_count));
 						}
 					}
 
 					is.close();
 					outStream.write(LINEND.getBytes());
+					if (progress != null) {
+						read_count = read_count+ LINEND.getBytes().length;
+						progress.progress((int) (read_count * 100 / all_count));
+					}
 				}
 
 				// 请求结束标志
 				byte[] end_data = (PREFIX + BOUNDARY + PREFIX + LINEND).getBytes();
 				outStream.write(end_data);
 				outStream.flush();
+				if (progress != null) {
+					read_count = read_count+ end_data.length;
+					progress.progress((int) (read_count * 100 / all_count));
+				}
 				// 得到响应码
 				// int res = conn.getResponseCode();
 				// if (res == 200) {
@@ -1046,7 +1069,11 @@ public class FastHttp {
 				msg.obj = webServer(url, params, internetConfig, internetConfig.getMethod());
 				break;
 			case InternetConfig.request_form:
-				msg.obj = form(url, params, internetConfig.getFiles(), internetConfig);
+				if (internetConfig.getProgress()!=null) {
+					msg.obj = formProgress(url, params, internetConfig.getFiles(), internetConfig,internetConfig.getProgress());
+                }else {
+                	msg.obj = form(url, params, internetConfig.getFiles(), internetConfig);
+				}
 				break;
 			default:
 				break;
@@ -1124,6 +1151,9 @@ public class FastHttp {
 		}
 		URL url = new URL(urls);
 		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+		if (config.getFiles()!=null) {
+	        conn.setFixedLengthStreamingMode((int)config.getAll_length());
+        }
 		conn.setConnectTimeout(config.getTimeout());
 		String method = "POST";
 		if (config.getRequest_type() == InternetConfig.request_get) {
@@ -1212,7 +1242,7 @@ public class FastHttp {
 
 	static class MyHostnameVerifier implements HostnameVerifier {
 		public boolean verify(String hostname, SSLSession session) {
-			ApplicationBean.logger.w("Warning: URL Host: " + hostname + " vs. " + session.getPeerHost());
+			Ioc.getIoc().getLogger().w("Warning: URL Host: " + hostname + " vs. " + session.getPeerHost());
 			return true;
 		}
 	}
@@ -1243,5 +1273,42 @@ public class FastHttp {
 				}
 			}
 		}
+	}
+	
+	private static int getOrtherLength(HashMap<String, String> params, HashMap<String, File> files,InternetConfig config){
+		long count = 0;
+		StringBuilder sb = new StringBuilder();
+		for (Map.Entry<String, String> entry : params.entrySet()) {
+			sb.append(PREFIX);
+			sb.append(BOUNDARY);
+			sb.append(LINEND);
+			sb.append("Content-Disposition: form-data; name=\"" + entry.getKey() + "\"" + LINEND);
+			sb.append("Content-Type: text/plain; charset=" + config.getCharset() + LINEND);
+			sb.append("Content-Transfer-Encoding: 8bit" + LINEND);
+			sb.append(LINEND);
+			sb.append(entry.getValue());
+			sb.append(LINEND);
+		}
+		count = count+sb.toString().getBytes().length;
+		
+		if (files!=null) {
+			for (String name : files.keySet()) {
+				if (files.get(name).exists()) {
+					count = count+files.get(name).length();
+					StringBuilder sb1 = new StringBuilder();
+					sb1.append(PREFIX);
+					sb1.append(BOUNDARY);
+					sb1.append(LINEND);
+					sb1.append("Content-Disposition: form-data; name=\"" + name + "\"; filename=\"" + files.get(name).getName() + "\"" + LINEND);
+					sb1.append("Content-Type: image/pjpeg; " + LINEND);
+					sb1.append(LINEND);
+					count = count+sb1.toString().getBytes().length;
+					count = count + LINEND.getBytes().length;
+				}
+			}
+			byte[] end_data = (PREFIX + BOUNDARY + PREFIX + LINEND).getBytes();
+			count = count + end_data.length;
+        }
+		return (int) count;
 	}
 }

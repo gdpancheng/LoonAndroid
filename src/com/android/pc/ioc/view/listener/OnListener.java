@@ -14,7 +14,7 @@ import java.lang.reflect.Method;
 
 import android.view.View;
 
-import com.android.pc.ioc.app.ApplicationBean;
+import com.android.pc.ioc.app.Ioc;
 import com.android.pc.ioc.core.kernel.KernelClass;
 import com.android.pc.ioc.core.kernel.KernelReflect;
 import com.android.pc.ioc.core.kernel.KernelString;
@@ -80,7 +80,7 @@ public abstract class OnListener {
 				StringWriter buf = new StringWriter();
 				PrintWriter w = new PrintWriter(buf);
 				e.getCause().printStackTrace(w);
-				ApplicationBean.logger.e(target.getClass().getSimpleName() + " 方法 " + targetMethod + "里面出错了 请检查\n" + buf.toString());
+				Ioc.getIoc().getLogger().e(target.getClass().getSimpleName() + " 方法 " + targetMethod + "里面出错了 请检查\n" + buf.toString());
 				return null;
 			} else {
 				e.printStackTrace();

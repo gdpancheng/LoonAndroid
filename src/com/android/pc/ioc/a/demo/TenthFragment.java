@@ -5,7 +5,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
+import android.widget.TextView;
 
+import com.android.pc.ioc.app.Ioc;
+import com.android.pc.ioc.inject.InjectBinder;
 import com.android.pc.ioc.inject.InjectHttp;
 import com.android.pc.ioc.inject.InjectInit;
 import com.android.pc.ioc.inject.InjectPullRefresh;
@@ -13,6 +16,7 @@ import com.android.pc.ioc.inject.InjectView;
 import com.android.pc.ioc.internet.FastHttpHander;
 import com.android.pc.ioc.internet.ResponseEntity;
 import com.android.pc.ioc.view.PullToRefreshManager;
+import com.android.pc.ioc.view.listener.OnClick;
 import com.android.pc.util.Handler_Inject;
 import com.wash.activity.R;
 
@@ -33,6 +37,11 @@ public class TenthFragment extends BaseFragment {
 	@InjectView(pull = true,down = true)
 	ListView list;
 
+	@InjectView(binders = @InjectBinder(method = "click", listeners = { OnClick.class }))
+	TextView emtpy;
+	
+	DataAdapter dataAdapter;
+	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View rootView = inflater.inflate(R.layout.test_listview, container, false);
@@ -44,7 +53,9 @@ public class TenthFragment extends BaseFragment {
 	private void init(){
 		//这里是设置里面的文字 可以不设置 默认有
 		PullToRefreshManager.getInstance().setRelease_label("松开后刷新");
-		list.setAdapter(new DataAdapter(activity));
+		dataAdapter = new DataAdapter(activity);
+		list.setAdapter(dataAdapter);
+		list.setEmptyView(emtpy);
 	}
 	
 	/**
@@ -66,9 +77,14 @@ public class TenthFragment extends BaseFragment {
 		}
 	}
 	
+	private void click(View v){
+		dataAdapter.setCount();
+		dataAdapter.notifyDataSetChanged();
+	}
+	
 	@InjectHttp
 	private void result(ResponseEntity entity){
-		MeApplication.logger.s(entity.getContentAsString());
+		Ioc.getIoc().getLogger().s(entity.getContentAsString());
 		//完成 加载更多
 		PullToRefreshManager.getInstance().onFooterRefreshComplete();
 		//完成 刷新

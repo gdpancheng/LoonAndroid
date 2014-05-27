@@ -77,7 +77,7 @@ public class SixthFragment extends BaseFragment {
 		json.setText(parent_json.toString());
 		Parent event = Handler_Json.JsonToBean(Parent.class, parent_json.toString());
 		bean.setText(event.toString());
-		HashMap<String, Object> object = (HashMap<String, Object>) Handler_Json.JsonToCollection(parent_json.toString());
+		HashMap<String, Object> object = Handler_Json.JsonToCollection(parent_json.toString());
 		map.setText(object.toString());
 	}
 }

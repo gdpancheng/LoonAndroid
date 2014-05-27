@@ -3,7 +3,7 @@ package com.android.pc.ioc.db.table;
 import java.lang.reflect.Field;
 import java.util.List;
 
-import com.android.pc.ioc.app.ApplicationBean;
+import com.android.pc.ioc.app.Ioc;
 import com.android.pc.ioc.db.sqlite.DbUtils;
 import com.android.pc.ioc.db.sqlite.ForeignLazyLoader;
 
@@ -43,13 +43,13 @@ public class Foreign extends Column {
 				try {
 					value = new ForeignLazyLoader(this, columnValue).getAllFromDb();
 				} catch (Exception e) {
-					ApplicationBean.logger.e(e);
+					Ioc.getIoc().getLogger().e(e);
 				}
 			} else {
 				try {
 					value = new ForeignLazyLoader(this, columnValue).getFirstFromDb();
 				} catch (Exception e) {
-					ApplicationBean.logger.e(e);
+					Ioc.getIoc().getLogger().e(e);
 				}
 			}
 		}
@@ -58,14 +58,14 @@ public class Foreign extends Column {
 			try {
 				setMethod.invoke(entity, value);
 			} catch (Exception e) {
-				ApplicationBean.logger.e(e);
+				Ioc.getIoc().getLogger().e(e);
 			}
 		} else {
 			try {
 				this.columnField.setAccessible(true);
 				this.columnField.set(entity, value);
 			} catch (Exception e) {
-				ApplicationBean.logger.e(e);
+				Ioc.getIoc().getLogger().e(e);
 			}
 		}
 	}
@@ -94,7 +94,7 @@ public class Foreign extends Column {
 					}
 				} catch (Exception e) {
 					valueObj = null;
-					ApplicationBean.logger.e(e);
+					Ioc.getIoc().getLogger().e(e);
 				}
 			} else {
 				try {
@@ -102,14 +102,14 @@ public class Foreign extends Column {
 						try {
 							this.db.saveOrUpdate(valueObj);
 						} catch (Exception e) {
-							ApplicationBean.logger.e(e);
+							Ioc.getIoc().getLogger().e(e);
 						}
 					}
 					Column column = TableUtils.getColumnOrId(columnType, foreignColumnName);
 					valueObj = column.getColumnValue(valueObj);
 				} catch (Exception e) {
 					valueObj = null;
-					ApplicationBean.logger.e(e);
+					Ioc.getIoc().getLogger().e(e);
 				}
 			}
 		}
@@ -124,14 +124,14 @@ public class Foreign extends Column {
 				try {
 					valueObj = getMethod.invoke(entity);
 				} catch (Exception e) {
-					ApplicationBean.logger.e(e);
+					Ioc.getIoc().getLogger().e(e);
 				}
 			} else {
 				try {
 					this.columnField.setAccessible(true);
 					valueObj = this.columnField.get(entity);
 				} catch (Exception e) {
-					ApplicationBean.logger.e(e);
+					Ioc.getIoc().getLogger().e(e);
 				}
 			}
 		}

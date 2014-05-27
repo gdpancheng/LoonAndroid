@@ -7,7 +7,7 @@ import java.util.Arrays;
 import android.app.Activity;
 import android.view.View;
 
-import com.android.pc.ioc.app.ApplicationBean;
+import com.android.pc.ioc.app.Ioc;
 import com.android.pc.ioc.util.InjectExcutor;
 import com.android.pc.ioc.view.listener.OnListener;
 
@@ -38,9 +38,9 @@ public class InjectMethods extends InjectInvoker {
 					}
 				} catch (Exception e) {
 					if (e.getMessage() != null && e.getMessage().indexOf("wrong number of arguments") != -1) {
-						ApplicationBean.logger.e(beanObject.getClass().getSimpleName() + " 方法 " + method + "参数不对 请检查\n");
+						Ioc.getIoc().getLogger().e(beanObject.getClass().getSimpleName() + " 方法 " + method + "参数不对 请检查\n");
 					} else if (e instanceof InvocationTargetException) {
-						ApplicationBean.logger.e(beanObject.getClass().getSimpleName() + " 方法 " + method + "里面出错了 请检查\n");
+						Ioc.getIoc().getLogger().e(beanObject.getClass().getSimpleName() + " 方法 " + method + "里面出错了 请检查\n");
 						e.getCause().printStackTrace();
 					}
 				}
@@ -57,7 +57,7 @@ public class InjectMethods extends InjectInvoker {
 					view = inject.findViewById((Activity) beanObject, id);
 				}
 				if (view == null) {
-					ApplicationBean.logger.e(beanObject.getClass().getSimpleName() + " 方法 " + method + " 对应的ids出错\n");
+					Ioc.getIoc().getLogger().e(beanObject.getClass().getSimpleName() + " 方法 " + method + " 对应的ids出错\n");
 					continue;
 				}
 				for (int j = 0; j < clazz.length; j++) {

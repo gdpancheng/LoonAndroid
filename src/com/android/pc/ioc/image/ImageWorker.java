@@ -14,7 +14,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.widget.ImageView;
 
-import com.android.pc.ioc.app.ApplicationBean;
+import com.android.pc.ioc.app.Ioc;
 
 /**
  * 图片下载工具类
@@ -69,6 +69,7 @@ public abstract class ImageWorker {
 		// 如果图片为空
 		if (value != null) {
 			// 如果图片不为空 则直接设置
+			finish(value.getBitmap(), imageView);
 			imageView.setImageDrawable(value);
 		} else if (cancelPotentialWork(data, imageView)) {
 			final BitmapWorkerTask task = new BitmapWorkerTask(data, imageView);
@@ -225,7 +226,7 @@ public abstract class ImageWorker {
 		if (bitmapWorkerTask != null) {
 			bitmapWorkerTask.cancel(true);
 			final Object bitmapData = bitmapWorkerTask.mData;
-			ApplicationBean.logger.d("cancelWork - cancelled work for " + bitmapData);
+			Ioc.getIoc().getLogger().d("cancelWork - cancelled work for " + bitmapData);
 		}
 	}
 
@@ -245,7 +246,7 @@ public abstract class ImageWorker {
 			// 判断当前的Url和之前的url是否一样
 			if (bitmapData == null || !bitmapData.equals(data)) {
 				bitmapWorkerTask.cancel(true);
-				ApplicationBean.logger.d("cancelPotentialWork - cancelled work for " + data);
+				Ioc.getIoc().getLogger().d("cancelPotentialWork - cancelled work for " + data);
 			} else {
 				return false;
 			}
@@ -288,7 +289,7 @@ public abstract class ImageWorker {
 		 */
 		@Override
 		protected BitmapDrawable doInBackground(Void... params) {
-			ApplicationBean.logger.d("doInBackground - starting work");
+			Ioc.getIoc().getLogger().d("doInBackground - starting work");
 
 			final String dataString = String.valueOf(mData);
 			Bitmap bitmap = null;
@@ -308,7 +309,9 @@ public abstract class ImageWorker {
 			if (mImageCache != null && !isCancelled() && getAttachedImageView() != null && !mExitTasksEarly) {
 				bitmap = mImageCache.getBitmapFromDiskCache(dataString, getW(), getH());
 			}
-
+			if (bitmap != null) {
+				finish(bitmap, imageViewReference.get());
+            }
 			// 下载图片 通过自定义下载模块
 			if (bitmap == null && !isCancelled() && getAttachedImageView() != null && !mExitTasksEarly) {
 				bitmap = processBitmap(mData, imageViewReference.get());
@@ -330,7 +333,7 @@ public abstract class ImageWorker {
 				}
 			}
 
-			ApplicationBean.logger.d("doInBackground - finished work");
+			Ioc.getIoc().getLogger().d("doInBackground - finished work");
 
 			return drawable;
 		}
@@ -347,7 +350,7 @@ public abstract class ImageWorker {
 
 			final ImageView imageView = getAttachedImageView();
 			if (value != null && imageView != null) {
-				ApplicationBean.logger.d("onPostExecute - setting bitmap");
+				Ioc.getIoc().getLogger().d("onPostExecute - setting bitmap");
 				setImageDrawable(imageView, value);
 			}
 		}

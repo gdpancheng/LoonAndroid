@@ -6,10 +6,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import android.app.Activity;
-import android.support.v4.app.Fragment;
 
-import com.android.pc.ioc.app.ApplicationBean;
+import com.android.pc.ioc.app.Ioc;
 import com.android.pc.ioc.internet.FastHttp.AjaxTask;
+import com.android.pc.ioc.internet.FastHttp.Progress;
 import com.android.pc.ioc.internet.FastHttp.TimeTask;
 import com.android.pc.ioc.invoker.InjectInvoker;
 import com.android.pc.ioc.util.ContextUtils;
@@ -190,6 +190,10 @@ public class FastHttpHander {
 	public static void ajaxForm(String url, HashMap<String, String> params, HashMap<String, File> files, Object object) {
 		ajaxForm(url, params, files, InternetConfig.defaultConfig(), object);
 	}
+	
+	public static void ajaxForm(String url, HashMap<String, String> params, HashMap<String, File> files, Object object,Progress progress) {
+		ajaxForm(url, params, files, InternetConfig.defaultConfig(), object);
+	}
 
 	/**
 	 * 自定义表单提交有参数 有文件 自定义下载配置
@@ -281,7 +285,7 @@ public class FastHttpHander {
 	 */
 	public static void ajaxGet(String url, HashMap<String, String> params, final InternetConfig config, final Object object) {
 		if (config == null) {
-			ApplicationBean.logger.e(object.getClass().getSimpleName() + "  的网络请求配置不能为空\n");
+			Ioc.getIoc().getLogger().e(object.getClass().getSimpleName() + "  的网络请求配置不能为空\n");
 			return;
 		}
 		config.setRequest_type(InternetConfig.request_get);
@@ -390,7 +394,7 @@ public class FastHttpHander {
 	 */
 	public static void ajaxWebServer(String url, String method, HashMap<String, String> params, final InternetConfig config, final Object object) {
 		if (config == null) {
-			ApplicationBean.logger.e(object.getClass().getSimpleName() + " 的网络请求配置不能为空\n");
+			Ioc.getIoc().getLogger().e(object.getClass().getSimpleName() + " 的网络请求配置不能为空\n");
 			return;
 		}
 		config.setMethod(method);
@@ -469,7 +473,7 @@ public class FastHttpHander {
 
 		if (entity.getStatus() == FastHttp.result_ok) {
 			if (ok == null && arrayList == null) {
-				ApplicationBean.logger.e(object.getClass().getSimpleName() + " 的网络请求"+entity.getUrl()+"\nkey为"+entity.getKey()+"没有增加回调方法注释 请检查\n");
+				Ioc.getIoc().getLogger().e(object.getClass().getSimpleName() + " 的网络请求"+entity.getUrl()+"\nkey为"+entity.getKey()+"没有增加回调方法注释 请检查\n");
 				return;
 			}
 			if (ok == null) {
@@ -485,7 +489,7 @@ public class FastHttpHander {
 			}
 		} else {
 			if (err == null && arrayList == null) {
-				ApplicationBean.logger.e(object.getClass().getSimpleName() + " 的网络请求"+entity.getUrl()+"\nkey为"+entity.getKey()+"没有增加回调方法注释 请检查\n");
+				Ioc.getIoc().getLogger().e(object.getClass().getSimpleName() + " 的网络请求"+entity.getUrl()+"\nkey为"+entity.getKey()+"没有增加回调方法注释 请检查\n");
 				return;
 			}
 			if (err == null) {

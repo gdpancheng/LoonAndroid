@@ -11,6 +11,7 @@ import com.wash.activity.R;
 
 public class DataAdapter extends BaseAdapter {
 	Context mContext;
+	int count = 0;
 
 	public DataAdapter(Context context) {
 		mContext = context;
@@ -18,9 +19,13 @@ public class DataAdapter extends BaseAdapter {
 
 	@Override
 	public int getCount() {
-		return 20;
+		return count;
 	}
 
+	public void setCount(){
+		count = 20;
+	}
+	
 	@Override
 	public Object getItem(int position) {
 		return position;

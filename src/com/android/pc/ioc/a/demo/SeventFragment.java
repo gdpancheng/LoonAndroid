@@ -13,6 +13,7 @@ import android.widget.ListView;
 import android.widget.RadioGroup;
 import android.widget.Toast;
 
+import com.android.pc.ioc.app.Ioc;
 import com.android.pc.ioc.db.sqlite.Selector;
 import com.android.pc.ioc.db.sqlite.WhereBuilder;
 import com.android.pc.ioc.inject.InjectInit;
@@ -96,14 +97,14 @@ public class SeventFragment extends BaseFragment {
 	private void delete() {
 		String txt = input.getText().toString();
 		if (key.equals("content")) {
-			MeApplication.app.getDb("/sdcard/","test").delete(User.class, WhereBuilder.b(key, "like", "%" + txt + "%"));
+			Ioc.getIoc().getDb("/sdcard/","test").delete(User.class, WhereBuilder.b(key, "like", "%" + txt + "%"));
 		} else if (key.equals("id") || key.equals("server_id")) {
 			Pattern pattern = Pattern.compile("[0-9]*");
 			if (!pattern.matcher(txt).matches()) {
 				Toast.makeText(activity, "输入的和选择的不对", Toast.LENGTH_LONG).show();
 				return;
 			}
-			MeApplication.app.getDb("/sdcard/","test").delete(User.class, WhereBuilder.b(key, "=", Integer.valueOf(txt)));
+			Ioc.getIoc().getDb("/sdcard/","test").delete(User.class, WhereBuilder.b(key, "=", Integer.valueOf(txt)));
 		}
 	}
 
@@ -111,7 +112,7 @@ public class SeventFragment extends BaseFragment {
 		Selector selector = Selector.from(User.class);
 		selector.select(" * ");
 		selector.limit(Integer.MAX_VALUE);
-		List<User> users = MeApplication.app.getDb("/sdcard/","test").findAll(selector);
+		List<User> users = Ioc.getIoc().getDb("/sdcard/","test").findAll(selector);
 		if (users != null) {
 			user_lists.clear();
 			for (User user : users) {
@@ -147,6 +148,6 @@ public class SeventFragment extends BaseFragment {
 			arrayList.add(user2);
 		}
 
-		MeApplication.app.getDb("/sdcard/","test").saveBindingIdAll(arrayList);
+		Ioc.getIoc().getDb("/sdcard/","test").saveBindingIdAll(arrayList);
 	}
 }

@@ -3,9 +3,9 @@ package com.android.pc.ioc.invoker;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 
-import com.android.pc.ioc.app.ApplicationBean;
-import com.android.pc.ioc.core.kernel.KernelReflect;
+import com.android.pc.ioc.app.Ioc;
 import com.android.pc.ioc.core.kernel.KernelLang.CauseRuntimeException;
+import com.android.pc.ioc.core.kernel.KernelReflect;
 import com.android.pc.ioc.util.InjectResouceSupply.InjectResouceType;
 
 public class InjectResources extends InjectInvoker {
@@ -28,7 +28,7 @@ public class InjectResources extends InjectInvoker {
 	public void invoke(Object beanObject, Object... args) {
 		Object value = injectResouceType.getResouce(id, field.getName());
 		if (value == null || !field.getType().isAssignableFrom(value.getClass())) {
-			ApplicationBean.logger.e(beanObject.getClass().getSimpleName() + " 对象 " + field.getName() + "赋值不对 请检查\n");
+			Ioc.getIoc().getLogger().e(beanObject.getClass().getSimpleName() + " 对象 " + field.getName() + "赋值不对 请检查\n");
 			return;
 		}
 
@@ -54,7 +54,7 @@ public class InjectResources extends InjectInvoker {
 			field.set(values, value);
 		} catch (Exception e) {
 			e.printStackTrace();
-			ApplicationBean.logger.e(beanObject.getClass().getSimpleName() + " 对象 " + field.getName() + "赋值不对 请检查\n");
+			Ioc.getIoc().getLogger().e(beanObject.getClass().getSimpleName() + " 对象 " + field.getName() + "赋值不对 请检查\n");
 			throw new CauseRuntimeException(e);
 		}
 	}

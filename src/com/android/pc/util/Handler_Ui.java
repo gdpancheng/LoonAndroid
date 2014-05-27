@@ -1,5 +1,7 @@
 package com.android.pc.util;
 
+import java.util.HashMap;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.Configuration;
@@ -7,6 +9,7 @@ import android.graphics.Bitmap;
 import android.os.ResultReceiver;
 import android.view.Display;
 import android.view.View;
+import android.view.ViewGroup.MarginLayoutParams;
 import android.view.animation.Animation;
 import android.view.animation.AnimationSet;
 import android.view.animation.LinearInterpolator;
@@ -17,8 +20,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
-
-import com.android.pc.ioc.app.ApplicationBean;
 
 /**
  * UI工具类
@@ -101,6 +102,51 @@ public class Handler_Ui {
 		}
 	}
 
+	public static void imageLLViewReset(ImageView imageView,int bitmapW,int bitmapH){
+		LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) imageView.getLayoutParams();
+		HashMap<String, Integer> data = Handler_System.getDisplayMetrics();
+		int	width = data.get(Handler_System.systemWidth);
+		int	height = data.get(Handler_System.systemHeight);
+		if (width>height) {
+			layoutParams.width = (int) (bitmapW*1.00f/bitmapH*height);
+			layoutParams.height = height;
+        }else {
+        	layoutParams.width =width;
+			layoutParams.height =  (int) (bitmapH*1.00f/bitmapW*width);
+		}
+		imageView.setLayoutParams(layoutParams);
+	}
+	
+	public static void imageRLViewReset(ImageView imageView,int bitmapW,int bitmapH){
+		RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) imageView.getLayoutParams();
+		HashMap<String, Integer> data = Handler_System.getDisplayMetrics();
+		int	width = data.get(Handler_System.systemWidth);
+		int	height = data.get(Handler_System.systemHeight);
+		if (width>height) {
+			layoutParams.width = (int) (bitmapW*1.00f/bitmapH*height);
+			layoutParams.height = height;
+        }else {
+        	layoutParams.width =width;
+			layoutParams.height =  (int) (bitmapH*1.00f/bitmapW*width);
+		}
+		imageView.setLayoutParams(layoutParams);
+	}
+	
+	public static void imageFLViewReset(ImageView imageView,int bitmapW,int bitmapH){
+		FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) imageView.getLayoutParams();
+		HashMap<String, Integer> data = Handler_System.getDisplayMetrics();
+		int	width = data.get(Handler_System.systemWidth);
+		int	height = data.get(Handler_System.systemHeight);
+		if (width>height) {
+			layoutParams.width = (int) (bitmapW*1.00f/bitmapH*height);
+			layoutParams.height = height;
+        }else {
+        	layoutParams.width =width;
+			layoutParams.height =  (int) (bitmapH*1.00f/bitmapW*width);
+		}
+		imageView.setLayoutParams(layoutParams);
+	}
+	
 	public static void resetRL(View... view) {
 		float rote = Handler_System.getWidthRoate();
 		if (view == null || rote == 1) {

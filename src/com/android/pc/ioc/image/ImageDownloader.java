@@ -16,7 +16,7 @@ import android.os.Build;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.android.pc.ioc.app.ApplicationBean;
+import com.android.pc.ioc.app.Ioc;
 import com.android.pc.util.Handler_System;
 
 /**
@@ -73,8 +73,8 @@ public class ImageDownloader extends ImageResizer {
 		final ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
 		final NetworkInfo networkInfo = cm.getActiveNetworkInfo();
 		if (networkInfo == null || !networkInfo.isConnectedOrConnecting()) {
-			Toast.makeText(context, "无法链接到网络", Toast.LENGTH_LONG).show();
-			ApplicationBean.logger.e("网络连接失败");
+			Toast.makeText(context, "无法连接到网络", Toast.LENGTH_LONG).show();
+			Ioc.getIoc().getLogger().e("网络连接失败");
 		}
 	}
 
@@ -87,7 +87,7 @@ public class ImageDownloader extends ImageResizer {
 	 */
 	private Bitmap processBitmap(String data,ImageView imageView) {
 		
-		ApplicationBean.logger.d("图片下载开始 - " + data);
+		Ioc.getIoc().getLogger().d("图片下载开始 - " + data);
 		File file = null;
 		//网络图片 本地SD卡图片
 		if (data.startsWith("http")) {
@@ -160,7 +160,7 @@ public class ImageDownloader extends ImageResizer {
 			}
 			return true;
 		} catch (final IOException e) {
-			ApplicationBean.logger.e("图片下载出错 - " + "Error in downloadBitmap - " + e);
+			Ioc.getIoc().getLogger().e("图片下载出错 - " + "Error in downloadBitmap - " + e);
 		} finally {
 			if (urlConnection != null) {
 				urlConnection.disconnect();

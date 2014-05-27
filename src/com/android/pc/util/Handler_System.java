@@ -20,7 +20,7 @@ import android.telephony.TelephonyManager;
 import android.view.Display;
 import android.view.WindowManager;
 
-import com.android.pc.ioc.app.ApplicationBean;
+import com.android.pc.ioc.app.Ioc;
 
 /**
  * 获取相关系统信息
@@ -68,15 +68,15 @@ public class Handler_System {
 		String applicationName;
 
 		if (packageName == null) {
-			packageName = ApplicationBean.getApplication().getPackageName();
+			packageName = Ioc.getIoc().getApplication().getPackageName();
 		}
 
 		try {
-			PackageManager packageManager = ApplicationBean.getApplication().getPackageManager();
+			PackageManager packageManager = Ioc.getIoc().getApplication().getPackageManager();
 			PackageInfo packageInfo = packageManager.getPackageInfo(packageName, 0);
-			applicationName = ApplicationBean.getApplication().getString(packageInfo.applicationInfo.labelRes);
+			applicationName = Ioc.getIoc().getApplication().getString(packageInfo.applicationInfo.labelRes);
 		} catch (Exception e) {
-			ApplicationBean.logger.e(e);
+			Ioc.getIoc().getLogger().e(e);
 			applicationName = "";
 		}
 
@@ -106,15 +106,15 @@ public class Handler_System {
 		String versionName;
 
 		if (packageName == null) {
-			packageName = ApplicationBean.getApplication().getPackageName();
+			packageName = Ioc.getIoc().getApplication().getPackageName();
 		}
 
 		try {
-			PackageManager packageManager = ApplicationBean.getApplication().getPackageManager();
+			PackageManager packageManager = Ioc.getIoc().getApplication().getPackageManager();
 			PackageInfo packageInfo = packageManager.getPackageInfo(packageName, 0);
 			versionName = packageInfo.versionName;
 		} catch (Exception e) {
-			ApplicationBean.logger.e(e);
+			Ioc.getIoc().getLogger().e(e);
 			versionName = "";
 		}
 
@@ -144,15 +144,15 @@ public class Handler_System {
 		String versionCode;
 
 		if (packageName == null) {
-			packageName = ApplicationBean.getApplication().getPackageName();
+			packageName = Ioc.getIoc().getApplication().getPackageName();
 		}
 
 		try {
-			PackageManager packageManager = ApplicationBean.getApplication().getPackageManager();
+			PackageManager packageManager = Ioc.getIoc().getApplication().getPackageManager();
 			PackageInfo packageInfo = packageManager.getPackageInfo(packageName, 0);
 			versionCode = Integer.toString(packageInfo.versionCode);
 		} catch (Exception e) {
-			ApplicationBean.logger.e(e);
+			Ioc.getIoc().getLogger().e(e);
 			versionCode = "";
 		}
 
@@ -170,7 +170,7 @@ public class Handler_System {
 		try {
 			return Build.VERSION.class.getField("SDK_INT").getInt(null);
 		} catch (Exception e) {
-			ApplicationBean.logger.e(e);
+			Ioc.getIoc().getLogger().e(e);
 			return 3;
 		}
 	}
@@ -186,15 +186,15 @@ public class Handler_System {
 
 		final Signature releaseSignature = new Signature(releaseSignatureString);
 		try {
-			PackageManager pm = ApplicationBean.getApplication().getPackageManager();
-			PackageInfo pi = pm.getPackageInfo(ApplicationBean.getApplication().getPackageName(), PackageManager.GET_SIGNATURES);
+			PackageManager pm = Ioc.getIoc().getApplication().getPackageManager();
+			PackageInfo pi = pm.getPackageInfo(Ioc.getIoc().getApplication().getPackageName(), PackageManager.GET_SIGNATURES);
 			for (Signature sig : pi.signatures) {
 				if (sig.equals(releaseSignature)) {
 					return true;
 				}
 			}
 		} catch (Exception e) {
-			ApplicationBean.logger.e(e);
+			Ioc.getIoc().getLogger().e(e);
 			return true;
 		}
 		return false;
@@ -233,7 +233,7 @@ public class Handler_System {
 				sb.append("\n");
 			}
 		} catch (Exception e) {
-			ApplicationBean.logger.e(e);
+			Ioc.getIoc().getLogger().e(e);
 		}
 		return sb.toString();
 	}
@@ -249,7 +249,7 @@ public class Handler_System {
 	public static HashMap<String, Integer> getDisplayMetrics() {
 		if (map == null) {
 			map = new HashMap<String, Integer>();
-			Display display = ((WindowManager) ApplicationBean.getApplication().getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
+			Display display = ((WindowManager) Ioc.getIoc().getApplication().getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
 			int screenWidth = display.getWidth();
 			int screenHeight = display.getHeight();
 			map.put(systemWidth, screenWidth);
@@ -267,40 +267,40 @@ public class Handler_System {
 	public static float getWidthRoate() {
 		if (map == null) {
 			map = new HashMap<String, Integer>();
-			Display display = ((WindowManager) ApplicationBean.getApplication().getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
+			Display display = ((WindowManager) Ioc.getIoc().getApplication().getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
 			int screenWidth = display.getWidth();
 			int screenHeight = display.getHeight();
 			map.put(systemWidth, screenWidth);
 			map.put(systemHeight, screenHeight);
 		}
-		return (map.get(systemWidth) * 1.00f) / ApplicationBean.getApplication().getMode_w();
+		return (map.get(systemWidth) * 1.00f) / Ioc.getIoc().getMode_w();
 	}
 	
 	public static float getRoate() {
 		if (map == null) {
 			map = new HashMap<String, Integer>();
-			Display display = ((WindowManager) ApplicationBean.getApplication().getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
+			Display display = ((WindowManager) Ioc.getIoc().getApplication().getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
 			int screenWidth = display.getWidth();
 			int screenHeight = display.getHeight();
 			map.put(systemWidth, screenWidth);
 			map.put(systemHeight, screenHeight);
 		} 
-		float w = (map.get(systemWidth) * 1.00f) / ApplicationBean.getApplication().getMode_w();
-		float h = (map.get(systemHeight) * 1.00f) / ApplicationBean.getApplication().getMode_h();
+		float w = (map.get(systemWidth) * 1.00f) / Ioc.getIoc().getMode_w();
+		float h = (map.get(systemHeight) * 1.00f) / Ioc.getIoc().getMode_h();
 		return w>h?w:h;
 	}
 	
 	public static float getPadRoate() {
 		if (map == null) {
 			map = new HashMap<String, Integer>();
-			Display display = ((WindowManager) ApplicationBean.getApplication().getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
+			Display display = ((WindowManager) Ioc.getIoc().getApplication().getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
 			int screenWidth = display.getWidth();
 			int screenHeight = display.getHeight();
 			map.put(systemWidth, screenWidth);
 			map.put(systemHeight, screenHeight);
 		} 
-		float w = (map.get(systemWidth) * 1.00f) / ApplicationBean.getApplication().getMode_w();
-		float h = (map.get(systemHeight) * 1.00f) / ApplicationBean.getApplication().getMode_h();
+		float w = (map.get(systemWidth) * 1.00f) / Ioc.getIoc().getMode_w();
+		float h = (map.get(systemHeight) * 1.00f) / Ioc.getIoc().getMode_h();
 		return w<h?w:h;
 	}
 
@@ -313,13 +313,13 @@ public class Handler_System {
 	public static float getHeightRoate() {
 		if (map == null) {
 			map = new HashMap<String, Integer>();
-			Display display = ((WindowManager) ApplicationBean.getApplication().getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
+			Display display = ((WindowManager) Ioc.getIoc().getApplication().getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
 			int screenWidth = display.getWidth();
 			int screenHeight = display.getHeight();
 			map.put(systemWidth, screenWidth);
 			map.put(systemHeight, screenHeight);
 		} 
-		return (map.get(systemHeight) * 1.00f) /  ApplicationBean.getApplication().getMode_h();
+		return (map.get(systemHeight) * 1.00f) /  Ioc.getIoc().getMode_h();
 	}
 
 	/**
@@ -329,7 +329,7 @@ public class Handler_System {
 	 * @return int
 	 */
 	public static int dip2px(float dipValue) {
-		final float scale = ApplicationBean.getApplication().getResources().getDisplayMetrics().density;
+		final float scale = Ioc.getIoc().getApplication().getResources().getDisplayMetrics().density;
 		return (int) (dipValue * scale + 0.5f);
 	}
 
@@ -342,7 +342,7 @@ public class Handler_System {
 	 * @return int
 	 */
 	public static int px2dip(float pxValue) {
-		final float scale = ApplicationBean.getApplication().getResources().getDisplayMetrics().density;
+		final float scale = Ioc.getIoc().getApplication().getResources().getDisplayMetrics().density;
 		return (int) (pxValue / scale + 0.5f);
 	}
 
@@ -364,9 +364,9 @@ public class Handler_System {
 			obj = c.newInstance();
 			field = c.getField("status_bar_height");
 			x = Integer.parseInt(field.get(obj).toString());
-			sbar = ApplicationBean.getApplication().getResources().getDimensionPixelSize(x);
+			sbar = Ioc.getIoc().getApplication().getResources().getDimensionPixelSize(x);
 		} catch (Exception e1) {
-			ApplicationBean.logger.e(e1);
+			Ioc.getIoc().getLogger().e(e1);
 		}
 		return sbar;
 	}
@@ -452,7 +452,7 @@ public class Handler_System {
 	 * 设置手机立刻震动
 	 * */
 	public static void Vibrate(long milliseconds) {
-		Vibrator vib = (Vibrator) ApplicationBean.getApplication().getSystemService(Service.VIBRATOR_SERVICE);
+		Vibrator vib = (Vibrator) Ioc.getIoc().getApplication().getSystemService(Service.VIBRATOR_SERVICE);
 		vib.vibrate(milliseconds);
 	}
 
@@ -464,7 +464,7 @@ public class Handler_System {
 	 * @return void
 	 */
 	public static void init() {
-		mTm = (TelephonyManager) ApplicationBean.getApplication().getSystemService(Context.TELEPHONY_SERVICE);
+		mTm = (TelephonyManager) Ioc.getIoc().getApplication().getSystemService(Context.TELEPHONY_SERVICE);
 		mIMEI = mTm.getDeviceId();
 		mMobileVersion = mTm.getDeviceSoftwareVersion();
 		mCellinfos = mTm.getNeighboringCellInfo();
@@ -472,7 +472,7 @@ public class Handler_System {
 		mSIM = mTm.getSimSerialNumber();
 		mDeviceID = getDeviceId();
 		try {
-			ConnectivityManager cm = (ConnectivityManager) ApplicationBean.getApplication().getSystemService(Context.CONNECTIVITY_SERVICE);
+			ConnectivityManager cm = (ConnectivityManager) Ioc.getIoc().getApplication().getSystemService(Context.CONNECTIVITY_SERVICE);
 			NetworkInfo info = cm.getActiveNetworkInfo();
 			if (info!=null) {
 				mNetType = info.getTypeName();
@@ -496,7 +496,7 @@ public class Handler_System {
 	 * @return String
 	 */
 	private static String getDeviceId() {
-		return Secure.getString(ApplicationBean.getApplication().getContentResolver(), Secure.ANDROID_ID);
+		return Secure.getString(Ioc.getIoc().getApplication().getContentResolver(), Secure.ANDROID_ID);
 	}
 
 	public static String getImei() {
@@ -615,7 +615,7 @@ public class Handler_System {
 	 */
 	public static String getPhoneSettings() {
 		StringBuffer buf = new StringBuffer();
-		String str = Secure.getString(ApplicationBean.getApplication().getContentResolver(), Secure.BLUETOOTH_ON);
+		String str = Secure.getString(Ioc.getIoc().getApplication().getContentResolver(), Secure.BLUETOOTH_ON);
 		buf.append("蓝牙:");
 		if (str.equals("0")) {
 			buf.append("禁用");
@@ -623,11 +623,11 @@ public class Handler_System {
 			buf.append("开启");
 		}
 		//
-		str = Secure.getString(ApplicationBean.getApplication().getContentResolver(), Secure.BLUETOOTH_ON);
+		str = Secure.getString(Ioc.getIoc().getApplication().getContentResolver(), Secure.BLUETOOTH_ON);
 		buf.append("WIFI:");
 		buf.append(str);
 
-		str = Secure.getString(ApplicationBean.getApplication().getContentResolver(), Secure.INSTALL_NON_MARKET_APPS);
+		str = Secure.getString(Ioc.getIoc().getApplication().getContentResolver(), Secure.INSTALL_NON_MARKET_APPS);
 		buf.append("APP位置来源:");
 		buf.append(str);
 

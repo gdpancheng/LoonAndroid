@@ -38,7 +38,7 @@ import android.os.Looper;
 import android.os.StatFs;
 import android.widget.Toast;
 
-import com.android.pc.ioc.app.ApplicationBean;
+import com.android.pc.ioc.app.Ioc;
 import com.android.pc.ioc.image.ImageCache.ImageCacheParams;
 import com.android.pc.util.LruCache;
 
@@ -110,7 +110,7 @@ public class ImageCache {
 
 		// Set up memory cache
 		if (mCacheParams.memoryCacheEnabled) {
-			ApplicationBean.logger.d("Memory cache created (size = " + mCacheParams.memCacheSize + ")");
+			Ioc.getIoc().getLogger().d("Memory cache created (size = " + mCacheParams.memCacheSize + ")");
 
 			// If we're running on Honeycomb or newer, create a set of reusable bitmaps that can be
 			// populated into the inBitmap field of BitmapFactory.Options. Note that the set is
@@ -176,7 +176,7 @@ public class ImageCache {
 			}
 			if (ImageCache.getUsableSpace(mCacheParams.diskCacheDir) < HTTP_CACHE_SIZE) {
 				Looper.prepare();
-				Toast.makeText(ApplicationBean.getApplication(), "存储空间不足,请检查", Toast.LENGTH_LONG).show();
+				Toast.makeText(Ioc.getIoc().getApplication(), "存储空间不足,请检查", Toast.LENGTH_LONG).show();
 				Looper.loop();
 			}
 			mDiskCacheStarting = false;
@@ -294,7 +294,7 @@ public class ImageCache {
 	public void clearCache() {
 		if (mMemoryCache != null) {
 			mMemoryCache.evictAll();
-			ApplicationBean.logger.d("缓存清理成功");
+				Ioc.getIoc().getLogger().d("缓存清理成功");
 		}
 
 		synchronized (mDiskCacheLock) {
@@ -309,7 +309,7 @@ public class ImageCache {
 				}
 			}
 			// 删除缓存
-			ApplicationBean.logger.d("本地磁盘清理成功");
+			Ioc.getIoc().getLogger().d("本地磁盘清理成功");
 			initDiskCache();
 		}
 	}

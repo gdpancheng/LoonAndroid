@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 import android.annotation.SuppressLint;
 import android.app.NotificationManager;
 import android.content.Context;
@@ -23,7 +24,8 @@ import android.net.Uri;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Base64;
-import com.android.pc.ioc.app.ApplicationBean;
+
+import com.android.pc.ioc.app.Ioc;
 import com.android.pc.ioc.db.sqlite.WhereBuilder;
 import com.android.pc.ioc.event.EventBus;
 import com.android.pc.ioc.update.NotificationHelper;
@@ -70,7 +72,7 @@ public class FileLoaderManager {
 				// 因为这种情况下 得显示通知栏
 				if (entity.getNotfi() != null) {
 					NotfiEntity notfiEntity = entity.getNotfi();
-					NotificationHelper helper = new NotificationHelper(ApplicationBean.getApplication(), notfiEntity.getLayout_id(), notfiEntity.getIcon_id(), notfiEntity.getProgress_id(), notfiEntity.getProgress_txt_id(), notfiEntity.getClazz());
+					NotificationHelper helper = new NotificationHelper(Ioc.getIoc().getApplication(), notfiEntity.getLayout_id(), notfiEntity.getIcon_id(), notfiEntity.getProgress_id(), notfiEntity.getProgress_txt_id(), notfiEntity.getClazz());
 					helper.initNotif();
 					entity.setHelper(helper);
 				}
@@ -349,7 +351,7 @@ public class FileLoaderManager {
 		}
 		FileEntity entity = fileEntities.get(url);
 		entity.setNotfi(notfi);
-		NotificationHelper helper = new NotificationHelper(ApplicationBean.getApplication(), notfi.getLayout_id(), notfi.getIcon_id(), notfi.getProgress_id(), notfi.getProgress_txt_id(), notfi.getClazz());
+		NotificationHelper helper = new NotificationHelper(Ioc.getIoc().getApplication(), notfi.getLayout_id(), notfi.getIcon_id(), notfi.getProgress_id(), notfi.getProgress_txt_id(), notfi.getClazz());
 		entity.setHelper(helper);
 		if (entity.isRange()) {
 			helper.initNotif();
@@ -371,7 +373,7 @@ public class FileLoaderManager {
 	}
 
 	public static void hideNotif() {
-		NotificationManager mContextNotificationManager = (NotificationManager) ApplicationBean.getApplication().getSystemService(Context.NOTIFICATION_SERVICE);
+		NotificationManager mContextNotificationManager = (NotificationManager) Ioc.getIoc().getApplication().getSystemService(Context.NOTIFICATION_SERVICE);
 		mContextNotificationManager.cancelAll();
 	}
 
@@ -408,7 +410,7 @@ public class FileLoaderManager {
 	 * @return void
 	 */
 	public static void clearByUrl(String url) {
-		ApplicationBean.getApplication().getDb().delete(FileEntity.class, WhereBuilder.b(" url ", " = ", url));
+		Ioc.getIoc().getDb().delete(FileEntity.class, WhereBuilder.b(" url ", " = ", url));
 	}
 
 	/**
@@ -418,8 +420,8 @@ public class FileLoaderManager {
 	 * @return void
 	 */
 	public static void clearHistory() {
-		ApplicationBean.getApplication().getDb().deleteAll(FileEntity.class);
-		ApplicationBean.getApplication().getDb().deleteAll(ThreadEntity.class);
+		Ioc.getIoc().getDb().deleteAll(FileEntity.class);
+		Ioc.getIoc().getDb().deleteAll(ThreadEntity.class);
 	}
 
 	/**
@@ -442,7 +444,7 @@ public class FileLoaderManager {
 		loadingMap.put(url, true);
 
 		if (path == null) {
-			path = Handler_File.getExternalCacheDir(ApplicationBean.getApplication(), "files").getPath() + "/file_" + (System.currentTimeMillis() + "").substring(4);
+			path = Handler_File.getExternalCacheDir(Ioc.getIoc().getApplication(), "files").getPath() + "/file_" + (System.currentTimeMillis() + "").substring(4);
 		}
 		File path_file = new File(path);
 		if (!path_file.getParentFile().exists()) {
@@ -558,19 +560,19 @@ public class FileLoaderManager {
 					connection.disconnect();
 					fileEntity.setReal_url(redictURL);
 					connection = getHttpConnection(0, redictURL);
-					ApplicationBean.logger.i("下载的文件是重定向地址,正在获取真实地址......");
+					Ioc.getIoc().getLogger().i("下载的文件是重定向地址,正在获取真实地址......");
 				}
 				int length = connection.getContentLength();
 				if (length <= 0) {
 					// 不支持多线程下载,采用单线程下载
-					ApplicationBean.logger.w("服务器不能返回文件大小，采用单线程下载");
+					Ioc.getIoc().getLogger().w("服务器不能返回文件大小，采用单线程下载");
 					fileEntity.setThreads(1);
 				}
 				// --------------------------------------------------------------------------------------
 				// 是否支持断点
 				fileEntity.setRange(true);
 				if (connection.getHeaderField("Content-Range") == null) {
-					ApplicationBean.logger.w("服务器不支持断点续传");
+					Ioc.getIoc().getLogger().w("服务器不支持断点续传");
 					fileEntity.setRange(false);
 				}
 				connection.disconnect();
@@ -578,7 +580,7 @@ public class FileLoaderManager {
 				File file = new File(fileEntity.getPath());
 				// 存储空间不够
 				if (length > 0 && file.getParentFile().getFreeSpace() < length) {
-					ApplicationBean.logger.e("磁盘空间不够");
+					Ioc.getIoc().getLogger().e("磁盘空间不够");
 					sendMsg(fileEntity, FileResultEntity.status_fail, 0);
 					loadingMap.remove(fileEntity.getUrl());
 					return;
@@ -600,7 +602,7 @@ public class FileLoaderManager {
 			} catch (Exception e) {
 				if (fileEntity.getNotfi() != null) {
 					NotfiEntity notfiEntity = fileEntity.getNotfi();
-					NotificationHelper helper = new NotificationHelper(ApplicationBean.getApplication(), notfiEntity.getLayout_id(), notfiEntity.getIcon_id(), notfiEntity.getProgress_id(), notfiEntity.getProgress_txt_id(), notfiEntity.getClazz());
+					NotificationHelper helper = new NotificationHelper(Ioc.getIoc().getApplication(), notfiEntity.getLayout_id(), notfiEntity.getIcon_id(), notfiEntity.getProgress_id(), notfiEntity.getProgress_txt_id(), notfiEntity.getClazz());
 					helper.initNotif();
 					fileEntity.setHelper(helper);
 				}
@@ -657,7 +659,7 @@ public class FileLoaderManager {
 				while (DownloadThreadGroup.this.activeCount() > 0) {
 					entity.setLoadedLength(getSize());
 					sendMsg(entity, FileResultEntity.status_loading, (int) (entity.getLoadedLength() * 100 / entity.getLength()));
-					ApplicationBean.getApplication().getDb().saveOrUpdateAll(entitysList);
+					Ioc.getIoc().getDb().saveOrUpdateAll(entitysList);
 					try {
 						Thread.sleep(1000);
 					} catch (Exception e) {
@@ -675,8 +677,8 @@ public class FileLoaderManager {
 					sendMsg(entity, FileResultEntity.status_sucess, price);
 				}
 				loadingMap.remove(entity.getUrl());
-				ApplicationBean.getApplication().getDb().saveOrUpdateAll(entitysList);
-				ApplicationBean.getApplication().getDb().update(entity);
+				Ioc.getIoc().getDb().saveOrUpdateAll(entitysList);
+				Ioc.getIoc().getDb().update(entity);
 			}
 		}
 
@@ -696,7 +698,7 @@ public class FileLoaderManager {
 		public void start() {
 			if (entity.getNotfi() != null) {
 				NotfiEntity notfiEntity = entity.getNotfi();
-				NotificationHelper helper = new NotificationHelper(ApplicationBean.getApplication(), notfiEntity.getLayout_id(), notfiEntity.getIcon_id(), notfiEntity.getProgress_id(), notfiEntity.getProgress_txt_id(), notfiEntity.getClazz());
+				NotificationHelper helper = new NotificationHelper(Ioc.getIoc().getApplication(), notfiEntity.getLayout_id(), notfiEntity.getIcon_id(), notfiEntity.getProgress_id(), notfiEntity.getProgress_txt_id(), notfiEntity.getClazz());
 				helper.initNotif();
 				entity.setHelper(helper);
 			}
@@ -748,9 +750,9 @@ public class FileLoaderManager {
 					destFile.write(b, 0, read);
 					threadEntity.setLoad(loading);
 				}
-				ApplicationBean.logger.d("---------------------------------------------------------------------");
-				ApplicationBean.logger.d(getName() + "开始：" + blockBegin + "下载了：" + loading + "结束：" + blockEnd);
-				ApplicationBean.logger.d("---------------------------------------------------------------------");
+				Ioc.getIoc().getLogger().d("---------------------------------------------------------------------");
+				Ioc.getIoc().getLogger().d(getName() + "开始：" + blockBegin + "下载了：" + loading + "结束：" + blockEnd);
+				Ioc.getIoc().getLogger().d("---------------------------------------------------------------------");
 				httpConnection.disconnect();
 				return;
 			} catch (Exception e) {
@@ -800,7 +802,7 @@ public class FileLoaderManager {
 
 				if (entity.getNotfi() != null&&entity.getLength()==0) {
 					NotfiEntity notfiEntity = entity.getNotfi();
-					NotificationHelper helper = new NotificationHelper(ApplicationBean.getApplication(), notfiEntity.getLayout_id(), notfiEntity.getIcon_id(), notfiEntity.getProgress_id(), notfiEntity.getProgress_txt_id(), notfiEntity.getClazz());
+					NotificationHelper helper = new NotificationHelper(Ioc.getIoc().getApplication(), notfiEntity.getLayout_id(), notfiEntity.getIcon_id(), notfiEntity.getProgress_id(), notfiEntity.getProgress_txt_id(), notfiEntity.getClazz());
 					helper.downNotification("下载中...");
 					entity.setHelper(helper);
 				}
@@ -817,7 +819,7 @@ public class FileLoaderManager {
 							entity.setHelper(helper);
 						}
 						entity.setSucess(false);
-						ApplicationBean.getApplication().getDb().saveOrUpdate(entity);
+						Ioc.getIoc().getDb().saveOrUpdate(entity);
 						return;
 					}
 					readCount = readCount + read;
@@ -835,10 +837,10 @@ public class FileLoaderManager {
 				}
 				loadingMap.remove(entity.getUrl());
 				entity.setSucess(true);
-				ApplicationBean.getApplication().getDb().saveOrUpdate(entity);
-				ApplicationBean.logger.d("---------------------------------------------------------------------");
-				ApplicationBean.logger.d("单线程下载:" + readCount);
-				ApplicationBean.logger.d("---------------------------------------------------------------------");
+				Ioc.getIoc().getDb().saveOrUpdate(entity);
+				Ioc.getIoc().getLogger().d("---------------------------------------------------------------------");
+				Ioc.getIoc().getLogger().d("单线程下载:" + readCount);
+				Ioc.getIoc().getLogger().d("---------------------------------------------------------------------");
 				httpConnection.disconnect();
 				return;
 			} catch (Exception e) {
@@ -888,7 +890,7 @@ public class FileLoaderManager {
 			Intent intent = new Intent(Intent.ACTION_VIEW);
 			intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 			intent.setDataAndType(Uri.fromFile(resultEntity.getFile()), "application/vnd.android.package-archive");
-			Context context = ApplicationBean.getApplication().getApplicationContext();
+			Context context = Ioc.getIoc().getApplication().getApplicationContext();
 			context.startActivity(intent);
 		}
 

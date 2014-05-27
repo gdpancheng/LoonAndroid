@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.json.JSONArray;
@@ -15,7 +16,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
-import com.android.pc.ioc.app.ApplicationBean;
+import com.android.pc.ioc.app.Ioc;
 
 /**
  * json帮助类 可以解析为集合或者对象
@@ -33,20 +34,20 @@ public class Handler_Json {
 	 * @param str
 	 * @return Object
 	 */
-	public static Object JsonToCollection(String str) {
-		Map<String, Object> json = new HashMap<String, Object>();
+	private static Object JsonToHashMap(String str) {
+		LinkedHashMap<String, Object> json = new LinkedHashMap<String, Object>();
 		try {
 			Object object = new JSONTokener(str).nextValue();
 			if (object instanceof JSONArray) {
 				JSONArray root = new JSONArray(str);
+				ArrayList<Object> list = new ArrayList<Object>();
 				if (root.length() > 0) {
-					ArrayList<Object> list = new ArrayList<Object>();
 					for (int i = 0; i < root.length(); i++) {
 						list.add(JsonToCollection(root.getString(i)));
 					}
 					return list;
 				}
-				return str;
+				return list.add(str);
 			} else if (object instanceof JSONObject) {
 				JSONObject root = new JSONObject(str);
 				if (root.length() > 0) {
@@ -63,7 +64,7 @@ public class Handler_Json {
 				return str;
 			}
 		} catch (JSONException e) {
-			ApplicationBean.logger.d("错误字符串：" + str);
+			Ioc.getIoc().getLogger().d("错误字符串：" + str);
 			return str;
 		}
 	}
@@ -94,7 +95,7 @@ public class Handler_Json {
 					}
 					return list;
 				}
-				ApplicationBean.logger.e("数组" + entity + "解析出错");
+				Ioc.getIoc().getLogger().e("数组" + entity + "解析出错");
 				return null;
 			} else if (object instanceof JSONObject) {
 				JSONObject root = new JSONObject(str);
@@ -161,18 +162,18 @@ public class Handler_Json {
 						}
 
 						if (!isHas) {
-							ApplicationBean.logger.e("字段" + name + "在实体类" + entity + "不存在");
+							Ioc.getIoc().getLogger().e("字段" + name + "在实体类" + entity + "不存在");
 						}
 					}
 				} else {
-					ApplicationBean.logger.e("数据长度不对 解析出错");
+					Ioc.getIoc().getLogger().e("数据长度不对 解析出错");
 				}
 				return entity;
 			} else {
 				return entity;
 			}
 		} catch (Exception e) {
-			ApplicationBean.logger.d("错误字符串：" + str);
+			Ioc.getIoc().getLogger().d("错误字符串：" + str);
 			return entity;
 		}
 	}
@@ -252,11 +253,20 @@ public class Handler_Json {
 		try {
 			object = (T) JsonToBean(json, clazz.newInstance());
 		} catch (Exception e) {
-			e.printStackTrace();
 		}
 		return object;
 	}
 
+	@SuppressWarnings("unchecked")
+    public static <T> T  JsonToCollection(String str) {
+		T object = null;
+		try {
+			object = (T) JsonToHashMap(str);
+        } catch (Exception e) {
+        }
+		return object;
+	}
+	
 	/**
 	 * 解析内部类
 	 * 

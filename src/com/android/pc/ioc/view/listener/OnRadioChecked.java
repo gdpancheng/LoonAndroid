@@ -7,11 +7,11 @@
  */
 package com.android.pc.ioc.view.listener;
 
-import com.android.pc.ioc.app.ApplicationBean;
-
 import android.view.View;
 import android.widget.RadioGroup;
 import android.widget.RadioGroup.OnCheckedChangeListener;
+
+import com.android.pc.ioc.app.Ioc;
 
 /**
  * @author absir
@@ -42,7 +42,7 @@ public class OnRadioChecked extends OnListener implements OnCheckedChangeListene
 		if (view instanceof RadioGroup) {
 			((RadioGroup) view).setOnCheckedChangeListener(this);
 		}else {
-			ApplicationBean.logger.e(view.getClass() +" 无法设置OnRadioChecked 请检查InjectMethod的参数\n");
+			Ioc.getIoc().getLogger().e(view.getClass() +" 无法设置OnRadioChecked 请检查InjectMethod的参数\n");
 		}
 	}
 

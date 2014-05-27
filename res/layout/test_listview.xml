@@ -2,13 +2,23 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:background="@android:color/white" 
-    android:orientation="horizontal">
+    android:background="@android:color/white"
+    android:orientation="horizontal" >
 
-<ListView
+    <ListView
         android:id="@+id/list"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_weight="1"
         android:cacheColorHint="#00000000" />
+
+    <TextView
+        android:id="@+id/emtpy"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:text="没有数据（这个是EmptyView），点击刷新"
+        android:textSize="22sp"
+        android:visibility="gone" />
+
 </LinearLayout>

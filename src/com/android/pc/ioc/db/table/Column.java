@@ -4,7 +4,7 @@ package com.android.pc.ioc.db.table;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
-import com.android.pc.ioc.app.ApplicationBean;
+import com.android.pc.ioc.app.Ioc;
 
 public class Column {
 
@@ -37,14 +37,14 @@ public class Column {
             try {
                 setMethod.invoke(entity, value == null ? defaultValue : value);
             } catch (Exception e) {
-            	ApplicationBean.logger.e(e);
+            	Ioc.getIoc().getLogger().e(e);
             }
         } else {
             try {
                 this.columnField.setAccessible(true);
                 this.columnField.set(entity, value == null ? defaultValue : value);
             } catch (Exception e) {
-            	ApplicationBean.logger.e(e);
+            	Ioc.getIoc().getLogger().e(e);
             }
         }
     }
@@ -57,14 +57,14 @@ public class Column {
                 try {
                     resultObj = getMethod.invoke(entity);
                 } catch (Exception e) {
-                	ApplicationBean.logger.e(e);
+                	Ioc.getIoc().getLogger().e(e);
                 }
             } else {
                 try {
                     this.columnField.setAccessible(true);
                     resultObj = this.columnField.get(entity);
                 } catch (Exception e) {
-                	ApplicationBean.logger.e(e);
+                	Ioc.getIoc().getLogger().e(e);
                 }
             }
         }

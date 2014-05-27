@@ -11,7 +11,6 @@ import android.widget.Toast;
 
 import com.android.pc.ioc.a.demo.MyAdapter.ViewHolder;
 import com.android.pc.ioc.adapter.LazyAdapter;
-import com.android.pc.ioc.app.ApplicationBean;
 import com.android.pc.ioc.inject.InjectBinder;
 import com.android.pc.ioc.inject.InjectView;
 import com.android.pc.ioc.view.listener.OnClick;
@@ -68,7 +67,7 @@ public class MyAdapter extends LazyAdapter<HashMap<String, String>, ViewHolder> 
 		public ImageView image;
 		
 		private void click(View v){
-			Toast.makeText(ApplicationBean.getApplication(), "点击"+v.getTag(), Toast.LENGTH_LONG).show();
+			Toast.makeText(MeApplication.app, "点击"+v.getTag(), Toast.LENGTH_LONG).show();
 		}
 	}
 }

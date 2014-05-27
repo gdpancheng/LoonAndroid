@@ -9,7 +9,7 @@ import java.util.List;
 
 import android.text.TextUtils;
 
-import com.android.pc.ioc.app.ApplicationBean;
+import com.android.pc.ioc.app.Ioc;
 import com.android.pc.ioc.db.annotation.Check;
 import com.android.pc.ioc.db.annotation.Column;
 import com.android.pc.ioc.db.annotation.Finder;
@@ -37,7 +37,7 @@ public class ColumnUtils {
             try {
                 getMethod = entityType.getDeclaredMethod(methodName);
             } catch (NoSuchMethodException e) {
-            	ApplicationBean.logger.d(methodName + " not exist");
+            	Ioc.getIoc().getLogger().d(methodName + " not exist");
             }
         }
 
@@ -58,7 +58,7 @@ public class ColumnUtils {
             try {
                 setMethod = entityType.getDeclaredMethod(methodName, field.getType());
             } catch (NoSuchMethodException e) {
-            	ApplicationBean.logger.d(methodName + " not exist");
+            	Ioc.getIoc().getLogger().d(methodName + " not exist");
             }
         }
 
@@ -269,7 +269,7 @@ public class ColumnUtils {
         try {
             return entityType.getDeclaredMethod(methodName);
         } catch (NoSuchMethodException e) {
-        	ApplicationBean.logger.d(methodName + " not exist");
+        	Ioc.getIoc().getLogger().d(methodName + " not exist");
         }
         return null;
     }
@@ -285,7 +285,7 @@ public class ColumnUtils {
         try {
             return entityType.getDeclaredMethod(methodName, field.getType());
         } catch (NoSuchMethodException e) {
-        	ApplicationBean.logger.d(methodName + " not exist");
+        	Ioc.getIoc().getLogger().d(methodName + " not exist");
         }
         return null;
     }

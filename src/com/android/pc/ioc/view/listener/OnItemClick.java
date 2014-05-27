@@ -7,12 +7,12 @@
  */
 package com.android.pc.ioc.view.listener;
 
-import com.android.pc.ioc.app.ApplicationBean;
-
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
+
+import com.android.pc.ioc.app.Ioc;
 
 public class OnItemClick extends OnListener implements OnItemClickListener {
 
@@ -26,7 +26,7 @@ public class OnItemClick extends OnListener implements OnItemClickListener {
 		if (view instanceof ListView) {
 			((ListView) view).setOnItemClickListener(this);
 		}else {
-			ApplicationBean.logger.e(view.getClass() +" 无法设置OnItemClick 请检查InjectMethod的参数\n");
+			Ioc.getIoc().getLogger().e(view.getClass() +" 无法设置OnItemClick 请检查InjectMethod的参数\n");
 		}
 	}
 }

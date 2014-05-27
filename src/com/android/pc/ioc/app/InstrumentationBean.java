@@ -35,11 +35,11 @@ public class InstrumentationBean extends Instrumentation {
 			long time = System.currentTimeMillis();
 			ContextUtils.getCreateInvokers(activity.getClass());
 			inject(activity, InjectBefore.class, null);
-			ApplicationBean.logger.d(activity.getClass() + " 遍历生命周期和网络请求注解耗时 " + (System.currentTimeMillis() - time)+"ms");
+			Ioc.getIoc().getLogger().d(activity.getClass() + " 遍历生命周期和网络请求注解耗时 " + (System.currentTimeMillis() - time)+"ms");
 			time = System.currentTimeMillis();
 			// 当前类和当前父类的注解
 			ArrayList<InjectInvoker> all_inject = ContextUtils.getViewInvokers(activity.getClass(), activity, Activity.class);
-			ApplicationBean.logger.d(activity.getClass() + " 遍历所有View注解耗时 " + (System.currentTimeMillis() - time)+"ms");
+			Ioc.getIoc().getLogger().d(activity.getClass() + " 遍历所有View注解耗时 " + (System.currentTimeMillis() - time)+"ms");
 			if (all_inject.size() > 0 && all_inject.get(0).getClass() == InjectLayers.class) {
 				InjectLayers injectLayers = (InjectLayers) all_inject.get(0);
 				if (injectLayers.isFull()) {// 全屏
@@ -56,12 +56,12 @@ public class InstrumentationBean extends Instrumentation {
 				InjectInvoker injectInvoker = all_inject.get(i);
 				injectInvoker.invoke(activity);
 			}
-			ApplicationBean.logger.d(activity.getClass() + " 遍历UI绑定耗时 " + (System.currentTimeMillis() - time)+"ms");
+			Ioc.getIoc().getLogger().d(activity.getClass() + " 遍历UI绑定耗时 " + (System.currentTimeMillis() - time)+"ms");
 		} catch (Exception e) {
 			StringWriter buf = new StringWriter();
 			PrintWriter w = new PrintWriter(buf);
 			e.printStackTrace(w);
-			ApplicationBean.logger.e(activity.getClass().getSimpleName() + " 方法 OnCreate里面出错了 请检查\n" + buf.toString());
+			Ioc.getIoc().getLogger().e(activity.getClass().getSimpleName() + " 方法 OnCreate里面出错了 请检查\n" + buf.toString());
 		}
 	}
 
@@ -82,7 +82,7 @@ public class InstrumentationBean extends Instrumentation {
 			StringWriter buf = new StringWriter();
 			PrintWriter w = new PrintWriter(buf);
 			e.printStackTrace(w);
-			ApplicationBean.logger.e(activity.getClass().getSimpleName() + "  里面出错了 请检查\n" + buf.toString());
+			Ioc.getIoc().getLogger().e(activity.getClass().getSimpleName() + "  里面出错了 请检查\n" + buf.toString());
 		}
 	}
 

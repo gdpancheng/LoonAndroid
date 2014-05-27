@@ -18,7 +18,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.android.pc.ioc.app.ApplicationBean;
+import com.android.pc.ioc.app.Ioc;
 import com.android.pc.ioc.image.ImageDownloader;
 import com.android.pc.ioc.image.Utils;
 import com.android.pc.ioc.inject.InjectBinder;
@@ -50,7 +50,7 @@ public class LazyAdapter<T1, T2> extends BaseAdapter {
 		this.layout_id = layout_id;
 		this.context = listView.getContext();
 		this.layoutInflater = LayoutInflater.from(context);
-		this.packageName = ApplicationBean.getApplication().getPackageName();
+		this.packageName = Ioc.getIoc().getApplication().getPackageName();
 		imageDownloader = new ImageDownloader(context, 0);
 		listView.setOnScrollListener(new AbsListView.OnScrollListener() {
 			@Override
@@ -188,10 +188,10 @@ public class LazyAdapter<T1, T2> extends BaseAdapter {
 					if (vs.value()!=ContextUtils.ID_NONE) {
 						v = view.findViewById(vs.value());
                     }else {
-                    	v = view.findViewById(ApplicationBean.getApplication().getResources().getIdentifier(field.getName(), "id", this.packageName));
+                    	v = view.findViewById(Ioc.getIoc().getApplication().getResources().getIdentifier(field.getName(), "id", this.packageName));
 					}
 					if (v == null) {
-						ApplicationBean.logger.e("变量  "+field+"  无法赋值，请检查ID和NAME");
+						Ioc.getIoc().getLogger().e("变量  "+field+"  无法赋值，请检查ID和NAME");
 	                    continue;
                     }
 					try {

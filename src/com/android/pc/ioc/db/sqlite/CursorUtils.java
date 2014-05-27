@@ -3,7 +3,7 @@ package com.android.pc.ioc.db.sqlite;
 
 import android.database.Cursor;
 
-import com.android.pc.ioc.app.ApplicationBean;
+import com.android.pc.ioc.app.Ioc;
 import com.android.pc.ioc.db.table.Column;
 import com.android.pc.ioc.db.table.DbModel;
 import com.android.pc.ioc.db.table.Finder;
@@ -57,7 +57,7 @@ public class CursorUtils {
             }
             return entity;
         } catch (Exception e) {
-        	ApplicationBean.logger.e(e);
+        	Ioc.getIoc().getLogger().e(e);
         }
 
         return null;

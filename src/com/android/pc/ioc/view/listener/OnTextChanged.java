@@ -14,7 +14,7 @@ import android.text.TextWatcher;
 import android.view.View;
 import android.widget.TextView;
 
-import com.android.pc.ioc.app.ApplicationBean;
+import com.android.pc.ioc.app.Ioc;
 import com.android.pc.ioc.core.kernel.KernelClass;
 import com.android.pc.ioc.core.kernel.KernelReflect;
 import com.android.pc.ioc.core.kernel.KernelString;
@@ -107,7 +107,7 @@ public class OnTextChanged extends OnListener implements TextWatcher {
 			}
 			((TextView) view).addTextChangedListener(this);
 		} else {
-			ApplicationBean.logger.e(view.getClass() + " 无法设置OnTextChanged 请检查InjectMethod的参数\n");
+			Ioc.getIoc().getLogger().e(view.getClass() + " 无法设置OnTextChanged 请检查InjectMethod的参数\n");
 		}
 	}
 }

@@ -6,7 +6,7 @@ import java.util.ArrayList;
 
 import android.view.View;
 
-import com.android.pc.ioc.app.ApplicationBean;
+import com.android.pc.ioc.app.Ioc;
 import com.android.pc.ioc.inject.InjectBefore;
 import com.android.pc.ioc.invoker.InjectInvoker;
 import com.android.pc.ioc.util.ContextUtils;
@@ -41,7 +41,7 @@ public class Handler_Inject {
 				StringWriter buf = new StringWriter();
 				PrintWriter w = new PrintWriter(buf);
 				e.printStackTrace(w);
-				ApplicationBean.logger.e(object.getClass().getSimpleName() + "  里面出错了 请检查\n" + buf.toString());
+				Ioc.getIoc().getLogger().e(object.getClass().getSimpleName() + "  里面出错了 请检查\n" + buf.toString());
 			}
 		}
 		//-------------------------------------------------------------------------------------------------
@@ -50,7 +50,7 @@ public class Handler_Inject {
 		for (InjectInvoker injectInvoker : arrayList) {
 			injectInvoker.invoke(object);
 		}
-		ApplicationBean.logger.d(object.getClass() + " UI加载耗时 " + (System.currentTimeMillis() - time));
+		Ioc.getIoc().getLogger().d(object.getClass() + " UI加载耗时 " + (System.currentTimeMillis() - time));
 	}
 	
 	public static void injectOrther(Object object, View view) {
@@ -59,6 +59,6 @@ public class Handler_Inject {
 		for (InjectInvoker injectInvoker : arrayList) {
 			injectInvoker.invoke(object);
 		}
-		ApplicationBean.logger.d(object.getClass() + " UI加载耗时 " + (System.currentTimeMillis() - time));
+		Ioc.getIoc().getLogger().d(object.getClass() + " UI加载耗时 " + (System.currentTimeMillis() - time));
 	}
 }

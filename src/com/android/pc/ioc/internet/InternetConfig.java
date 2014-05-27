@@ -4,6 +4,8 @@ package com.android.pc.ioc.internet;
 import java.io.File;
 import java.util.HashMap;
 
+import com.android.pc.ioc.internet.FastHttp.Progress;
+
 /*
  * Author: pan Email:gdpancheng@gmail.com
  * Created Date:2013-5-20
@@ -13,7 +15,6 @@ import java.util.HashMap;
  * History:
  */
 public class InternetConfig {
-
 
 	final public static int request_post = 0;
 	final public static int request_get = 1;
@@ -68,7 +69,7 @@ public class InternetConfig {
 	/**
 	 * 链接超时
 	 */
-	private int timeout = 5000;
+	private int timeout = 30000;
 	/**
 	 * 表单提交的时候 上传的文件集合
 	 */
@@ -90,6 +91,10 @@ public class InternetConfig {
 	 * 否则 运行在后台进程 需要用handler来更新Ui
 	 */
 	private boolean front = true;
+	
+	private long all_length = 0;
+	
+	private Progress progress;
 
 	public static InternetConfig defaultConfig() {
 		InternetConfig defaultConfig = new InternetConfig();
@@ -243,5 +248,21 @@ public class InternetConfig {
 
 	public void setResult_type(int result_type) {
 		this.result_type = result_type;
+	}
+
+	public Progress getProgress() {
+		return progress;
+	}
+
+	public void setProgress(Progress progress) {
+		this.progress = progress;
+	}
+
+	public long getAll_length() {
+		return all_length;
+	}
+
+	public void setAll_length(long all_length) {
+		this.all_length = all_length;
 	}
 }

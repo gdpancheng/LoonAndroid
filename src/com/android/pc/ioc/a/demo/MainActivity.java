@@ -8,6 +8,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.pc.ioc.app.Ioc;
 import com.android.pc.ioc.inject.InjectAll;
 import com.android.pc.ioc.inject.InjectBefore;
 import com.android.pc.ioc.inject.InjectBinder;
@@ -28,10 +29,10 @@ import com.wash.activity.R;
 @InjectLayer(value = R.layout.activity_main, parent = R.id.common)
 public class MainActivity extends BaseActivity {
 
-	//四种写法任选一种
+	// 四种写法任选一种
 	// --------------------------------------------------------------------------------------
 	// 第一种写法(内部类 全局定义点击事件)
-	@InjectView(binders=@InjectBinder(method = "click", listeners = { OnClick.class }))
+	@InjectView(binders = @InjectBinder(method = "click", listeners = { OnClick.class }))
 	Button next, next3, next4, next2;
 	@InjectView
 	TextView test;
@@ -45,7 +46,7 @@ public class MainActivity extends BaseActivity {
 	Views v;
 
 	class Views {
-		Button next, next3, next4, next2,next5;
+		Button next, next3, next4, next2, next5;
 		TextView test;
 		String action_settings;
 		Drawable ic_launcher;
@@ -72,17 +73,15 @@ public class MainActivity extends BaseActivity {
 
 	@InjectBefore
 	void call() {
-		MeApplication.logger.s("执行在oncreat之前");
+		Ioc.getIoc().getLogger().s("执行在oncreat之前");
 	}
 
 	// 这个注解是在所有组件自动绑定以后自动调用
 	@InjectInit
-	void init() {
-		MeApplication.logger.s("子类的初始化" + v2.ic_launcher);
+	private void init() {
+		Ioc.getIoc().getLogger().s("子类的初始化" + v2.ic_launcher);
 		v.test.setText("初始化完成，第一个页面");
-		System.out.println("activity生命周期oncreat" + super.v.tv_top);
 	}
-	
 
 	// 支持由参数和无参数 即click(View view)或者click() 当然click名字必须对于变量注解中的method = "click"
 	private void click(View view) {
@@ -118,6 +117,6 @@ public class MainActivity extends BaseActivity {
 
 	@InjectResume
 	private void resume() {
-		System.out.println("activity生命周期会走这里哦"+ super.v.tv_top);
+		System.out.println("activity生命周期会走这里哦" + super.v.tv_top);
 	}
 }

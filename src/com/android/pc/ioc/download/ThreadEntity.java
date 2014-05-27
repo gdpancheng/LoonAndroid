@@ -1,6 +1,6 @@
 package com.android.pc.ioc.download;
 
-import com.android.pc.ioc.app.ApplicationBean;
+import com.android.pc.ioc.app.Ioc;
 import com.android.pc.ioc.db.annotation.Foreign;
 import com.android.pc.ioc.db.sqlite.WhereBuilder;
 
@@ -62,7 +62,7 @@ public class ThreadEntity {
 		this.fileEntity = fileEntity;
 	}
 	public static void delete(int id) {
-		ApplicationBean.getApplication().getDb().delete(ThreadEntity.class, WhereBuilder.b("ThreadId","=",id));
+		Ioc.getIoc().getDb().delete(ThreadEntity.class, WhereBuilder.b("ThreadId","=",id));
 	}
 	@Override
     public String toString() {

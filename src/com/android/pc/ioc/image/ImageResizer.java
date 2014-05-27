@@ -13,7 +13,7 @@ import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.widget.ImageView;
 
-import com.android.pc.ioc.app.ApplicationBean;
+import com.android.pc.ioc.app.Ioc;
 import com.android.pc.ioc.image.ImageLoadManager.Coding;
 import com.android.pc.util.Handler_System;
 
@@ -82,7 +82,7 @@ public class ImageResizer extends ImageWorker {
 	 * @return
 	 */
 	private Bitmap processBitmap(int resId) {
-		ApplicationBean.logger.d("图片下载开始 - " + resId);
+		Ioc.getIoc().getLogger().d("图片下载开始 - " + resId);
 		return decodeSampledBitmapFromResource(mResources, resId, mImageWidth, mImageHeight, getImageCache());
 	}
 
@@ -132,7 +132,21 @@ public class ImageResizer extends ImageWorker {
 
 		final BitmapFactory.Options options = new BitmapFactory.Options();
 		options.inJustDecodeBounds = true;
-		BitmapFactory.decodeFile(filename, options);
+		
+		Coding coding = ImageLoadManager.instance().getCoding();
+		if (coding == null) {
+			BitmapFactory.decodeFile(filename, options);
+        }else {
+        	try {
+	            InputStream in = new FileInputStream(filename);
+	            byte[] buffer = coding.decodeJPG(in.available(), in);
+	            in.close();
+	            BitmapFactory.decodeByteArray(buffer, 0, buffer.length, options);
+	            buffer = null;
+            } catch (Exception e) {
+	            e.printStackTrace();
+            } 
+		}
 
 		options.inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight);
 
@@ -141,14 +155,14 @@ public class ImageResizer extends ImageWorker {
 		}
 
 		options.inJustDecodeBounds = false;
-
-		Coding coding = ImageLoadManager.instance().getCoding();
+		
 		if (coding == null) {
 			return BitmapFactory.decodeFile(filename, options);
 		}
 		try {
 			InputStream in = new FileInputStream(filename);
 			byte[] buffer = coding.decodeJPG(in.available(), in);
+			 in.close();
 			return BitmapFactory.decodeByteArray(buffer, 0, buffer.length, options);
 		} catch (Exception e) {
 			e.printStackTrace();

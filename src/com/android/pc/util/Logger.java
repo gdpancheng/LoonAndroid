@@ -5,7 +5,7 @@ import java.util.Hashtable;
 
 import android.util.Log;
 
-import com.android.pc.ioc.app.ApplicationBean;
+import com.android.pc.ioc.app.Ioc;
 import com.android.pc.ioc.core.kernel.KernelClass;
 
 /**
@@ -22,7 +22,7 @@ public class Logger {
 
 	private Logger(String name) {
 		this.name = name;
-		Class clazz = KernelClass.forName(ApplicationBean.getApplication().getPackageName() + "." + "BuildConfig");
+		Class clazz = KernelClass.forName(Ioc.getIoc().getApplication().getPackageName() + "." + "BuildConfig");
 		if (null == clazz) {
 			debug = false;
 			return;

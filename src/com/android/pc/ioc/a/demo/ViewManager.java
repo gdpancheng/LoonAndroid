@@ -6,7 +6,6 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.pc.ioc.app.ApplicationBean;
 import com.android.pc.ioc.inject.InjectBinder;
 import com.android.pc.ioc.inject.InjectView;
 import com.android.pc.ioc.view.listener.OnClick;
@@ -25,13 +24,13 @@ public class ViewManager {
 	Button button;
 	
 	public View getView() {
-		LayoutInflater layoutInflater = LayoutInflater.from(ApplicationBean.getApplication());
+		LayoutInflater layoutInflater = LayoutInflater.from(MeApplication.app);
 		View v = layoutInflater.inflate(R.layout.activity_main5, null);
 		Handler_Inject.injectOrther(this, v);
 		return v;
 	}
 	
 	private void click(){
-		Toast.makeText(ApplicationBean.getApplication(), "这个注解 不是在acitivity中哦", Toast.LENGTH_SHORT).show();
+		Toast.makeText(MeApplication.app, "这个注解 不是在acitivity中哦", Toast.LENGTH_SHORT).show();
 	}
 }

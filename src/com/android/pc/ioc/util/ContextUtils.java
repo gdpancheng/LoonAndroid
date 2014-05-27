@@ -15,7 +15,7 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 
-import com.android.pc.ioc.app.ApplicationBean;
+import com.android.pc.ioc.app.Ioc;
 import com.android.pc.ioc.core.kernel.KernelString;
 import com.android.pc.ioc.inject.InjectAll;
 import com.android.pc.ioc.inject.InjectBefore;
@@ -304,7 +304,7 @@ public class ContextUtils {
 			// 如果是Activity InjectLayer没有设置 则提示错误
 			if (isActivity && injectLayer == null && injectPLayer == null) {
 				if (clazz == template) {
-					ApplicationBean.logger.d(template + " 无法获取到对应layout的ID 请检查injectLayer或者injectPLayer是否设置\n");
+					Ioc.getIoc().getLogger().d(template + " 无法获取到对应layout的ID 请检查injectLayer或者injectPLayer是否设置\n");
 				}
 			}
 			// 获得当前类的所有的字段
@@ -325,7 +325,7 @@ public class ContextUtils {
 								id = 0;
 								id = InjectViewUtils.getResouceId("id", allFields[j].getName());
 							} catch (Exception e) {
-								ApplicationBean.logger.e("内部类 " + template + " 变量 " + allFields[j].getName() + " 无法获取到对应的ID 请检查InjectView的参数\n");
+								Ioc.getIoc().getLogger().e("内部类 " + template + " 变量 " + allFields[j].getName() + " 无法获取到对应的ID 请检查InjectView的参数\n");
 							}
 							InjectViews injectViews = new InjectViews(id, isActivity ? InjectViewUtils.Inject_Excutors[0] : InjectViewUtils.Inject_Excutors[1].setObject(obj), allFields[j], false, false, false, type, field);
 
@@ -359,7 +359,7 @@ public class ContextUtils {
 								}
 							}
 						} catch (Exception e) {
-							ApplicationBean.logger.e(template + " 变量" + allFields[j].getName() + "|" + allFields[j].getType() + "无法获取到对应的ID 请检查InjectView的参数\n");
+							Ioc.getIoc().getLogger().e(template + " 变量" + allFields[j].getName() + "|" + allFields[j].getType() + "无法获取到对应的ID 请检查InjectView的参数\n");
 							e.printStackTrace();
 						}
 					}
@@ -374,7 +374,7 @@ public class ContextUtils {
 						try {
 							id = InjectViewUtils.getResouceId("id", field.getName());
 						} catch (Exception e) {
-							ApplicationBean.logger.e(template + " 变量" + field.getName() + "无法获取到对应的ID 请检查InjectView的参数\n");
+							Ioc.getIoc().getLogger().e(template + " 变量" + field.getName() + "无法获取到对应的ID 请检查InjectView的参数\n");
 							e.printStackTrace();
 						}
 					}
@@ -414,7 +414,7 @@ public class ContextUtils {
 						try {
 							id = InjectViewUtils.getResouceId(KernelString.capitalize(field.getType().getSimpleName()), field.getName());
 						} catch (Exception e) {
-							ApplicationBean.logger.e(template + " 变量" + field.getName() + "无法获取到对应的ID 请检查InjectView的参数\n");
+							Ioc.getIoc().getLogger().e(template + " 变量" + field.getName() + "无法获取到对应的ID 请检查InjectView的参数\n");
 							e.printStackTrace();
 						}
 					}
@@ -488,10 +488,11 @@ public class ContextUtils {
 	}
 
 	public static void getFactoryProvider() {
+
+		PackageManager pManager = Ioc.getIoc().getApplication().getPackageManager();
 		Class<?>[] classes = null;
-		PackageManager pManager = ApplicationBean.getApplication().getPackageManager();
 		try {
-			PackageInfo packageInfo = pManager.getPackageInfo(ApplicationBean.getApplication().getPackageName(), PackageManager.GET_ACTIVITIES);
+			PackageInfo packageInfo = pManager.getPackageInfo(Ioc.getIoc().getApplication().getPackageName(), PackageManager.GET_ACTIVITIES);
 			ActivityInfo[] activityInfos = packageInfo.activities;
 			classes = new Class[activityInfos.length];
 			for (int i = 0; i < activityInfos.length; i++) {
@@ -511,8 +512,8 @@ public class ContextUtils {
 
 		for (int i = 0; i < classes.length; i++) {
 			Class<?> clazz = classes[i];
-			ContextUtils.getViewInvokers(clazz, null, Activity.class);
 			ContextUtils.getCreateInvokers(clazz);
+			ContextUtils.getViewInvokers(clazz, null, Activity.class);
 		}
 	}
 }

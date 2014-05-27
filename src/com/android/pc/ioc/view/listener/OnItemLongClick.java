@@ -12,7 +12,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ListView;
 
-import com.android.pc.ioc.app.ApplicationBean;
+import com.android.pc.ioc.app.Ioc;
 import com.android.pc.ioc.core.kernel.KernelDyna;
 
 /**
@@ -45,7 +45,7 @@ public class OnItemLongClick extends OnListener implements OnItemLongClickListen
 		if (view instanceof ListView) {
 			((ListView) view).setOnItemLongClickListener(this);
 		}else {
-			ApplicationBean.logger.e(view.getClass() +" 无法设置onItemLongClick 请检查InjectMethod的参数\n");
+			Ioc.getIoc().getLogger().e(view.getClass() +" 无法设置onItemLongClick 请检查InjectMethod的参数\n");
 		}
 	}
 

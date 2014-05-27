@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import android.widget.AbsListView;
+import android.widget.ImageView;
 import android.widget.ListView;
 
 import com.android.pc.ioc.image.ImageDownloader;
@@ -49,8 +50,12 @@ public class SecondActivity extends BaseActivity {
 		// --------------------------------------------------------------------------------------------------
 		// 如果不传ImageDownloader进去 则调用Adapter类的图片下载
 		imageDownloader = new ImageDownloader(this, 200);
-		MyAdapter adapter = new MyAdapter(lt_demo, dataList, R.layout.list_item);
-		adapter.setImageDownloader(imageDownloader);
+		MyAdapter adapter = new MyAdapter(lt_demo, dataList, R.layout.list_item){
+			@Override
+			public void download(ImageView view, String url) {
+			    super.download(view, url);
+			}
+		};
 		lt_demo.setAdapter(adapter);
 		// 滑动停止才开始加载
 		lt_demo.setOnScrollListener(new AbsListView.OnScrollListener() {

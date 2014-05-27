@@ -13,7 +13,7 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.net.Uri;
 import android.widget.RemoteViews;
 
-import com.android.pc.ioc.app.ApplicationBean;
+import com.android.pc.ioc.app.Ioc;
 
 public class NotificationHelper {
 
@@ -52,7 +52,7 @@ public class NotificationHelper {
 		mDownProgrNotif.contentView = mRemoteViews;
 		Intent intent = null;
 		if (clazz != null) {
-			intent = new Intent(ApplicationBean.getApplication(), clazz);
+			intent = new Intent(Ioc.getIoc().getApplication(), clazz);
 		}
 		mDownProgrNotif.contentIntent = PendingIntent.getService(mContext, 0, intent == null ? new Intent() : intent, 0);
 		// mContextNotificationManager.notify(id, mDownProgrNotif);
@@ -79,7 +79,7 @@ public class NotificationHelper {
 	public void downShowNotification(String text) {
 		Intent intent = new Intent();
 		if (clazz != null) {
-			intent = new Intent(ApplicationBean.getApplication(), clazz);
+			intent = new Intent(Ioc.getIoc().getApplication(), clazz);
 			intent.addCategory(Intent.CATEGORY_LAUNCHER);
 			intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
 		}
@@ -103,7 +103,7 @@ public class NotificationHelper {
 		notfi.flags |= Notification.FLAG_ONGOING_EVENT;
 		Intent intent = null;
 		if (clazz != null) {
-			intent = new Intent(ApplicationBean.getApplication(), clazz);
+			intent = new Intent(Ioc.getIoc().getApplication(), clazz);
 		}
 		PendingIntent pendingIntent = PendingIntent.getService(mContext, 0, intent == null ? new Intent() : intent, 0);
 		notfi.setLatestEventInfo(mContext, mPackageHelper.getAppName(), text, pendingIntent);
@@ -139,9 +139,9 @@ public class NotificationHelper {
 		private PackageManager pm;
 
 		public PackageHelper() {
-			pm = ApplicationBean.getApplication().getPackageManager();
+			pm = Ioc.getIoc().getApplication().getPackageManager();
 			try {
-				info = pm.getPackageInfo(ApplicationBean.getApplication().getPackageName(), 0);
+				info = pm.getPackageInfo(Ioc.getIoc().getApplication().getPackageName(), 0);
 			} catch (NameNotFoundException e) {
 				e.printStackTrace();
 			}

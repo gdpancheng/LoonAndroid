@@ -7,7 +7,7 @@ import java.util.Properties;
 
 import android.content.Context;
 
-import com.android.pc.ioc.app.ApplicationBean;
+import com.android.pc.ioc.app.Ioc;
 
 /**
  * 配置文件工具类
@@ -27,10 +27,10 @@ public class Handler_Properties {
 	public static Properties loadProperties(String fileName, String dirName) {
 		Properties props = new Properties();
 		try {
-			int id = ApplicationBean.getApplication().getResources().getIdentifier(fileName, dirName, ApplicationBean.getApplication().getPackageName());
-			props.load(ApplicationBean.getApplication().getResources().openRawResource(id));
+			int id = Ioc.getIoc().getApplication().getResources().getIdentifier(fileName, dirName, Ioc.getIoc().getApplication().getPackageName());
+			props.load(Ioc.getIoc().getApplication().getResources().openRawResource(id));
 		} catch (Exception e) {
-			ApplicationBean.logger.e(e.toString());
+			Ioc.getIoc().getLogger().e(e.toString());
 		}
 		return props;
 	}
@@ -48,7 +48,7 @@ public class Handler_Properties {
 			FileInputStream s = new FileInputStream(file);
 			properties.load(s);
 		} catch (Exception e) {
-			ApplicationBean.logger.e(e.toString());
+			Ioc.getIoc().getLogger().e(e.toString());
 		}
 		return properties;
 	}
@@ -66,7 +66,7 @@ public class Handler_Properties {
 			FileOutputStream s = new FileOutputStream(file, false);
 			properties.store(s, "");
 		} catch (Exception e) {
-			ApplicationBean.logger.e(e.toString());
+			Ioc.getIoc().getLogger().e(e.toString());
 		}
 	}
 
@@ -80,10 +80,10 @@ public class Handler_Properties {
 	public static Properties loadConfigNoDirs(String fileName) {
 		Properties properties = new Properties();
 		try {
-			FileInputStream s = ApplicationBean.getApplication().openFileInput(fileName);
+			FileInputStream s = Ioc.getIoc().getApplication().openFileInput(fileName);
 			properties.load(s);
 		} catch (Exception e) {
-			ApplicationBean.logger.e(e.toString());
+			Ioc.getIoc().getLogger().e(e.toString());
 		}
 		return properties;
 	}
@@ -98,10 +98,10 @@ public class Handler_Properties {
 	 */
 	public static void saveConfigNoDirs(String fileName, Properties properties) {
 		try {
-			FileOutputStream s = ApplicationBean.getApplication().openFileOutput(fileName, Context.MODE_PRIVATE);
+			FileOutputStream s = Ioc.getIoc().getApplication().openFileOutput(fileName, Context.MODE_PRIVATE);
 			properties.store(s, "");
 		} catch (Exception e) {
-			ApplicationBean.logger.e(e.toString());
+			Ioc.getIoc().getLogger().e(e.toString());
 		}
 	}
 
@@ -109,10 +109,10 @@ public class Handler_Properties {
 
 		Properties properties = new Properties();
 		try {
-			InputStream is = ApplicationBean.getApplication().getAssets().open(fileName);
+			InputStream is = Ioc.getIoc().getApplication().getAssets().open(fileName);
 			properties.load(is);
 		} catch (Exception e) {
-			ApplicationBean.logger.e(e.toString());
+			Ioc.getIoc().getLogger().e(e.toString());
 		}
 		return properties;
 	}

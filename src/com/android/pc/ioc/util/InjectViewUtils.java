@@ -9,7 +9,7 @@ import android.app.Dialog;
 import android.view.LayoutInflater;
 import android.view.View;
 
-import com.android.pc.ioc.app.ApplicationBean;
+import com.android.pc.ioc.app.Ioc;
 import com.android.pc.ioc.core.kernel.KernelClass;
 import com.android.pc.ioc.core.kernel.KernelObject;
 import com.android.pc.ioc.core.kernel.KernelString;
@@ -82,7 +82,7 @@ public class InjectViewUtils {
 			try {
 				object.setContentView(id);
 			} catch (Exception e) {
-				ApplicationBean.logger.e(object.getClass().getSimpleName() + " setContentView() 出错 请检查InjectLayer的布局\n");
+				Ioc.getIoc().getLogger().e(object.getClass().getSimpleName() + " setContentView() 出错 请检查InjectLayer的布局\n");
 				e.printStackTrace();
 			}
 		}
@@ -97,7 +97,7 @@ public class InjectViewUtils {
 			try {
 				return object.findViewById(id);
 			} catch (Exception e) {
-				ApplicationBean.logger.e(object.getClass().getSimpleName() + " findViewById() 出错 请检查InjectView的参数\n");
+				Ioc.getIoc().getLogger().e(object.getClass().getSimpleName() + " findViewById() 出错 请检查InjectView的参数\n");
 				e.printStackTrace();
 			}
 			return null;

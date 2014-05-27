@@ -13,7 +13,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.text.TextUtils;
 
-import com.android.pc.ioc.app.ApplicationBean;
+import com.android.pc.ioc.app.Ioc;
 import com.android.pc.ioc.db.table.DbModel;
 import com.android.pc.ioc.db.table.Id;
 import com.android.pc.ioc.db.table.KeyValue;
@@ -219,7 +219,7 @@ public class DbUtils {
 
 			for (Object entity : entities) {
 				if (!saveBindingIdWithoutTransaction(entity)) {
-					ApplicationBean.logger.e("saveBindingId error, transaction will not commit!");
+					Ioc.getIoc().getLogger().e("saveBindingId error, transaction will not commit!");
 				}
 			}
 
@@ -269,7 +269,7 @@ public class DbUtils {
 
 			setTransactionSuccessful();
 		} catch (Exception e) {
-			ApplicationBean.logger.e(e);
+			Ioc.getIoc().getLogger().e(e);
 		} finally {
 			endTransaction();
 		}
@@ -576,7 +576,7 @@ public class DbUtils {
 				try {
 					dropDb();
 				} catch (Exception e) {
-					ApplicationBean.logger.e(e);
+					Ioc.getIoc().getLogger().e(e);
 				}
 			}
 		}
@@ -643,7 +643,7 @@ public class DbUtils {
 		try {
 			execNonQuery(SqlInfoBuilder.buildDeleteSqlInfo(entity));
 		} catch (Exception e) {
-			ApplicationBean.logger.e(e);
+			Ioc.getIoc().getLogger().e(e);
 		}
 	}
 
@@ -651,7 +651,7 @@ public class DbUtils {
 		try {
 			execNonQuery(SqlInfoBuilder.buildUpdateSqlInfo(this, entity));
 		} catch (Exception e) {
-			ApplicationBean.logger.e(e);
+			Ioc.getIoc().getLogger().e(e);
 		}
 	}
 
@@ -663,7 +663,7 @@ public class DbUtils {
 				contentValues.put(kv.getKey(), kv.getValue().toString());
 			}
 		} else {
-			ApplicationBean.logger.w("List<KeyValue> is empty or ContentValues is empty!");
+			Ioc.getIoc().getLogger().w("List<KeyValue> is empty or ContentValues is empty!");
 		}
 	}
 
@@ -706,7 +706,7 @@ public class DbUtils {
 					try {
 						execNonQuery("DROP TABLE " + cursor.getString(0));
 					} catch (Exception e) {
-						ApplicationBean.logger.e(e);
+						Ioc.getIoc().getLogger().e(e);
 					}
 				}
 			}
@@ -725,7 +725,7 @@ public class DbUtils {
 	// /////////////////////////////////// exec sql /////////////////////////////////////////////////////
 	private void debugSql(String sql) {
 		if (config != null && debug) {
-			ApplicationBean.logger.d(sql);
+			Ioc.getIoc().getLogger().d(sql);
 		}
 	}
 
@@ -756,7 +756,7 @@ public class DbUtils {
 				database.execSQL(sqlInfo.getSql());
 			}
 		} catch (Exception e) {
-			ApplicationBean.logger.e(e);
+			Ioc.getIoc().getLogger().e(e);
 		}
 	}
 
@@ -765,7 +765,7 @@ public class DbUtils {
 		try {
 			database.execSQL(sql);
 		} catch (Exception e) {
-			ApplicationBean.logger.e(e);
+			Ioc.getIoc().getLogger().e(e);
 		}
 	}
 	
@@ -774,7 +774,7 @@ public class DbUtils {
 			Table table = Table.get(clazz);
 			database.delete(table.getTableName(), null, null);
 		} catch (Exception e) {
-			ApplicationBean.logger.e(e);
+			Ioc.getIoc().getLogger().e(e);
 		}
 	}
 
@@ -783,7 +783,7 @@ public class DbUtils {
 		try {
 			return database.rawQuery(sqlInfo.getSql(), sqlInfo.getBindArgsAsStrArray());
 		} catch (Exception e) {
-			ApplicationBean.logger.e(e);
+			Ioc.getIoc().getLogger().e(e);
 		}
 		return null;
 	}
@@ -793,7 +793,7 @@ public class DbUtils {
 		try {
 			return database.rawQuery(sql, null);
 		} catch (Exception e) {
-			ApplicationBean.logger.e(e);
+			Ioc.getIoc().getLogger().e(e);
 		}
 		return null;
 	}

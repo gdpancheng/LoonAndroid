@@ -16,7 +16,7 @@ import android.view.ViewGroup.LayoutParams;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 
-import com.android.pc.ioc.app.ApplicationBean;
+import com.android.pc.ioc.app.Ioc;
 import com.android.pc.ioc.core.kernel.KernelReflect;
 import com.android.pc.ioc.inject.InjectView;
 import com.android.pc.ioc.util.InjectExcutor;
@@ -85,7 +85,7 @@ public class InjectViews extends InjectInvoker implements OnHeaderRefreshListene
 			view = injectExcutor.findViewById((Activity) beanObject, id);
 		}
 		if (view == null) {
-			ApplicationBean.logger.e(beanObject.getClass().getSimpleName() + " 对象 " + field.getName() + " ID:" + id + "不对 无法查找到view 请检查\n");
+			Ioc.getIoc().getLogger().e(beanObject.getClass().getSimpleName() + " 对象 " + field.getName() + " ID:" + id + "不对 无法查找到view 请检查\n");
 			return;
 		}
 		if (isAsy && ListView.class.isAssignableFrom(view.getClass())) {
@@ -107,7 +107,7 @@ public class InjectViews extends InjectInvoker implements OnHeaderRefreshListene
 			}
 		}
 		if (view == null || !field.getType().isAssignableFrom(view.getClass())) {
-			ApplicationBean.logger.e(beanObject.getClass().getSimpleName() + " 对象 " + field.getName() + "赋值不对 请检查\n");
+			Ioc.getIoc().getLogger().e(beanObject.getClass().getSimpleName() + " 对象 " + field.getName() + "赋值不对 请检查\n");
 			return;
 		}
 		try {
@@ -198,9 +198,9 @@ public class InjectViews extends InjectInvoker implements OnHeaderRefreshListene
 			method.invoke(object, InjectView.PULL);
 		} catch (Exception e) {
 			if (e.getMessage() != null && e.getMessage().indexOf("wrong number of arguments") != -1) {
-				ApplicationBean.logger.e(object.getClass().getSimpleName() + " 方法 " + method + "参数不对 请检查\n");
+				Ioc.getIoc().getLogger().e(object.getClass().getSimpleName() + " 方法 " + method + "参数不对 请检查\n");
 			} else if (e instanceof InvocationTargetException) {
-				ApplicationBean.logger.e(object.getClass().getSimpleName() + " 方法 " + method + "里面出错了 请检查\n");
+				Ioc.getIoc().getLogger().e(object.getClass().getSimpleName() + " 方法 " + method + "里面出错了 请检查\n");
 				e.getCause().printStackTrace();
 			}
 		}
@@ -216,9 +216,9 @@ public class InjectViews extends InjectInvoker implements OnHeaderRefreshListene
 			method.invoke(object, InjectView.DOWN);
 		} catch (Exception e) {
 			if (e.getMessage() != null && e.getMessage().indexOf("wrong number of arguments") != -1) {
-				ApplicationBean.logger.e(object.getClass().getSimpleName() + " 方法 " + method + "参数不对 请检查\n");
+				Ioc.getIoc().getLogger().e(object.getClass().getSimpleName() + " 方法 " + method + "参数不对 请检查\n");
 			} else if (e instanceof InvocationTargetException) {
-				ApplicationBean.logger.e(object.getClass().getSimpleName() + " 方法 " + method + "里面出错了 请检查\n");
+				Ioc.getIoc().getLogger().e(object.getClass().getSimpleName() + " 方法 " + method + "里面出错了 请检查\n");
 				e.getCause().printStackTrace();
 			}
 		}

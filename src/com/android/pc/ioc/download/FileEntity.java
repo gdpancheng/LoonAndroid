@@ -2,7 +2,7 @@ package com.android.pc.ioc.download;
 
 import java.util.List;
 
-import com.android.pc.ioc.app.ApplicationBean;
+import com.android.pc.ioc.app.Ioc;
 import com.android.pc.ioc.db.annotation.Finder;
 import com.android.pc.ioc.db.annotation.Transient;
 import com.android.pc.ioc.db.sqlite.Selector;
@@ -138,14 +138,14 @@ public class FileEntity {
 
 		Selector selector = Selector.from(FileEntity.class);
 		selector.select(" * ").where(WhereBuilder.b("url", "=", url));
-		List<FileEntity> fileEntities = ApplicationBean.getApplication().getDb().findAll(selector);
+		List<FileEntity> fileEntities = Ioc.getIoc().getDb().findAll(selector);
 		if (fileEntities == null || fileEntities.size() == 0) {
 			return null;
 		}
 		FileEntity entity = fileEntities.get(0);
 		Selector selector2 = Selector.from(ThreadEntity.class);
 		selector2.select(" * ").where(WhereBuilder.b("ThreadId", "=", entity.getId()));
-		List<ThreadEntity> entities = ApplicationBean.getApplication().getDb().findAll(selector2);
+		List<ThreadEntity> entities = Ioc.getIoc().getDb().findAll(selector2);
 		entity.setThreadsEntities(entities);
 		return entity;
 	}
@@ -153,25 +153,25 @@ public class FileEntity {
 	public static List<FileEntity> getAllFinishEntity() {
 		Selector selector = Selector.from(FileEntity.class);
 		selector.select(" * ").where(WhereBuilder.b("isSucess", "=", true));
-		List<FileEntity> fileEntities = ApplicationBean.getApplication().getDb().findAll(selector);
+		List<FileEntity> fileEntities = Ioc.getIoc().getDb().findAll(selector);
 		return fileEntities;
 	}
 
 	public static List<FileEntity> getAllFailureEntity() {
 		Selector selector = Selector.from(FileEntity.class);
 		selector.select(" * ").where(WhereBuilder.b("isSucess", "=", false));
-		List<FileEntity> fileEntities = ApplicationBean.getApplication().getDb().findAll(selector);
+		List<FileEntity> fileEntities = Ioc.getIoc().getDb().findAll(selector);
 		return fileEntities;
 	}
 
 	public static List<FileEntity> getAllEntity() {
 		Selector selector = Selector.from(FileEntity.class);
-		List<FileEntity> fileEntities = ApplicationBean.getApplication().getDb().findAll(selector);
+		List<FileEntity> fileEntities = Ioc.getIoc().getDb().findAll(selector);
 		return fileEntities;
 	}
 
 	public void update() {
-		ApplicationBean.getApplication().getDb().update(this);
+		Ioc.getIoc().getDb().update(this);
 	}
 
 	public String getReal_url() {

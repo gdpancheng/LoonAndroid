@@ -13,7 +13,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 
-import com.android.pc.ioc.app.ApplicationBean;
+import com.android.pc.ioc.app.Ioc;
 import com.android.pc.ioc.core.kernel.KernelClass;
 import com.android.pc.ioc.core.kernel.KernelReflect;
 import com.android.pc.ioc.core.kernel.KernelString;
@@ -39,7 +39,7 @@ public class OnItemSelected extends OnListener implements OnItemSelectedListener
 	public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
 		// TODO Auto-generated method stub
 		if (arg0 == null || arg1 == null) {
-			ApplicationBean.logger.d(" 无法调用OnItemSelected(如果没有对程序造成影响请忽略，这是个未找出问题的错误)\n");
+			Ioc.getIoc().getLogger().d(" 无法调用OnItemSelected(如果没有对程序造成影响请忽略，这是个未找出问题的错误)\n");
 			return;
 		}
 		invoke(arg0, arg1, arg2, arg3);
@@ -81,7 +81,7 @@ public class OnItemSelected extends OnListener implements OnItemSelectedListener
 			}
 			((AdapterView) view).setOnItemSelectedListener(this);
 		} else {
-			ApplicationBean.logger.e(view.getClass() + " 无法设置OnItemSelected 请检查InjectMethod的参数\n");
+			Ioc.getIoc().getLogger().e(view.getClass() + " 无法设置OnItemSelected 请检查InjectMethod的参数\n");
 		}
 	}
 

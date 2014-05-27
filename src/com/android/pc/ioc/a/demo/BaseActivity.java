@@ -1,10 +1,12 @@
 package com.android.pc.ioc.a.demo;
 
 import android.graphics.Color;
+import android.support.v4.app.FragmentActivity;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.pc.ioc.app.Ioc;
 import com.android.pc.ioc.inject.InjectAll;
 import com.android.pc.ioc.inject.InjectInit;
 import com.android.pc.ioc.inject.InjectListener;
@@ -15,7 +17,7 @@ import com.android.pc.util.Handler_TextStyle;
 import com.wash.activity.R;
 
 @InjectPLayer(R.layout.activity_com)
-public abstract class BaseActivity extends CommonActivity {
+public  class BaseActivity extends FragmentActivity {
 	
 	@InjectAll
 	Views v;
@@ -26,7 +28,7 @@ public abstract class BaseActivity extends CommonActivity {
 	
 	@InjectInit
 	private void init() {
-		MeApplication.logger.s("公共类的初始化");
+		Ioc.getIoc().getLogger().s("公共类的初始化");
 		v.tv_top.setText("父类对顶部文字进行填充");
 	}
 

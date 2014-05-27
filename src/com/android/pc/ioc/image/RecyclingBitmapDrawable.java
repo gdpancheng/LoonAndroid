@@ -20,7 +20,7 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 
-import com.android.pc.ioc.app.ApplicationBean;
+import com.android.pc.ioc.app.Ioc;
 
 /**
  * A BitmapDrawable that keeps track of whether it is being displayed or cached. When the drawable is no longer being displayed or cached, {@link android.graphics.Bitmap#recycle() recycle()} will be called on this drawable's bitmap.
@@ -85,7 +85,7 @@ public class RecyclingBitmapDrawable extends BitmapDrawable {
 		// If the drawable cache and display ref counts = 0, and this drawable
 		// has been displayed, then recycle
 		if (mCacheRefCount <= 0 && mDisplayRefCount <= 0 && mHasBeenDisplayed && hasValidBitmap()) {
-			ApplicationBean.logger.d("No longer being used or cached so recycling. " + toString());
+			Ioc.getIoc().getLogger().d("No longer being used or cached so recycling. " + toString());
 			getBitmap().recycle();
 		}
 		// END_INCLUDE(check_state)

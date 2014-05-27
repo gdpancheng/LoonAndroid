@@ -2,7 +2,7 @@ package com.android.pc.ioc.util;
 
 import android.graphics.drawable.Drawable;
 
-import com.android.pc.ioc.app.ApplicationBean;
+import com.android.pc.ioc.app.Ioc;
 import com.android.pc.ioc.core.kernel.KernelClass;
 
 public class InjectResouceSupply {
@@ -52,7 +52,7 @@ public class InjectResouceSupply {
 
 		@Override
 		protected String getResouce(int id) {
-			return ApplicationBean.getApplication().getResources().getString(id);
+			return Ioc.getIoc().getApplication().getResources().getString(id);
 		}
 	},
 
@@ -60,7 +60,7 @@ public class InjectResouceSupply {
 
 		@Override
 		protected String[] getResouce(int id) {
-			return ApplicationBean.getApplication().getResources().getStringArray(id);
+			return Ioc.getIoc().getApplication().getResources().getStringArray(id);
 		}
 	},
 
@@ -68,7 +68,7 @@ public class InjectResouceSupply {
 
 		@Override
 		protected Drawable getResouce(int id) {
-			return ApplicationBean.getApplication().getResources().getDrawable(id);
+			return Ioc.getIoc().getApplication().getResources().getDrawable(id);
 		}
 	},
 	};

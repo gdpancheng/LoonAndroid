@@ -8,7 +8,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import android.text.TextUtils;
 
-import com.android.pc.ioc.app.ApplicationBean;
+import com.android.pc.ioc.app.Ioc;
 import com.android.pc.ioc.db.annotation.Id;
 import com.android.pc.ioc.db.annotation.Table;
 
@@ -81,7 +81,7 @@ public class TableUtils {
 				addColumns2Map(entityType.getSuperclass(), primaryKeyFieldName, columnMap);
 			}
 		} catch (Exception e) {
-			ApplicationBean.logger.e(e);
+			Ioc.getIoc().getLogger().e(e);
 		}
 	}
 
@@ -169,7 +169,7 @@ public class TableUtils {
 				return null;
 			}
 		} catch (Exception e) {
-			ApplicationBean.logger.e(e);
+			Ioc.getIoc().getLogger().e(e);
 		}
 		return null;
 	}

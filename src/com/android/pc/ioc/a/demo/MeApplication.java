@@ -2,24 +2,30 @@ package com.android.pc.ioc.a.demo;
 
 import java.io.InputStream;
 
-import com.android.pc.ioc.app.ApplicationBean;
+import android.app.Application;
+
+import com.android.pc.ioc.app.Ioc;
 import com.android.pc.ioc.image.ImageCache;
 import com.android.pc.ioc.image.ImageLoadManager;
 import com.android.pc.ioc.image.ImageLoadManager.Coding;
 
-public class MeApplication extends ApplicationBean {
+public class MeApplication extends Application {
 	
-	public static MeApplication app;
+	public static Application app;
 	
 	@Override
-    public void init() {
-		app = this;
+	public void onCreate() {
+		//整个框架的入口 最好在super之前执行
+		Ioc.getIoc().init(this);
 		
-		ImageCache.ImageCacheParams cacheParams = new ImageCache.ImageCacheParams(this, "images");
+	    super.onCreate();
+	    
+	    app = this;
+	    ImageCache.ImageCacheParams cacheParams = new ImageCache.ImageCacheParams(this, "images");
 		cacheParams.setMemCacheSizePercent(0.25f); // Set memory cache to 25% of app memory
 		ImageLoadManager.instance().addImageCache(cacheParams);
 //		ImageLoadManager.instance().setCoding(coding);
-    }
+	}
 	
 	/**
 	 * 图片解密专用
