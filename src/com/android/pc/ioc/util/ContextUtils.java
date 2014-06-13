@@ -65,7 +65,8 @@ public class ContextUtils {
 	private static final Map<Class<?>, HashMap<Integer, ArrayList<InjectInvoker>>> http_InjectInvokes = new HashMap<Class<?>, HashMap<Integer, ArrayList<InjectInvoker>>>();
 	private static final Map<Class<?>, HashMap<Integer, ArrayList<InjectInvoker>>> http_InjectInvokes_OK = new HashMap<Class<?>, HashMap<Integer, ArrayList<InjectInvoker>>>();
 	private static final Map<Class<?>, HashMap<Integer, ArrayList<InjectInvoker>>> http_InjectInvokes_Err = new HashMap<Class<?>, HashMap<Integer, ArrayList<InjectInvoker>>>();
-
+	private static final Map<Class<?>, Boolean> inject_status = new HashMap<Class<?>, Boolean>();
+	
 	private static HashSet<Class<?>> classes = new HashSet<Class<?>>() {
 		private static final long serialVersionUID = -2816879839908314497L;
 		{
@@ -238,8 +239,8 @@ public class ContextUtils {
 		ArrayList<InjectInvoker> orther_list = new ArrayList<InjectInvoker>();
 		// ----------------------------------------------------------------------------------------------------------
 		Class<?> template = clazz;
-		if (all_inject_layers.containsKey(clazz) && orther_inject_invokes.containsKey(clazz)) {
-			while (template != null && template != Object.class && template != superClass) {
+		if (all_inject_layers.containsKey(clazz) && orther_inject_invokes.containsKey(clazz)&&checkInjectStatus(clazz)) {
+			while (template != null && template != Object.class && template != superClass&&inject_status.containsKey(template)) {
 				if (all_inject_layers.containsKey(template) && Activity.class.isAssignableFrom(template)) {
 					layers_list.add(0, all_inject_layers.get(template));
 				}
@@ -472,21 +473,6 @@ public class ContextUtils {
 		return all_list;
 	}
 
-	public static void getAdapterViewInvokers(final Class<?> clazz, final Object obj, final Class<?> superClass) {
-		ArrayList<InjectInvoker> all_list = new ArrayList<InjectInvoker>();
-		Class<?> template = clazz;
-		if (all_inject_views.containsKey(template) && Activity.class.isAssignableFrom(template)) {
-			all_list.addAll(all_inject_views.get(template));
-		}
-		if (orther_inject_invokes.containsKey(template) && Activity.class.isAssignableFrom(template)) {
-			all_list.addAll(orther_inject_invokes.get(template));
-		}
-		template = template.getSuperclass();
-		if (all_list.size() > 0) {
-		}
-		ArrayList<InjectInvoker> views_list = new ArrayList<InjectInvoker>();
-	}
-
 	public static void getFactoryProvider() {
 
 		PackageManager pManager = Ioc.getIoc().getApplication().getPackageManager();
@@ -512,8 +498,17 @@ public class ContextUtils {
 
 		for (int i = 0; i < classes.length; i++) {
 			Class<?> clazz = classes[i];
+			inject_status.put(clazz, true);
 			ContextUtils.getCreateInvokers(clazz);
 			ContextUtils.getViewInvokers(clazz, null, Activity.class);
+			inject_status.remove(clazz);
 		}
 	}
+	
+	public static boolean checkInjectStatus(Class<?> clazz) {
+	    if (inject_status.containsKey(clazz)) {
+	        return false;
+        }
+	    return true;
+    }
 }

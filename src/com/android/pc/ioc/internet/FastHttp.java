@@ -15,6 +15,7 @@ import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -31,6 +32,7 @@ import android.os.Message;
 import android.util.Xml;
 
 import com.android.pc.ioc.app.Ioc;
+import com.android.pc.util.Handler_Network;
 
 /**
  * ----------------------同步----------------------<br>
@@ -111,7 +113,7 @@ public class FastHttp {
 	 *            请求的参数
 	 * @return ResponseEntity 返回的数据
 	 */
-	public static ResponseEntity get(String url, HashMap<String, String> params) {
+	public static ResponseEntity get(String url, LinkedHashMap<String, String> params) {
 		return get(url, params, InternetConfig.defaultConfig());
 	}
 
@@ -127,10 +129,14 @@ public class FastHttp {
 	 *            配置
 	 * @return ResponseEntity 返回结果
 	 */
-	public static ResponseEntity get(String url, HashMap<String, String> params, InternetConfig config) {
+	public static ResponseEntity get(String url, LinkedHashMap<String, String> params, InternetConfig config) {
 		config.setRequest_type(InternetConfig.request_get);
 		if (params != null) {
-			url = url + "?";
+			if (url.indexOf("\\?")!=-1) {
+				url = url + "?";
+            }else {
+            	url = url + "&";
+			}
 			for (Map.Entry<String, String> entry : params.entrySet()) {
 				url = url + entry.getKey() + "=" + entry.getValue() + "&";
 			}
@@ -138,19 +144,34 @@ public class FastHttp {
 		}
 		ResponseEntity responseEntity = new ResponseEntity();
 		responseEntity.setUrl(url);
+		responseEntity.setParams(params);
 		responseEntity.setKey(config.getKey());
+
+		// 判断是否需要离线
+		if (config.isSave()) {
+			if (!Handler_Network.isNetworkAvailable(Ioc.getIoc().getApplication())) {
+				Ioc.getIoc().getLogger().e("无法连接到网络 将获取离线数据");
+				String result = HttpCache.getUrlCache(url, params);
+				if (result != null) {
+					responseEntity.setContent(result, false);
+					responseEntity.setStatus(result_ok);
+					return responseEntity;
+				}
+			}
+		}
+
 		try {
 			HttpURLConnection conn = getDefaultHttpClient(url, config);
 			InputStream inStream = conn.getInputStream();
 			getCookies(config, responseEntity, conn);
-			responseEntity.setContent(inputStreamToString(inStream, config.getCharset()));
+			responseEntity.setContent(inputStreamToString(inStream, config.getCharset()), config.isSave());
 			conn.disconnect();
 			responseEntity.setStatus(result_ok);
 			if (responseEntity.getContentAsString().length() == 0) {
 				responseEntity.setStatus(result_net_err);
 			}
 			return responseEntity;
-		}catch (Exception e) {
+		} catch (Exception e) {
 			responseEntity.setStatus(result_net_err);
 			e.printStackTrace();
 		}
@@ -179,7 +200,7 @@ public class FastHttp {
 	 *            请求的参数
 	 * @return ResponseEntity 返回的数据
 	 */
-	public static ResponseEntity post(String url, HashMap<String, String> params) {
+	public static ResponseEntity post(String url, LinkedHashMap<String, String> params) {
 		return post(url, params, InternetConfig.defaultConfig());
 	}
 
@@ -195,12 +216,26 @@ public class FastHttp {
 	 *            下载配置
 	 * @return ResponseEntity 返回值
 	 */
-	public static ResponseEntity post(String url, HashMap<String, String> params, InternetConfig config) {
+	public static ResponseEntity post(String url, LinkedHashMap<String, String> params, InternetConfig config) {
 		config.setRequest_type(InternetConfig.request_post);
 		ResponseEntity responseEntity = new ResponseEntity();
 		responseEntity.setUrl(url);
 		responseEntity.setParams(params);
 		responseEntity.setKey(config.getKey());
+
+		// 判断是否需要离线
+		if (config.isSave()) {
+			if (!Handler_Network.isNetworkAvailable(Ioc.getIoc().getApplication())) {
+				Ioc.getIoc().getLogger().e("无法连接到网络 将获取离线数据");
+				String result = HttpCache.getUrlCache(url, params);
+				if (result != null) {
+					responseEntity.setContent(result, false);
+					responseEntity.setStatus(result_ok);
+					return responseEntity;
+				}
+			}
+		}
+
 		try {
 			HttpURLConnection conn = getDefaultHttpClient(url, config);
 			conn.setDoOutput(true);
@@ -221,7 +256,7 @@ public class FastHttp {
 
 			getCookies(config, responseEntity, conn);
 
-			responseEntity.setContent(inputStreamToString(inStream, config.getCharset()));
+			responseEntity.setContent(inputStreamToString(inStream, config.getCharset()), config.isSave());
 			conn.disconnect();
 			responseEntity.setStatus(result_ok);
 			if (responseEntity.getContentAsString().length() == 0) {
@@ -261,7 +296,7 @@ public class FastHttp {
 					}
 				}
 			}
-			responseEntity.setContent(inputStreamToString(inStream, config.getCharset()));
+			responseEntity.setContent(inputStreamToString(inStream, config.getCharset()), config.isSave());
 			conn.disconnect();
 			responseEntity.setStatus(result_ok);
 			if (responseEntity.getContentAsString().length() == 0) {
@@ -297,7 +332,7 @@ public class FastHttp {
 	 *            请求的参数
 	 * @return ResponseEntity 返回的数据
 	 */
-	public static ResponseEntity form(String url, HashMap<String, String> params) {
+	public static ResponseEntity form(String url, LinkedHashMap<String, String> params) {
 		return form(url, params, null, InternetConfig.defaultConfig());
 	}
 
@@ -314,7 +349,7 @@ public class FastHttp {
 	 * @return
 	 * @return ResponseEntity
 	 */
-	public static ResponseEntity form(String url, HashMap<String, String> params, HashMap<String, File> files) {
+	public static ResponseEntity form(String url, LinkedHashMap<String, String> params, HashMap<String, File> files) {
 		return form(url, params, files, InternetConfig.defaultConfig());
 	}
 
@@ -332,13 +367,27 @@ public class FastHttp {
 	 * @return
 	 * @return ResponseEntity
 	 */
-	public static ResponseEntity form(String url, HashMap<String, String> params, HashMap<String, File> files, InternetConfig config) {
-		params = params == null ? new HashMap<String, String>() : params;
+	public static ResponseEntity form(String url, LinkedHashMap<String, String> params, HashMap<String, File> files, InternetConfig config) {
+		params = params == null ? new LinkedHashMap<String, String>() : params;
 
 		config.setRequest_type(InternetConfig.request_form);
 		ResponseEntity responseEntity = new ResponseEntity();
 		responseEntity.setUrl(url);
 		responseEntity.setParams(params);
+		responseEntity.setKey(config.getKey());
+
+		// 判断是否需要离线
+		if (config.isSave()) {
+			if (!Handler_Network.isNetworkAvailable(Ioc.getIoc().getApplication())) {
+				Ioc.getIoc().getLogger().e("无法连接到网络 将获取离线数据");
+				String result = HttpCache.getUrlCache(url, params);
+				if (result != null) {
+					responseEntity.setContent(result, false);
+					responseEntity.setStatus(result_ok);
+					return responseEntity;
+				}
+			}
+		}
 
 		try {
 			HttpURLConnection conn = getDefaultHttpClient(url, config);
@@ -370,9 +419,9 @@ public class FastHttp {
 				for (Map.Entry<String, File> file : files.entrySet()) {
 
 					if (!file.getValue().exists()) {
-	                    continue;
-                    }
-					
+						continue;
+					}
+
 					StringBuilder sb1 = new StringBuilder();
 					sb1.append(PREFIX);
 					sb1.append(BOUNDARY);
@@ -404,7 +453,7 @@ public class FastHttp {
 				// if (res == 200) {
 				in = conn.getInputStream();
 				getCookies(config, responseEntity, conn);
-				responseEntity.setContent(inputStreamToString(in, config.getCharset()));
+				responseEntity.setContent(inputStreamToString(in, config.getCharset()), config.isSave());
 				responseEntity.setKey(config.getKey());
 				outStream.close();
 				conn.disconnect();
@@ -414,7 +463,7 @@ public class FastHttp {
 				}
 			} else {
 				InputStream inStream = conn.getInputStream();
-				responseEntity.setContent(inputStreamToString(inStream, config.getCharset()));
+				responseEntity.setContent(inputStreamToString(inStream, config.getCharset()), config.isSave());
 				conn.disconnect();
 				responseEntity.setStatus(result_ok);
 				if (responseEntity.getContentAsString().length() == 0) {
@@ -432,26 +481,39 @@ public class FastHttp {
 		public void progress(int progress);
 	}
 
-	public static ResponseEntity formProgress(String url, HashMap<String, String> params, HashMap<String, File> files, InternetConfig config, Progress progress) {
-		params = params == null ? new HashMap<String, String>() : params;
+	public static ResponseEntity formProgress(String url, LinkedHashMap<String, String> params, HashMap<String, File> files, InternetConfig config, Progress progress) {
+		params = params == null ? new LinkedHashMap<String, String>() : params;
 
 		config.setRequest_type(InternetConfig.request_form);
 		ResponseEntity responseEntity = new ResponseEntity();
 		responseEntity.setUrl(url);
 		responseEntity.setParams(params);
+		responseEntity.setKey(config.getKey());
+
+		// 判断是否需要离线
+		if (config.isSave()) {
+			if (!Handler_Network.isNetworkAvailable(Ioc.getIoc().getApplication())) {
+				Ioc.getIoc().getLogger().e("无法连接到网络 将获取离线数据");
+				String result = HttpCache.getUrlCache(url, params);
+				if (result != null) {
+					responseEntity.setContent(result, false);
+					responseEntity.setStatus(result_ok);
+					return responseEntity;
+				}
+			}
+		}
 
 		try {
-			long all_count =getOrtherLength(params,files,config);
+			long all_count = getOrtherLength(params, files, config);
 
 			long read_count = 0;
-			
+
 			config.setAll_length(all_count);
 			HttpURLConnection conn = getDefaultHttpClient(url, config);
 			conn.setDoOutput(true);
 			conn.setDoInput(true);
 			conn.setUseCaches(false); // 不允许使用缓存
 
-			
 			StringBuilder sb = new StringBuilder();
 			for (Map.Entry<String, String> entry : params.entrySet()) {
 				sb.append(PREFIX);
@@ -464,13 +526,13 @@ public class FastHttp {
 				sb.append(entry.getValue());
 				sb.append(LINEND);
 			}
-			
+
 			BufferedOutputStream outStream = new BufferedOutputStream(conn.getOutputStream());
 			if (sb.length() > 0) {
 				outStream.write(sb.toString().getBytes());
-				
+
 				if (progress != null) {
-					read_count = read_count+ sb.toString().getBytes().length;
+					read_count = read_count + sb.toString().getBytes().length;
 					progress.progress((int) (read_count * 100 / all_count));
 				}
 			}
@@ -479,6 +541,10 @@ public class FastHttp {
 
 			if (files != null) {
 				for (Map.Entry<String, File> file : files.entrySet()) {
+
+					if (!file.getValue().exists()) {
+						continue;
+					}
 
 					StringBuilder sb1 = new StringBuilder();
 					sb1.append(PREFIX);
@@ -490,10 +556,10 @@ public class FastHttp {
 					outStream.write(sb1.toString().getBytes());
 
 					if (progress != null) {
-						read_count = read_count+ sb1.toString().getBytes().length;
+						read_count = read_count + sb1.toString().getBytes().length;
 						progress.progress((int) (read_count * 100 / all_count));
 					}
-					
+
 					InputStream is = new FileInputStream(file.getValue());
 					byte[] buffer = new byte[1024];
 					int len = 0;
@@ -508,7 +574,7 @@ public class FastHttp {
 					is.close();
 					outStream.write(LINEND.getBytes());
 					if (progress != null) {
-						read_count = read_count+ LINEND.getBytes().length;
+						read_count = read_count + LINEND.getBytes().length;
 						progress.progress((int) (read_count * 100 / all_count));
 					}
 				}
@@ -518,7 +584,7 @@ public class FastHttp {
 				outStream.write(end_data);
 				outStream.flush();
 				if (progress != null) {
-					read_count = read_count+ end_data.length;
+					read_count = read_count + end_data.length;
 					progress.progress((int) (read_count * 100 / all_count));
 				}
 				// 得到响应码
@@ -526,7 +592,7 @@ public class FastHttp {
 				// if (res == 200) {
 				in = conn.getInputStream();
 				getCookies(config, responseEntity, conn);
-				responseEntity.setContent(inputStreamToString(in, config.getCharset()));
+				responseEntity.setContent(inputStreamToString(in, config.getCharset()), config.isSave());
 				responseEntity.setKey(config.getKey());
 				outStream.close();
 				conn.disconnect();
@@ -536,14 +602,14 @@ public class FastHttp {
 				}
 			} else {
 				InputStream inStream = conn.getInputStream();
-				responseEntity.setContent(inputStreamToString(inStream, config.getCharset()));
+				responseEntity.setContent(inputStreamToString(inStream, config.getCharset()), config.isSave());
 				conn.disconnect();
 				responseEntity.setStatus(result_ok);
 				if (responseEntity.getContentAsString().length() == 0) {
 					responseEntity.setStatus(result_net_err);
 				}
 			}
-		}catch (Exception e) {
+		} catch (Exception e) {
 			responseEntity.setStatus(result_net_err);
 			e.printStackTrace();
 		}
@@ -584,7 +650,7 @@ public class FastHttp {
 	 * @param callBack
 	 * @return void
 	 */
-	public static void ajaxForm(String url, HashMap<String, String> params, AjaxCallBack callBack) {
+	public static void ajaxForm(String url, LinkedHashMap<String, String> params, AjaxCallBack callBack) {
 		ajaxForm(url, params, null, InternetConfig.defaultConfig(), callBack);
 	}
 
@@ -598,7 +664,7 @@ public class FastHttp {
 	 * @param callBack
 	 * @return void
 	 */
-	public static void ajaxForm(String url, HashMap<String, String> params, HashMap<String, File> files, AjaxCallBack callBack) {
+	public static void ajaxForm(String url, LinkedHashMap<String, String> params, HashMap<String, File> files, AjaxCallBack callBack) {
 		ajaxForm(url, params, files, InternetConfig.defaultConfig(), callBack);
 	}
 
@@ -613,7 +679,7 @@ public class FastHttp {
 	 * @param callBack
 	 * @return void
 	 */
-	public static void ajaxForm(String url, HashMap<String, String> params, HashMap<String, File> files, InternetConfig config, AjaxCallBack callBack) {
+	public static void ajaxForm(String url, LinkedHashMap<String, String> params, HashMap<String, File> files, InternetConfig config, AjaxCallBack callBack) {
 		config.setRequest_type(InternetConfig.request_form);
 		config.setFiles(files);
 		new Thread(new AjaxTask(url, params, config, callBack)).start();
@@ -661,7 +727,7 @@ public class FastHttp {
 	 *            回调函数
 	 * @return void
 	 */
-	public static void ajax(String url, HashMap<String, String> params, AjaxCallBack callBack) {
+	public static void ajax(String url, LinkedHashMap<String, String> params, AjaxCallBack callBack) {
 		ajax(url, params, InternetConfig.defaultConfig(), callBack);
 	}
 
@@ -679,7 +745,7 @@ public class FastHttp {
 	 *            回调函数
 	 * @return void
 	 */
-	public static void ajax(String url, HashMap<String, String> params, InternetConfig config, AjaxCallBack callBack) {
+	public static void ajax(String url, LinkedHashMap<String, String> params, InternetConfig config, AjaxCallBack callBack) {
 		config.setRequest_type(InternetConfig.request_post);
 		new Thread(new AjaxTask(url, params, config, callBack)).start();
 	}
@@ -707,7 +773,7 @@ public class FastHttp {
 	 * @param callBack
 	 * @return void
 	 */
-	public static void ajax(String url, HashMap<String, String> params, AjaxTimeCallBack callBack) {
+	public static void ajax(String url, LinkedHashMap<String, String> params, AjaxTimeCallBack callBack) {
 		InternetConfig config = InternetConfig.defaultConfig();
 		config.setRequest_type(InternetConfig.request_post);
 		ajax(url, params, config, callBack);
@@ -727,7 +793,7 @@ public class FastHttp {
 	 *            回调函数
 	 * @return void
 	 */
-	public static void ajax(String url, HashMap<String, String> params, InternetConfig config, AjaxTimeCallBack callBack) {
+	public static void ajax(String url, LinkedHashMap<String, String> params, InternetConfig config, AjaxTimeCallBack callBack) {
 		config.setRequest_type(InternetConfig.request_post);
 		new Thread(new TimeTask(url, params, config, callBack)).start();
 	}
@@ -771,7 +837,7 @@ public class FastHttp {
 	 *            请求的参数
 	 * @return T 返回的数据
 	 */
-	public static ResponseEntity webServer(String url, HashMap<String, String> params, String method) {
+	public static ResponseEntity webServer(String url, LinkedHashMap<String, String> params, String method) {
 		return webServer(url, params, InternetConfig.defaultConfig(), method);
 	}
 
@@ -787,12 +853,26 @@ public class FastHttp {
 	 *            下载的配置
 	 * @return T 返回的数据
 	 */
-	public static ResponseEntity webServer(String url, HashMap<String, String> params, InternetConfig config, String method) {
+	public static ResponseEntity webServer(String url, LinkedHashMap<String, String> params, InternetConfig config, String method) {
 		config.setRequest_type(InternetConfig.request_webserver);
 		ResponseEntity responseEntity = new ResponseEntity();
 		responseEntity.setUrl(url);
 		responseEntity.setParams(params);
 		responseEntity.setKey(config.getKey());
+
+		// 判断是否需要离线
+		if (config.isSave()) {
+			if (!Handler_Network.isNetworkAvailable(Ioc.getIoc().getApplication())) {
+				Ioc.getIoc().getLogger().e("无法连接到网络 将获取离线数据");
+				String result = HttpCache.getUrlCache(url, params);
+				if (result != null) {
+					responseEntity.setContent(result, false);
+					responseEntity.setStatus(result_ok);
+					return responseEntity;
+				}
+			}
+		}
+
 		try {
 			config.setMethod(method);
 			HttpURLConnection conn = getDefaultHttpClient(url, config);
@@ -802,7 +882,7 @@ public class FastHttp {
 			OutputStream out = conn.getOutputStream();
 			String content = "";
 			if (params == null) {
-				params = new HashMap<String, String>();
+				params = new LinkedHashMap<String, String>();
 			}
 			content = getXml(params, method, config.getName_space());
 			content = content.replace(" standalone='yes' ", "");
@@ -811,7 +891,7 @@ public class FastHttp {
 			out.close();
 			InputStream inStream = conn.getInputStream();
 			getCookies(config, responseEntity, conn);
-			responseEntity.setContent(XMLtoJsonUtil.XMLtoJson(inputStreamToString(inStream, config.getCharset()), method, config.getCharset()));
+			responseEntity.setContent(XMLtoJsonUtil.XMLtoJson(inputStreamToString(inStream, config.getCharset()), method, config.getCharset()), config.isSave());
 			responseEntity.setKey(config.getKey());
 			conn.disconnect();
 			responseEntity.setStatus(result_ok);
@@ -871,7 +951,7 @@ public class FastHttp {
 	 *            回调函数
 	 * @return void
 	 */
-	public static void ajaxWebServer(String url, String method, HashMap<String, String> params, AjaxCallBack callBack) {
+	public static void ajaxWebServer(String url, String method, LinkedHashMap<String, String> params, AjaxCallBack callBack) {
 		InternetConfig config = InternetConfig.defaultConfig();
 		config.setMethod(method);
 		config.setRequest_type(InternetConfig.request_webserver);
@@ -892,7 +972,7 @@ public class FastHttp {
 	 *            回调函数
 	 * @return void
 	 */
-	public static void ajaxWebServer(String url, String method, HashMap<String, String> params, InternetConfig config, AjaxCallBack callBack) {
+	public static void ajaxWebServer(String url, String method, LinkedHashMap<String, String> params, InternetConfig config, AjaxCallBack callBack) {
 		if (config == null) {
 			config = InternetConfig.defaultConfig();
 		}
@@ -915,7 +995,7 @@ public class FastHttp {
 	 *            回调函数
 	 * @return void
 	 */
-	public static void ajaxWebServer(String url, String method, HashMap<String, String> params, AjaxTimeCallBack callBack) {
+	public static void ajaxWebServer(String url, String method, LinkedHashMap<String, String> params, AjaxTimeCallBack callBack) {
 		InternetConfig config = InternetConfig.defaultConfig();
 		config.setMethod(method);
 		config.setRequest_type(InternetConfig.request_webserver);
@@ -936,7 +1016,7 @@ public class FastHttp {
 	 *            回调函数
 	 * @return void
 	 */
-	public static void ajaxWebServer(String url, String method, HashMap<String, String> params, InternetConfig config, AjaxTimeCallBack callBack) {
+	public static void ajaxWebServer(String url, String method, LinkedHashMap<String, String> params, InternetConfig config, AjaxTimeCallBack callBack) {
 		if (config == null) {
 			config = InternetConfig.defaultConfig();
 		}
@@ -987,7 +1067,7 @@ public class FastHttp {
 	 *            回调函数
 	 * @return void
 	 */
-	public static void ajaxGet(String url, HashMap<String, String> params, AjaxCallBack callBack) {
+	public static void ajaxGet(String url, LinkedHashMap<String, String> params, AjaxCallBack callBack) {
 		ajaxGet(url, params, InternetConfig.defaultConfig(), callBack);
 	}
 
@@ -1005,7 +1085,7 @@ public class FastHttp {
 	 *            回调函数
 	 * @return void
 	 */
-	public static void ajaxGet(String url, HashMap<String, String> params, InternetConfig config, AjaxCallBack callBack) {
+	public static void ajaxGet(String url, LinkedHashMap<String, String> params, InternetConfig config, AjaxCallBack callBack) {
 		if (config == null) {
 			config = InternetConfig.defaultConfig();
 		}
@@ -1027,7 +1107,7 @@ public class FastHttp {
 	 *            回调函数
 	 * @return void
 	 */
-	public static void ajaxGet(String url, HashMap<String, String> params, InternetConfig config, AjaxTimeCallBack callBack) {
+	public static void ajaxGet(String url, LinkedHashMap<String, String> params, InternetConfig config, AjaxTimeCallBack callBack) {
 		if (config == null) {
 			config = InternetConfig.defaultConfig();
 		}
@@ -1037,8 +1117,8 @@ public class FastHttp {
 
 	@SuppressLint("HandlerLeak")
 	static class AjaxTask extends basicRunable implements Runnable {
-		 private AjaxCallBack mCallBack;
-		 private Handler mHandler = new Handler() {
+		private AjaxCallBack mCallBack;
+		private Handler mHandler = new Handler() {
 			public void handleMessage(Message msg) {
 				if (mCallBack.stop()) {
 					return;
@@ -1047,7 +1127,7 @@ public class FastHttp {
 			}
 		};
 
-		public AjaxTask(String url, HashMap<String, String> params, InternetConfig internetConfig, AjaxCallBack callBack) {
+		public AjaxTask(String url, LinkedHashMap<String, String> params, InternetConfig internetConfig, AjaxCallBack callBack) {
 			this.mCallBack = callBack;
 			this.internetConfig = internetConfig;
 			this.url = url;
@@ -1069,11 +1149,11 @@ public class FastHttp {
 				msg.obj = webServer(url, params, internetConfig, internetConfig.getMethod());
 				break;
 			case InternetConfig.request_form:
-				if (internetConfig.getProgress()!=null) {
-					msg.obj = formProgress(url, params, internetConfig.getFiles(), internetConfig,internetConfig.getProgress());
-                }else {
-                	msg.obj = form(url, params, internetConfig.getFiles(), internetConfig);
-				}
+				// if (internetConfig.getProgress()!=null) {
+				msg.obj = formProgress(url, params, internetConfig.getFiles(), internetConfig, internetConfig.getProgress());
+				// }else {
+				// msg.obj = form(url, params, internetConfig.getFiles(), internetConfig);
+				// }
 				break;
 			default:
 				break;
@@ -1085,20 +1165,20 @@ public class FastHttp {
 	static class basicRunable {
 		InternetConfig internetConfig;
 		String url;
-		HashMap<String, String> params;
+		LinkedHashMap<String, String> params;
 	}
 
 	@SuppressLint("HandlerLeak")
 	static class TimeTask extends basicRunable implements Runnable {
-		 private AjaxTimeCallBack mCallBack;
+		private AjaxTimeCallBack mCallBack;
 
-		 private Handler mHandler = new Handler() {
+		private Handler mHandler = new Handler() {
 			public void handleMessage(Message msg) {
 				mCallBack.callBack((ResponseEntity) msg.obj);
 			}
 		};
 
-		public TimeTask(String url, HashMap<String, String> params, InternetConfig internetConfig, AjaxTimeCallBack callBack) {
+		public TimeTask(String url, LinkedHashMap<String, String> params, InternetConfig internetConfig, AjaxTimeCallBack callBack) {
 			this.mCallBack = callBack;
 			this.internetConfig = internetConfig;
 			this.url = url;
@@ -1149,11 +1229,12 @@ public class FastHttp {
 			// HttpsURLConnection.setDefaultHostnameVerifier(SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
 			HttpsURLConnection.setDefaultHostnameVerifier(hnv);
 		}
+		System.out.println(urls);
 		URL url = new URL(urls);
 		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-		if (config.getFiles()!=null) {
-	        conn.setFixedLengthStreamingMode((int)config.getAll_length());
-        }
+		if (config.getFiles() != null) {
+			conn.setFixedLengthStreamingMode((int) config.getAll_length());
+		}
 		conn.setConnectTimeout(config.getTimeout());
 		String method = "POST";
 		if (config.getRequest_type() == InternetConfig.request_get) {
@@ -1208,7 +1289,7 @@ public class FastHttp {
 		return out.toString();
 	}
 
-	private static String getXml(HashMap<String, String> data, String method, String name_space) {
+	private static String getXml(LinkedHashMap<String, String> data, String method, String name_space) {
 		XmlSerializer serializer = Xml.newSerializer();
 		StringWriter writer = new StringWriter();
 		try {
@@ -1274,8 +1355,8 @@ public class FastHttp {
 			}
 		}
 	}
-	
-	private static int getOrtherLength(HashMap<String, String> params, HashMap<String, File> files,InternetConfig config){
+
+	private static int getOrtherLength(LinkedHashMap<String, String> params, HashMap<String, File> files, InternetConfig config) {
 		long count = 0;
 		StringBuilder sb = new StringBuilder();
 		for (Map.Entry<String, String> entry : params.entrySet()) {
@@ -1289,26 +1370,27 @@ public class FastHttp {
 			sb.append(entry.getValue());
 			sb.append(LINEND);
 		}
-		count = count+sb.toString().getBytes().length;
-		
-		if (files!=null) {
-			for (String name : files.keySet()) {
-				if (files.get(name).exists()) {
-					count = count+files.get(name).length();
-					StringBuilder sb1 = new StringBuilder();
-					sb1.append(PREFIX);
-					sb1.append(BOUNDARY);
-					sb1.append(LINEND);
-					sb1.append("Content-Disposition: form-data; name=\"" + name + "\"; filename=\"" + files.get(name).getName() + "\"" + LINEND);
-					sb1.append("Content-Type: image/pjpeg; " + LINEND);
-					sb1.append(LINEND);
-					count = count+sb1.toString().getBytes().length;
-					count = count + LINEND.getBytes().length;
+		count = count + sb.toString().getBytes().length;
+
+		if (files != null) {
+			for (Map.Entry<String, File> file : files.entrySet()) {
+				if (!file.getValue().exists()) {
+					continue;
 				}
+				count = count + file.getValue().length();
+				StringBuilder sb1 = new StringBuilder();
+				sb1.append(PREFIX);
+				sb1.append(BOUNDARY);
+				sb1.append(LINEND);
+				sb1.append("Content-Disposition: form-data; name=\"" + file.getKey() + "\"; filename=\"" + file.getValue().getName() + "\"" + LINEND);
+				sb1.append("Content-Type: image/pjpeg; " + LINEND);
+				sb1.append(LINEND);
+				count = count + sb1.toString().getBytes().length;
+				count = count + LINEND.getBytes().length;
 			}
 			byte[] end_data = (PREFIX + BOUNDARY + PREFIX + LINEND).getBytes();
 			count = count + end_data.length;
-        }
+		}
 		return (int) count;
 	}
 }

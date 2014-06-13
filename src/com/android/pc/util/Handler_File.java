@@ -3,6 +3,7 @@ package com.android.pc.util;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -11,13 +12,18 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.OutputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 import android.content.Context;
 import android.os.Environment;
 import android.util.Log;
+
+import com.android.pc.ioc.app.Ioc;
 
 /**
  * File Utils
@@ -504,4 +510,95 @@ public class Handler_File {
 		}
 		return appCacheDir;
 	}
+
+	public static void write(File file, String data) {
+		BufferedWriter out = null;
+		try {
+			out = new BufferedWriter(new FileWriter(file), 1024);
+			out.write(data);
+		} catch (IOException e) {
+			Ioc.getIoc().getLogger().d("write " + file.getAbsolutePath() + " data failed!");
+			e.printStackTrace();
+		} finally {
+			if (out != null) {
+				try {
+					out.flush();
+					out.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+
+	public static String getAsString(File file) {
+		if (!file.exists())
+			return null;
+		BufferedReader in = null;
+		try {
+			in = new BufferedReader(new FileReader(file));
+			String readString = "";
+			String currentLine;
+			while ((currentLine = in.readLine()) != null) {
+				readString += currentLine;
+			}
+			return readString;
+		} catch (IOException e) {
+			e.printStackTrace();
+			return null;
+		} finally {
+			if (in != null) {
+				try {
+					in.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+	
+	public static void saveObject(String fileName,Serializable object) {
+		FileOutputStream fos = null;
+		 ObjectOutputStream oos = null;
+		try {
+			fos = Ioc.getIoc().getApplication().openFileOutput(fileName,Context.MODE_PRIVATE);
+			oos = new ObjectOutputStream(fos);
+	        oos.writeObject(object);// 写入
+        } catch (Exception e) {
+	        e.printStackTrace();
+        } finally{
+        	try {
+	            if (fos!=null) {
+	            	fos.close();
+	            }
+	            if (oos!=null) {
+	            	oos.close();
+	            }
+            } catch (IOException e) {
+            }
+        }
+    }
+	
+	public static <T>T getObject(String fileName) {
+		FileInputStream fis = null;
+		ObjectInputStream ois = null;
+		try {
+			fis=Ioc.getIoc().getApplication().openFileInput(fileName);   //获得输入流
+			ois = new ObjectInputStream(fis);
+			return (T) ois.readObject();
+        } catch (Exception e) {
+	        e.printStackTrace();
+        }finally{
+        	try {
+	            if (fis!=null) {
+	            	fis.close();
+	            }
+	            if (ois!=null) {
+	            	ois.close();
+	            }
+            } catch (IOException e) {
+            }
+        }
+		return null;
+    }
 }

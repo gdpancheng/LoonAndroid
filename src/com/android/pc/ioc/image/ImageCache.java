@@ -231,7 +231,7 @@ public class ImageCache {
 	 *            Unique identifier for which item to get
 	 * @return The bitmap if found in cache, null otherwise
 	 */
-	public Bitmap getBitmapFromDiskCache(String data, int w, int h) {
+	public Bitmap getBitmapFromDiskCache(String data, int w, int h,ImageWorker imWorker) {
 		final String key = hashKeyForDisk(data);
 
 		synchronized (mDiskCacheLock) {
@@ -244,7 +244,7 @@ public class ImageCache {
 			File file = getFromFileCache(key);
 			Bitmap bitmap = null;
 			if (file != null && file.exists()) {
-				bitmap = ImageResizer.decodeSampledBitmapFromFile(file.getPath(), w, h, this);
+				bitmap = imWorker.decodeSampledBitmapFromFile(data,file.getPath(), w, h, this);
 			}
 			return bitmap;
 		}

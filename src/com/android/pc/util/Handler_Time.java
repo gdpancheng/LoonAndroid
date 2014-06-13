@@ -123,6 +123,11 @@ public class Handler_Time {
 		}
 		return str;
 	}
+	
+	public String getTimestampSecond() {
+		String str = (new Timestamp(cal.getTimeInMillis())).toString();
+		return str.substring(0,19);
+	}
 
 	public Timestamp getTimestampPlus(long timeInMillis) {
 		return new Timestamp(cal.getTimeInMillis() + timeInMillis);

@@ -9,7 +9,6 @@ import android.graphics.Bitmap;
 import android.os.ResultReceiver;
 import android.view.Display;
 import android.view.View;
-import android.view.ViewGroup.MarginLayoutParams;
 import android.view.animation.Animation;
 import android.view.animation.AnimationSet;
 import android.view.animation.LinearInterpolator;
@@ -102,51 +101,81 @@ public class Handler_Ui {
 		}
 	}
 
-	public static void imageLLViewReset(ImageView imageView,int bitmapW,int bitmapH){
+	public static void imageLLViewReset(ImageView imageView, int bitmapW, int bitmapH, boolean isFull) {
 		LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) imageView.getLayoutParams();
 		HashMap<String, Integer> data = Handler_System.getDisplayMetrics();
-		int	width = data.get(Handler_System.systemWidth);
-		int	height = data.get(Handler_System.systemHeight);
-		if (width>height) {
-			layoutParams.width = (int) (bitmapW*1.00f/bitmapH*height);
-			layoutParams.height = height;
-        }else {
-        	layoutParams.width =width;
-			layoutParams.height =  (int) (bitmapH*1.00f/bitmapW*width);
+		int width = data.get(Handler_System.systemWidth);// 320
+		int height = data.get(Handler_System.systemHeight);// 480
+		if (isFull) {
+			if (width > height) {
+				layoutParams.width = (int) (bitmapW * 1.00f / bitmapH * height);
+				layoutParams.height = height;
+			} else {
+				layoutParams.width = width;
+				layoutParams.height = (int) (bitmapH * 1.00f / bitmapW * width);
+			}
+		} else {
+			if (bitmapW > width) {
+				layoutParams.width = width;
+				layoutParams.height = (int) (width * 1.00f / bitmapW * bitmapH);
+			} else {
+				layoutParams.width = bitmapW;
+				layoutParams.height = bitmapH;
+			}
 		}
 		imageView.setLayoutParams(layoutParams);
 	}
-	
-	public static void imageRLViewReset(ImageView imageView,int bitmapW,int bitmapH){
+
+	public static void imageRLViewReset(ImageView imageView, int bitmapW, int bitmapH, boolean isFull) {
 		RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) imageView.getLayoutParams();
 		HashMap<String, Integer> data = Handler_System.getDisplayMetrics();
-		int	width = data.get(Handler_System.systemWidth);
-		int	height = data.get(Handler_System.systemHeight);
-		if (width>height) {
-			layoutParams.width = (int) (bitmapW*1.00f/bitmapH*height);
-			layoutParams.height = height;
-        }else {
-        	layoutParams.width =width;
-			layoutParams.height =  (int) (bitmapH*1.00f/bitmapW*width);
+		int width = data.get(Handler_System.systemWidth);
+		int height = data.get(Handler_System.systemHeight);
+		if (isFull) {
+			if (width > height) {
+				layoutParams.width = (int) (bitmapW * 1.00f / bitmapH * height);
+				layoutParams.height = height;
+			} else {
+				layoutParams.width = width;
+				layoutParams.height = (int) (bitmapH * 1.00f / bitmapW * width);
+			}
+		} else {
+			if (bitmapW > width) {
+				layoutParams.width = width;
+				layoutParams.height = (int) (width * 1.00f / bitmapW * bitmapH);
+			} else {
+				layoutParams.width = bitmapW;
+				layoutParams.height = bitmapH;
+			}
 		}
 		imageView.setLayoutParams(layoutParams);
 	}
-	
-	public static void imageFLViewReset(ImageView imageView,int bitmapW,int bitmapH){
+
+	public static void imageFLViewReset(ImageView imageView, int bitmapW, int bitmapH, boolean isFull) {
 		FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) imageView.getLayoutParams();
 		HashMap<String, Integer> data = Handler_System.getDisplayMetrics();
-		int	width = data.get(Handler_System.systemWidth);
-		int	height = data.get(Handler_System.systemHeight);
-		if (width>height) {
-			layoutParams.width = (int) (bitmapW*1.00f/bitmapH*height);
-			layoutParams.height = height;
-        }else {
-        	layoutParams.width =width;
-			layoutParams.height =  (int) (bitmapH*1.00f/bitmapW*width);
+		int width = data.get(Handler_System.systemWidth);
+		int height = data.get(Handler_System.systemHeight);
+		if (isFull) {
+			if (width > height) {
+				layoutParams.width = (int) (bitmapW * 1.00f / bitmapH * height);
+				layoutParams.height = height;
+			} else {
+				layoutParams.width = width;
+				layoutParams.height = (int) (bitmapH * 1.00f / bitmapW * width);
+			}
+		} else {
+			if (bitmapW > width) {
+				layoutParams.width = width;
+				layoutParams.height = (int) (width * 1.00f / bitmapW * bitmapH);
+			} else {
+				layoutParams.width = bitmapW;
+				layoutParams.height = bitmapH;
+			}
 		}
 		imageView.setLayoutParams(layoutParams);
 	}
-	
+
 	public static void resetRL(View... view) {
 		float rote = Handler_System.getWidthRoate();
 		if (view == null || rote == 1) {
@@ -254,6 +283,7 @@ public class Handler_Ui {
 
 	/**
 	 * 截屏
+	 * 
 	 * @author gdpancheng@gmail.com 2013-10-26 下午2:39:01
 	 * @param activity
 	 * @return Bitmap
@@ -270,18 +300,21 @@ public class Handler_Ui {
 	}
 
 	/**
-	 * 代码实现旋转的菊花效果 
+	 * 代码实现旋转的菊花效果
+	 * 
 	 * @author gdpancheng@gmail.com 2014-2-21 下午5:09:58
-	 * @param imageView 需要旋转的图片
-	 * @param drawable 旋转菊花
+	 * @param imageView
+	 *            需要旋转的图片
+	 * @param drawable
+	 *            旋转菊花
 	 * @return void
 	 */
-	public static void startAnim(ImageView imageView,int drawable) {
+	public static void startAnim(ImageView imageView, int drawable) {
 		try {
 			imageView.setScaleType(ImageView.ScaleType.CENTER);
 			imageView.setImageResource(drawable);
 			AnimationSet animationSet = new AnimationSet(false);
-			RotateAnimation rotateAnimation = new RotateAnimation(0, 360, Animation.RELATIVE_TO_SELF,0.5f,Animation.RELATIVE_TO_SELF,0.5f);
+			RotateAnimation rotateAnimation = new RotateAnimation(0, 360, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
 			rotateAnimation.setDuration(2000);
 			rotateAnimation.setInterpolator(new LinearInterpolator());
 			rotateAnimation.setRepeatMode(Animation.RESTART);
@@ -295,6 +328,7 @@ public class Handler_Ui {
 
 	/**
 	 * 停止自定义菊花的旋转
+	 * 
 	 * @author gdpancheng@gmail.com 2014-2-21 下午5:10:40
 	 * @param imageView
 	 * @return void

@@ -31,6 +31,6 @@ public class ViewManager {
 	}
 	
 	private void click(){
-		Toast.makeText(MeApplication.app, "这个注解 不是在acitivity中哦", Toast.LENGTH_SHORT).show();
+		Toast.makeText(MeApplication.app, "这个注解 不是在acitivity中", Toast.LENGTH_SHORT).show();
 	}
 }

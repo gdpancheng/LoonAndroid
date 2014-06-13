@@ -9,7 +9,6 @@ import java.util.Properties;
 
 import android.app.Activity;
 import android.app.Application;
-import android.util.Log;
 import android.view.View;
 
 import com.android.pc.ioc.core.kernel.KernelObject;

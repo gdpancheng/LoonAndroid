@@ -40,6 +40,9 @@ public class MainActivity extends BaseActivity {
 	String action_settings;
 	@InjectResource
 	Drawable ic_launcher;
+	
+	
+	
 	// --------------------------------------------------------------------------------------
 	// 第二种写法(内部类 全局定义点击事件)
 	@InjectAll(@InjectBinder(method = "click", listeners = { OnClick.class }))

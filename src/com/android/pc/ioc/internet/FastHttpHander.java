@@ -4,6 +4,7 @@ import java.io.File;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 import android.app.Activity;
 
@@ -57,7 +58,7 @@ public class FastHttpHander {
 	 *            回调函数
 	 * @return void
 	 */
-	public static void ajax(String url, HashMap<String, String> params, Object object) {
+	public static void ajax(String url, LinkedHashMap<String, String> params, Object object) {
 		ajax(url, params, InternetConfig.defaultConfig(), object);
 	}
 
@@ -75,7 +76,7 @@ public class FastHttpHander {
 	 *            回调函数
 	 * @return void
 	 */
-	public static void ajax(String url, HashMap<String, String> params, final InternetConfig config, final Object object) {
+	public static void ajax(String url, LinkedHashMap<String, String> params, final InternetConfig config, final Object object) {
 		config.setRequest_type(InternetConfig.request_post);
 		AjaxCallBack callBack = new AjaxCallBack() {
 			@Override
@@ -114,7 +115,7 @@ public class FastHttpHander {
 	 * @param object
 	 * @return void
 	 */
-	public static void ajax(String url, HashMap<String, String> params, AjaxTimeCallBack object) {
+	public static void ajax(String url, LinkedHashMap<String, String> params, AjaxTimeCallBack object) {
 		InternetConfig config = InternetConfig.defaultConfig();
 		config.setRequest_type(InternetConfig.request_post);
 		ajax(url, params, config, object);
@@ -134,7 +135,7 @@ public class FastHttpHander {
 	 *            回调函数
 	 * @return void
 	 */
-	public static void ajax(String url, HashMap<String, String> params, InternetConfig config, AjaxTimeCallBack object) {
+	public static void ajax(String url, LinkedHashMap<String, String> params, InternetConfig config, AjaxTimeCallBack object) {
 		config.setRequest_type(InternetConfig.request_post);
 		new Thread(new TimeTask(url, params, config, object)).start();
 	}
@@ -173,7 +174,7 @@ public class FastHttpHander {
 	 * @param object
 	 * @return void
 	 */
-	public static void ajaxForm(String url, HashMap<String, String> params, Object object) {
+	public static void ajaxForm(String url, LinkedHashMap<String, String> params, Object object) {
 		ajaxForm(url, params, null, InternetConfig.defaultConfig(), object);
 	}
 
@@ -187,11 +188,11 @@ public class FastHttpHander {
 	 * @param object
 	 * @return void
 	 */
-	public static void ajaxForm(String url, HashMap<String, String> params, HashMap<String, File> files, Object object) {
+	public static void ajaxForm(String url, LinkedHashMap<String, String> params, HashMap<String, File> files, Object object) {
 		ajaxForm(url, params, files, InternetConfig.defaultConfig(), object);
 	}
-	
-	public static void ajaxForm(String url, HashMap<String, String> params, HashMap<String, File> files, Object object,Progress progress) {
+
+	public static void ajaxForm(String url, LinkedHashMap<String, String> params, HashMap<String, File> files, Object object, Progress progress) {
 		ajaxForm(url, params, files, InternetConfig.defaultConfig(), object);
 	}
 
@@ -206,7 +207,7 @@ public class FastHttpHander {
 	 * @param object
 	 * @return void
 	 */
-	public static void ajaxForm(String url, HashMap<String, String> params, HashMap<String, File> files, final InternetConfig config, final Object object) {
+	public static void ajaxForm(String url, LinkedHashMap<String, String> params, HashMap<String, File> files, final InternetConfig config, final Object object) {
 		config.setRequest_type(InternetConfig.request_form);
 		config.setFiles(files);
 		AjaxCallBack callBack = new AjaxCallBack() {
@@ -265,7 +266,7 @@ public class FastHttpHander {
 	 *            回调函数
 	 * @return void
 	 */
-	public static void ajaxGet(String url, HashMap<String, String> params, Object object) {
+	public static void ajaxGet(String url, LinkedHashMap<String, String> params, Object object) {
 		ajaxGet(url, params, InternetConfig.defaultConfig(), object);
 	}
 
@@ -283,7 +284,7 @@ public class FastHttpHander {
 	 *            回调函数
 	 * @return void
 	 */
-	public static void ajaxGet(String url, HashMap<String, String> params, final InternetConfig config, final Object object) {
+	public static void ajaxGet(String url, LinkedHashMap<String, String> params, final InternetConfig config, final Object object) {
 		if (config == null) {
 			Ioc.getIoc().getLogger().e(object.getClass().getSimpleName() + "  的网络请求配置不能为空\n");
 			return;
@@ -318,7 +319,7 @@ public class FastHttpHander {
 	 *            回调函数
 	 * @return void
 	 */
-	public static void ajaxGet(String url, HashMap<String, String> params, InternetConfig config, AjaxTimeCallBack object) {
+	public static void ajaxGet(String url, LinkedHashMap<String, String> params, InternetConfig config, AjaxTimeCallBack object) {
 		if (config == null) {
 			config = InternetConfig.defaultConfig();
 		}
@@ -371,7 +372,7 @@ public class FastHttpHander {
 	 *            回调函数
 	 * @return void
 	 */
-	public static void ajaxWebServer(String url, String method, HashMap<String, String> params, Object object) {
+	public static void ajaxWebServer(String url, String method, LinkedHashMap<String, String> params, Object object) {
 		InternetConfig config = InternetConfig.defaultConfig();
 		config.setMethod(method);
 		config.setRequest_type(InternetConfig.request_webserver);
@@ -392,7 +393,7 @@ public class FastHttpHander {
 	 *            回调函数
 	 * @return void
 	 */
-	public static void ajaxWebServer(String url, String method, HashMap<String, String> params, final InternetConfig config, final Object object) {
+	public static void ajaxWebServer(String url, String method, LinkedHashMap<String, String> params, final InternetConfig config, final Object object) {
 		if (config == null) {
 			Ioc.getIoc().getLogger().e(object.getClass().getSimpleName() + " 的网络请求配置不能为空\n");
 			return;
@@ -427,7 +428,7 @@ public class FastHttpHander {
 	 *            回调函数
 	 * @return void
 	 */
-	public static void ajaxWebServer(String url, String method, HashMap<String, String> params, AjaxTimeCallBack object) {
+	public static void ajaxWebServer(String url, String method, LinkedHashMap<String, String> params, AjaxTimeCallBack object) {
 		InternetConfig config = InternetConfig.defaultConfig();
 		config.setMethod(method);
 		config.setRequest_type(InternetConfig.request_webserver);
@@ -448,7 +449,7 @@ public class FastHttpHander {
 	 *            回调函数
 	 * @return void
 	 */
-	public static void ajaxWebServer(String url, String method, HashMap<String, String> params, InternetConfig config, AjaxTimeCallBack object) {
+	public static void ajaxWebServer(String url, String method, LinkedHashMap<String, String> params, InternetConfig config, AjaxTimeCallBack object) {
 		if (config == null) {
 			config = InternetConfig.defaultConfig();
 		}
@@ -473,7 +474,7 @@ public class FastHttpHander {
 
 		if (entity.getStatus() == FastHttp.result_ok) {
 			if (ok == null && arrayList == null) {
-				Ioc.getIoc().getLogger().e(object.getClass().getSimpleName() + " 的网络请求"+entity.getUrl()+"\nkey为"+entity.getKey()+"没有增加回调方法注释 请检查\n");
+				Ioc.getIoc().getLogger().e(object.getClass().getSimpleName() + " 的网络请求" + entity.getUrl() + "\nkey为" + entity.getKey() + "没有增加回调方法注释 请检查\n");
 				return;
 			}
 			if (ok == null) {
@@ -489,7 +490,7 @@ public class FastHttpHander {
 			}
 		} else {
 			if (err == null && arrayList == null) {
-				Ioc.getIoc().getLogger().e(object.getClass().getSimpleName() + " 的网络请求"+entity.getUrl()+"\nkey为"+entity.getKey()+"没有增加回调方法注释 请检查\n");
+				Ioc.getIoc().getLogger().e(object.getClass().getSimpleName() + " 的网络请求" + entity.getUrl() + "\nkey为" + entity.getKey() + "没有增加回调方法注释 请检查\n");
 				return;
 			}
 			if (err == null) {
@@ -511,16 +512,15 @@ public class FastHttpHander {
 			return ((Activity) object).isFinishing() || !((Activity) object).hasWindowFocus();
 		}
 		try {
-	        Class<?> clazz = Class.forName("android.support.v4.app.Fragment");
-	        Class<?> clazz2 = Class.forName("android.app.Fragment");
-	        if (clazz.isAssignableFrom(object.getClass())||clazz2.isAssignableFrom(object.getClass())) {
-	        	Method isDetached = object.getClass().getMethod("isDetached", null);
-	        	Method isRemoving = object.getClass().getMethod("isRemoving", null);
-	        	return Boolean.valueOf(isDetached.invoke(object).toString())&&Boolean.valueOf(isRemoving.invoke(object).toString());
-	        }
-        } catch (Exception e) {
-        }
-		
+			Class<?> clazz = Class.forName("android.support.v4.app.Fragment");
+			Class<?> clazz2 = Class.forName("android.app.Fragment");
+			if (clazz.isAssignableFrom(object.getClass()) || clazz2.isAssignableFrom(object.getClass())) {
+				Method isDetached = object.getClass().getMethod("isDetached", null);
+				Method isRemoving = object.getClass().getMethod("isRemoving", null);
+				return Boolean.valueOf(isDetached.invoke(object).toString()) && Boolean.valueOf(isRemoving.invoke(object).toString());
+			}
+		} catch (Exception e) {
+		}
 		return false;
 	}
 }

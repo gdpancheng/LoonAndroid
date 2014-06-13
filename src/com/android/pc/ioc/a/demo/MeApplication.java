@@ -24,7 +24,7 @@ public class MeApplication extends Application {
 	    ImageCache.ImageCacheParams cacheParams = new ImageCache.ImageCacheParams(this, "images");
 		cacheParams.setMemCacheSizePercent(0.25f); // Set memory cache to 25% of app memory
 		ImageLoadManager.instance().addImageCache(cacheParams);
-//		ImageLoadManager.instance().setCoding(coding);
+		ImageLoadManager.instance().setCoding(coding);
 	}
 	
 	/**

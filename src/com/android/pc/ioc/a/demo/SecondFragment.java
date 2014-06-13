@@ -38,9 +38,6 @@ public class SecondFragment extends BaseFragment {
 
 	@InjectBefore
 	void test() {
-		// @InjectView(isasy=true)表示这个listview里面有网络图片下载，并且需要实现滑动停止才加载的功能
-		// @InjectView(isasy=true)框架会给listview自动注入OnScrollListener,如果你自己也要滚动监听
-		// 那么请在此配置，如下
 		System.out.println("before");
 	}
 
@@ -52,14 +49,13 @@ public class SecondFragment extends BaseFragment {
 		Handler_Inject.injectFragment(this, rootView);
 		return rootView;
 	}
-
+	
 	@InjectInit
 	private void init() {
 
 		// The ImageFetcher takes care of loading images into our ImageView children asynchronously
 		mImageFetcher = new ImageDownloader(getActivity(),300);
 		mImageFetcher.setLoadingImage(R.drawable.ic_launcher);
-		
 		for (int i = 0; i < 1000; i++) {
 			image.add("http://bcs.duapp.com/question-image/201212310556374291.jpg?b=a" + i);
 		}
@@ -83,7 +79,7 @@ public class SecondFragment extends BaseFragment {
 			}
 		});
 	}
-
+	
 	@InjectMethod(@InjectListener(ids = { R.id.next }, listeners = { OnClick.class }))
 	private void click(View v) {
 		EventBus eventBus = EventBus.getDefault();
@@ -97,6 +93,5 @@ public class SecondFragment extends BaseFragment {
 		PullToRefreshManager.getInstance().onFooterRefreshComplete();
 		//完成 刷新
 		PullToRefreshManager.getInstance().onHeaderRefreshComplete();
-		
 	}
 }

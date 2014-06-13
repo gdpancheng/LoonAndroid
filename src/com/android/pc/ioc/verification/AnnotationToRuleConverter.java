@@ -218,7 +218,7 @@ class AnnotationToRuleConverter {
 		return Rules.and(message, ruleArray);
 	}
 
-	private static Rule<TextView> getPasswordRule(Field field, View view, Password password) {
+	private static Rule<View> getPasswordRule(Field field, View view, Password password) {
 		if (!TextView.class.isAssignableFrom(view.getClass())) {
 			Log.w(TAG, String.format(WARN_TEXT, field.getName(), Password.class.getSimpleName()));
 			return null;
@@ -227,7 +227,18 @@ class AnnotationToRuleConverter {
 		int messageResId = password.messageResId();
 		String message = messageResId != 0 ? view.getContext().getString(messageResId) : password.message();
 
-		return Rules.required(message, false);
+		List<Rule<?>> rules = new ArrayList<Rule<?>>();
+		if (password.minLength() > 0) {
+			rules.add(Rules.minLength(null, password.minLength(), password.trim()));
+		}
+		if (password.maxLength() != Integer.MAX_VALUE) {
+			rules.add(Rules.maxLength(null, password.maxLength(), password.trim()));
+		}
+
+		Rule<?>[] ruleArray = new Rule<?>[rules.size()];
+		rules.toArray(ruleArray);
+
+		return Rules.and(message, ruleArray);
 	}
 
 	private static Rule<TextView> getConfirmPasswordRule(Field field, View view, ConfirmPassword confirmPassword, TextView passwordTextView) {

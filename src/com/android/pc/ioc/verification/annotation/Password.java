@@ -28,6 +28,9 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Password {
     public int order();
+    public int minLength()      default 0;
+    public int maxLength()      default Integer.MAX_VALUE;
+    public boolean trim()       default true;
     public String message()     default "Password is required";
     public int messageResId()   default 0;
 }

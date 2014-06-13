@@ -10,19 +10,17 @@ import java.net.URL;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Build;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import com.android.pc.ioc.app.Ioc;
+import com.android.pc.util.Handler_Network;
 import com.android.pc.util.Handler_System;
 
 /**
  * 图片下载类 可以设置图片高度宽度
  */
-public class ImageDownloader extends ImageResizer {
+public class ImageDownloader extends ImageWorker {
 
 	/**
 	 * 限定高度宽度的
@@ -70,12 +68,9 @@ public class ImageDownloader extends ImageResizer {
 	 * @param context
 	 */
 	private void checkConnection(Context context) {
-		final ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-		final NetworkInfo networkInfo = cm.getActiveNetworkInfo();
-		if (networkInfo == null || !networkInfo.isConnectedOrConnecting()) {
-			Toast.makeText(context, "无法连接到网络", Toast.LENGTH_LONG).show();
+		if (!Handler_Network.isNetworkAvailable(context)) {
 			Ioc.getIoc().getLogger().e("网络连接失败");
-		}
+        }
 	}
 
 	/**
@@ -93,7 +88,7 @@ public class ImageDownloader extends ImageResizer {
 		if (data.startsWith("http")) {
 			final String key = ImageCache.hashKeyForDisk(data);
 			file = ImageCache.getFromFileCache(key);
-			start(imageView);
+			start(imageView,lister);
 			downloadUrlToStream(data, file,imageView);
         }else {
         	file = new File(data);
@@ -101,12 +96,7 @@ public class ImageDownloader extends ImageResizer {
 		
 		Bitmap bitmap = null;
 		if (file != null && file.exists()) {
-			bitmap = decodeSampledBitmapFromFile(file.getPath(), mImageWidth, mImageHeight, getImageCache());
-		}
-		if (bitmap==null) {
-			fail(imageView);
-        }else {
-        	finish(bitmap, imageView);
+			bitmap = decodeSampledBitmapFromFile(data,file.getPath(), mImageWidth, mImageHeight, getImageCache());
 		}
 		return bitmap;
 	}
@@ -155,7 +145,7 @@ public class ImageDownloader extends ImageResizer {
 				n = n + count;
 				if (length>0) {
 					int percent = (int) (n * 100 / length);
-					process(percent,imageView);
+					process(percent,imageView,lister);
                 }
 			}
 			return true;

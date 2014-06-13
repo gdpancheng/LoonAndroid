@@ -1,6 +1,7 @@
 package com.android.pc.ioc.a.demo;
 
-import android.app.ProgressDialog;
+import java.util.LinkedHashMap;
+
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -53,11 +54,16 @@ public class ThirdFragment extends BaseFragment {
 	 */
 	@InjectInit
 	private void init() {
-		FastHttpHander.ajaxGet("http://211.152.52.1119:8080/app/api.php?act=category", this);
+		
+		FastHttpHander.ajaxGet("http://211.152.52.119:8080/app/api.php?act=category", this);
 
 		InternetConfig config = new InternetConfig();
+		//是否保存数据 默认不保存 当没网络的时候 获取数据的时候 然后就会从之前存储的离线拿出数据
+		config.setSave(true);
 		config.setKey(1);
-		FastHttpHander.ajaxGet("http://211.152.52.119:8080/app/api.php?act=category", config, this);
+		LinkedHashMap<String, String> paHashMap = new LinkedHashMap<String, String>();
+		paHashMap.put("test", "haha");
+		FastHttpHander.ajaxGet("http://211.152.52.119:8080/app/api.php?act=category",paHashMap, config, this);
 
 		InternetConfig config2 = new InternetConfig();
 		config2.setKey(2);
@@ -87,6 +93,7 @@ public class ThirdFragment extends BaseFragment {
 
 	@InjectHttpOk(1)
 	private void resultOk(ResponseEntity r) {
+		System.out.println(r);
 		v.result.append("我是resultOk 当前key为:" + r.getKey() + "回调了\n");
 		v.result.setVisibility(View.VISIBLE);
 		v.progress.setVisibility(View.GONE);

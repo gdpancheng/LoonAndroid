@@ -31,7 +31,6 @@ public class InternetConfig {
 	final public static String content_type_json = "application/json;charset=utf-8";
 	final public static String content_type_xml = "text/xml; charset=utf-8";
 
-	private  int result_type = result_String;
 	/**
 	 * 协议
 	 */
@@ -44,10 +43,6 @@ public class InternetConfig {
 	 * webservers 也就是.net服务器的接口 必须要设置这个
 	 */
 	private String method;
-	//目前未使用
-	private boolean instanceFollowRedirects = false;
-	//目前未使用
-	private boolean useCache = false;
 	/**
 	 * 字符串的编码 以及服务器的编码
 	 */
@@ -56,8 +51,6 @@ public class InternetConfig {
 	 * 定时请求的时间间隔
 	 */
 	private int time;
-	//目前未使用
-	private String webServerUrl;
 	/**
 	 * 请求方式 post get webservers fom等
 	 */
@@ -86,21 +79,29 @@ public class InternetConfig {
 	 * 这个用来标记请求 可以让多个请求公用同一个callback
 	 */
 	private int key;
-	/**
-	 * 当此参数为true的时候 则表示callback运行在主线程 可以直接更新Ui
-	 * 否则 运行在后台进程 需要用handler来更新Ui
-	 */
-	private boolean front = true;
 	
 	private long all_length = 0;
-	
+	/**
+	 * 表单上传进度
+	 */
 	private Progress progress;
+	/**
+	 * 是否支持离线
+	 */
+	private boolean isSave = false;
+	
+	/**
+	 * 缓存的时间(分钟)
+	 */
+	private int saveDate = -1;
+	
+	private static InternetConfig defaultConfig = new InternetConfig(){{
+		setCharset("utf-8");
+		setTime(30 * 1000);
+		setRequest_type(request_post);
+	}};
 
 	public static InternetConfig defaultConfig() {
-		InternetConfig defaultConfig = new InternetConfig();
-		defaultConfig.charset = "utf-8";
-		defaultConfig.time = 30 * 1000;
-		defaultConfig.request_type = request_post;
 		return defaultConfig;
 	}
 
@@ -142,14 +143,6 @@ public class InternetConfig {
 		this.time = time * 1000;
 	}
 
-	public String getWebServerUrl() {
-		return webServerUrl;
-	}
-
-	public void setWebServerUrl(String webServerUrl) {
-		this.webServerUrl = webServerUrl;
-	}
-
 	public int getRequest_type() {
 		return request_type;
 	}
@@ -174,22 +167,6 @@ public class InternetConfig {
 		this.timeout = timeout;
 	}
 
-	public boolean isInstanceFollowRedirects() {
-		return instanceFollowRedirects;
-	}
-
-	public void setInstanceFollowRedirects(boolean instanceFollowRedirects) {
-		this.instanceFollowRedirects = instanceFollowRedirects;
-	}
-
-	public boolean isUseCache() {
-		return useCache;
-	}
-
-	public void setUseCache(boolean useCache) {
-		this.useCache = useCache;
-	}
-
 	public String getMethod() {
 		return method;
 	}
@@ -208,7 +185,7 @@ public class InternetConfig {
 
 	@Override
 	public String toString() {
-		return "InternetConfig [content_type_web=" + content_type_web + ", isHttps=" + isHttps + ", method=" + method + ", instanceFollowRedirects=" + instanceFollowRedirects + ", useCache=" + useCache + ", charset=" + charset + ", time=" + time + ", webServerUrl=" + webServerUrl + ", request_type=" + request_type + ", name_space=" + name_space + ", timeout=" + timeout + ", files=" + files + ", isCookies=" + isCookies + ", key=" + key + "]";
+		return "InternetConfig [content_type_web=" + content_type_web + ", isHttps=" + isHttps + ", method=" + method  + ", charset=" + charset + ", time=" + time  + ", request_type=" + request_type + ", name_space=" + name_space + ", timeout=" + timeout + ", files=" + files + ", isCookies=" + isCookies + ", key=" + key + "]";
 	}
 
 	public HashMap<String, File> getFiles() {
@@ -235,20 +212,6 @@ public class InternetConfig {
 	public void setKey(int key) {
 		this.key = key;
 	}
-	public boolean isFront() {
-		return front;
-	}
-
-	public void setFront(boolean front) {
-		this.front = front;
-	}
-	public int getResult_type() {
-		return result_type;
-	}
-
-	public void setResult_type(int result_type) {
-		this.result_type = result_type;
-	}
 
 	public Progress getProgress() {
 		return progress;
@@ -264,5 +227,21 @@ public class InternetConfig {
 
 	public void setAll_length(long all_length) {
 		this.all_length = all_length;
+	}
+
+	public boolean isSave() {
+		return isSave;
+	}
+
+	public void setSave(boolean isSave) {
+		this.isSave = isSave;
+	}
+
+	public int getSaveDate() {
+		return saveDate;
+	}
+
+	public void setSaveDate(int saveDate) {
+		this.saveDate = saveDate;
 	}
 }

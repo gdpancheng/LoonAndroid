@@ -1,7 +1,12 @@
 package com.android.pc.ioc.image;
 
+import java.io.FileDescriptor;
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.lang.ref.WeakReference;
+import java.util.HashMap;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -10,16 +15,19 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.TransitionDrawable;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
 import android.widget.ImageView;
 
 import com.android.pc.ioc.app.Ioc;
+import com.android.pc.ioc.image.ImageLoadManager.Coding;
+import com.android.pc.util.Handler_System;
 
 /**
  * 图片下载工具类
  */
-public abstract class ImageWorker {
+public  class ImageWorker {
 	private static final int FADE_IN_TIME = 200;
 
 	private static final int start = 0;
@@ -33,12 +41,46 @@ public abstract class ImageWorker {
 	private boolean mExitTasksEarly = false;
 	protected boolean mPauseWork = false;
 	private final Object mPauseWorkLock = new Object();
-
 	protected Resources mResources;
 	protected DisplayerLister lister;
+	private boolean isDecode = false;
 
 	protected ImageWorker(Context context) {
 		mResources = context.getResources();
+	}
+	
+	protected int mImageWidth;
+	protected int mImageHeight;
+
+	/**
+	 * 初始化的时候 需要设置大小
+	 * 
+	 * @param context
+	 * @param imageWidth
+	 * @param imageHeight
+	 */
+	public ImageWorker(Context context, int imageWidth, int imageHeight) {
+		setImageSize(imageWidth, imageHeight);
+		mResources = context.getResources();
+	}
+
+	/**
+	 * 初始化的时候 需要设置大小
+	 * 
+	 * @param context
+	 * @param imageSize
+	 */
+	public ImageWorker(Context context, int imageSize) {
+		setImageSize(imageSize);
+		mResources = context.getResources();
+	}
+	
+	public void useDecode(boolean isDecode){
+		this.isDecode = isDecode;
+	}
+	
+	public boolean isDecode(){
+		return isDecode;
 	}
 
 	/**
@@ -69,10 +111,12 @@ public abstract class ImageWorker {
 		// 如果图片为空
 		if (value != null) {
 			// 如果图片不为空 则直接设置
-			finish(value.getBitmap(), imageView);
+			if (value.getBitmap()!=null) {
+				finish(value.getBitmap(), imageView, lister);
+            }
 			imageView.setImageDrawable(value);
 		} else if (cancelPotentialWork(data, imageView)) {
-			final BitmapWorkerTask task = new BitmapWorkerTask(data, imageView);
+			final BitmapWorkerTask task = new BitmapWorkerTask(data, imageView, lister);
 			final AsyncDrawable asyncDrawable = new AsyncDrawable(mResources, mLoadingBitmap, task);
 			imageView.setImageDrawable(asyncDrawable);
 			// 通过线程池执行下载进程
@@ -115,18 +159,6 @@ public abstract class ImageWorker {
 		setPauseWork(false);
 	}
 
-	/**
-	 * 
-	 * 自定义图片下载类 继承此类以后，需要实现这个方法<br>
-	 * 它的目的是生成最终位图<br>
-	 * 它本身运行在后台，且是异步的<br>
-	 * 你可以在此加载本地的大图，或者从网络下载图片
-	 * 
-	 * @param data
-	 *            图片来源 由 {@link ImageWorker#loadImage(Object, android.widget.ImageView)}提供
-	 * @return 返回处理好的图片
-	 */
-	protected abstract Bitmap processBitmap(Object data, ImageView imageView);
 
 	private class Entity {
 		public int process;
@@ -135,7 +167,7 @@ public abstract class ImageWorker {
 		public DisplayerLister lister;
 	}
 
-	protected void process(int process, ImageView imageView) {
+	protected void process(int process, ImageView imageView, DisplayerLister lister) {
 		if (lister == null) {
 			return;
 		}
@@ -145,11 +177,11 @@ public abstract class ImageWorker {
 		entity.imageView = imageView;
 		entity.lister = lister;
 		msg.obj = entity;
-		msg.what = this.process;
-		handler.sendMessage(msg);
+		msg.what = process;
+		msg.sendToTarget();
 	};
 
-	protected void finish(Bitmap bitmap, ImageView imageView) {
+	protected void finish(Bitmap bitmap, ImageView imageView, DisplayerLister lister) {
 		if (lister == null) {
 			return;
 		}
@@ -160,10 +192,10 @@ public abstract class ImageWorker {
 		entity.lister = lister;
 		msg.obj = entity;
 		msg.what = finish;
-		handler.sendMessage(msg);
+		msg.sendToTarget();
 	};
 
-	protected void fail(ImageView imageView) {
+	protected void fail(ImageView imageView, DisplayerLister lister) {
 		if (lister == null) {
 			return;
 		}
@@ -173,10 +205,10 @@ public abstract class ImageWorker {
 		entity.lister = lister;
 		msg.obj = entity;
 		msg.what = fail;
-		handler.sendMessage(msg);
+		msg.sendToTarget();
 	};
 
-	protected void start(ImageView imageView) {
+	protected void start(ImageView imageView, DisplayerLister lister) {
 		if (lister == null) {
 			return;
 		}
@@ -186,10 +218,10 @@ public abstract class ImageWorker {
 		entity.lister = lister;
 		msg.obj = entity;
 		msg.what = start;
-		handler.sendMessage(msg);
+		msg.sendToTarget();
 	};
 
-	static Handler handler = new Handler() {
+	Handler handler = new Handler() {
 		public void handleMessage(Message msg) {
 			Entity entity = (Entity) msg.obj;
 			switch (msg.what) {
@@ -278,10 +310,12 @@ public abstract class ImageWorker {
 		private Object mData;
 		// 弱引用 存储了视图
 		private final WeakReference<ImageView> imageViewReference;
+		protected final DisplayerLister lister;
 
-		public BitmapWorkerTask(Object data, ImageView imageView) {
+		public BitmapWorkerTask(Object data, ImageView imageView, DisplayerLister lister) {
 			mData = data;
 			imageViewReference = new WeakReference<ImageView>(imageView);
+			this.lister = lister;
 		}
 
 		/**
@@ -307,11 +341,8 @@ public abstract class ImageWorker {
 
 			// 如果缓存不为空 没有被取消 当前显示的imageview不为空 则去从本地缓存中获取
 			if (mImageCache != null && !isCancelled() && getAttachedImageView() != null && !mExitTasksEarly) {
-				bitmap = mImageCache.getBitmapFromDiskCache(dataString, getW(), getH());
+				bitmap = mImageCache.getBitmapFromDiskCache(dataString, getW(), getH(),ImageWorker.this);
 			}
-			if (bitmap != null) {
-				finish(bitmap, imageViewReference.get());
-            }
 			// 下载图片 通过自定义下载模块
 			if (bitmap == null && !isCancelled() && getAttachedImageView() != null && !mExitTasksEarly) {
 				bitmap = processBitmap(mData, imageViewReference.get());
@@ -350,8 +381,14 @@ public abstract class ImageWorker {
 
 			final ImageView imageView = getAttachedImageView();
 			if (value != null && imageView != null) {
+				if (value.getBitmap()!=null) {
+					finish(value.getBitmap(), imageView, lister);
+                }
 				Ioc.getIoc().getLogger().d("onPostExecute - setting bitmap");
 				setImageDrawable(imageView, value);
+			}
+			if (value == null) {
+				fail(imageView, lister);
 			}
 		}
 
@@ -430,7 +467,206 @@ public abstract class ImageWorker {
 		}
 	}
 
-	protected abstract int getW();
+	/**
+	 * Set the target image width and height.
+	 * 
+	 * @param width
+	 * @param height
+	 */
+	public void setImageSize(int width, int height) {
+		HashMap<String, Integer> data = Handler_System.getDisplayMetrics();
+		if (width == 0) {
+			width = data.get(Handler_System.systemWidth);
+		}
+		if (height == 0) {
+			height = data.get(Handler_System.systemHeight);
+		}
+		mImageWidth = width;
+		mImageHeight = height;
+	}
 
-	protected abstract int getH();
+	/**
+	 * 设置图片的高宽 高宽一样
+	 * 
+	 * @param size
+	 */
+	public void setImageSize(int size) {
+		setImageSize(size, size);
+	}
+
+	/**
+	 * 图片解析的主方法<br>
+	 * 参数为资源ID
+	 * 
+	 * @param resId
+	 * @return
+	 */
+	private Bitmap processBitmap(int resId) {
+		Ioc.getIoc().getLogger().d("图片下载开始 - " + resId);
+		return decodeSampledBitmapFromResource(mResources, resId, mImageWidth, mImageHeight, getImageCache());
+	}
+
+	protected Bitmap processBitmap(Object data, ImageView imageView) {
+		return processBitmap(Integer.parseInt(String.valueOf(data)));
+	}
+
+	/**
+	 * 从资源文件加载图片
+	 * 
+	 * @author gdpancheng@gmail.com 2014-5-19 下午2:14:13
+	 * @param res
+	 * @param resId
+	 * @param reqWidth
+	 * @param reqHeight
+	 * @param cache
+	 * @return Bitmap
+	 */
+	public  Bitmap decodeSampledBitmapFromResource(Resources res, int resId, int reqWidth, int reqHeight, ImageCache cache) {
+
+		final BitmapFactory.Options options = new BitmapFactory.Options();
+		options.inJustDecodeBounds = true;
+		BitmapFactory.decodeResource(res, resId, options);
+
+		options.inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight);
+
+		if (Utils.hasHoneycomb()) {
+			addInBitmapOptions(options, cache);
+		}
+
+		options.inJustDecodeBounds = false;
+		return BitmapFactory.decodeResource(res, resId, options);
+	}
+
+	/**
+	 * 从本地文件加载图片
+	 * 
+	 * @author gdpancheng@gmail.com 2014-5-19 下午2:15:23
+	 * @param filename
+	 * @param reqWidth
+	 * @param reqHeight
+	 * @param cache
+	 * @return Bitmap
+	 */
+	public  Bitmap decodeSampledBitmapFromFile(String url,String filename, int reqWidth, int reqHeight, ImageCache cache) {
+
+		final BitmapFactory.Options options = new BitmapFactory.Options();
+		options.inJustDecodeBounds = true;
+		Coding coding = ImageLoadManager.instance().getCoding();
+		if (coding == null||isDecode == false) {
+			BitmapFactory.decodeFile(filename, options);
+        }else if (isDecode&&coding!=null) {
+        	try {
+	            InputStream in = new FileInputStream(filename);
+	            byte[] buffer;
+	            if (url.toLowerCase().indexOf(".jpg")!=-1) {
+	            	buffer= coding.decodeJPG(in.available(), in);
+                }else {
+                	buffer= coding.decodePNG(in.available(), in);
+				}
+	            in.close();
+	            BitmapFactory.decodeByteArray(buffer, 0, buffer.length, options);
+	            buffer = null;
+            } catch (Exception e) {
+	            e.printStackTrace();
+            } 
+		}
+
+		options.inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight);
+
+		if (Utils.hasHoneycomb()) {
+			addInBitmapOptions(options, cache);
+		}
+
+		options.inJustDecodeBounds = false;
+		
+		if (coding == null||isDecode == false) {
+			return BitmapFactory.decodeFile(filename, options);
+		}else if(isDecode && coding!=null) {
+			try {
+				InputStream in = new FileInputStream(filename);
+				byte[] buffer;
+				if (url.toLowerCase().indexOf(".jpg")!=-1) {
+					buffer= coding.decodeJPG(in.available(), in);
+				}else {
+					buffer= coding.decodePNG(in.available(), in);
+				}
+				in.close();
+				return BitmapFactory.decodeByteArray(buffer, 0, buffer.length, options);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		return null;
+	}
+
+	public  Bitmap decodeSampledBitmapFromDescriptor(FileDescriptor fileDescriptor, int reqWidth, int reqHeight, ImageCache cache) {
+		final BitmapFactory.Options options = new BitmapFactory.Options();
+		options.inJustDecodeBounds = true;
+		BitmapFactory.decodeFileDescriptor(fileDescriptor, null, options);
+
+		options.inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight);
+		options.inJustDecodeBounds = false;
+
+		if (Utils.hasHoneycomb()) {
+			addInBitmapOptions(options, cache);
+		}
+
+		return BitmapFactory.decodeFileDescriptor(fileDescriptor, null, options);
+	}
+
+	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
+	private  void addInBitmapOptions(BitmapFactory.Options options, ImageCache cache) {
+		options.inMutable = true;
+
+		if (cache != null) {
+			Bitmap inBitmap = cache.getBitmapFromReusableSet(options);
+
+			if (inBitmap != null) {
+				options.inBitmap = inBitmap;
+			}
+		}
+	}
+
+	/**
+	 * 根据需要的高宽，对图片进行缩放 TODO(这里用一句话描述这个方法的作用)
+	 * 
+	 * @author gdpancheng@gmail.com 2014-5-19 下午2:19:56
+	 * @param options
+	 * @param reqWidth
+	 * @param reqHeight
+	 * @return int
+	 */
+	public  int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight) {
+		final int height = options.outHeight;
+		final int width = options.outWidth;
+		int inSampleSize = 1;
+
+		if (height > reqHeight || width > reqWidth) {
+
+			final int halfHeight = height / 2;
+			final int halfWidth = width / 2;
+
+			while ((halfHeight / inSampleSize) > reqHeight && (halfWidth / inSampleSize) > reqWidth) {
+				inSampleSize *= 2;
+			}
+
+			long totalPixels = width * height / inSampleSize;
+
+			final long totalReqPixelsCap = reqWidth * reqHeight * 2;
+
+			while (totalPixels > totalReqPixelsCap) {
+				inSampleSize *= 2;
+				totalPixels /= 2;
+			}
+		}
+		return inSampleSize;
+	}
+
+	protected int getW() {
+		return mImageWidth;
+	}
+
+	protected int getH() {
+		return mImageHeight;
+	}
 }

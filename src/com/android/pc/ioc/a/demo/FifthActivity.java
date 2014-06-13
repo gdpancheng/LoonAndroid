@@ -1,23 +1,9 @@
 package com.android.pc.ioc.a.demo;
 
-import java.util.ArrayList;
+import com.wash.activity.R;
 
 import android.app.Activity;
-import android.content.Context;
 import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.Toast;
-
-import com.android.pc.ioc.a.demo.ImageListAdapter.ViewHolder;
-import com.android.pc.ioc.inject.InjectBinder;
-import com.android.pc.ioc.inject.InjectView;
-import com.android.pc.ioc.view.listener.OnClick;
-import com.android.pc.util.Handler_Inject;
-import com.wash.activity.R;
 
 
 /**
