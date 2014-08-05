@@ -509,7 +509,7 @@ public class FastHttpHander {
 
 	private static boolean isDestory(Object object) {
 		if (Activity.class.isAssignableFrom(object.getClass())) {
-			return ((Activity) object).isFinishing() || !((Activity) object).hasWindowFocus();
+			return ((Activity) object).isFinishing();
 		}
 		try {
 			Class<?> clazz = Class.forName("android.support.v4.app.Fragment");

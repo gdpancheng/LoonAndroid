@@ -101,7 +101,7 @@ public class Handler_Ui {
 		}
 	}
 
-	public static void imageLLViewReset(ImageView imageView, int bitmapW, int bitmapH, boolean isFull) {
+	public static void imageLLViewReset(View imageView, int bitmapW, int bitmapH, boolean isFull) {
 		LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) imageView.getLayoutParams();
 		HashMap<String, Integer> data = Handler_System.getDisplayMetrics();
 		int width = data.get(Handler_System.systemWidth);// 320
@@ -126,7 +126,7 @@ public class Handler_Ui {
 		imageView.setLayoutParams(layoutParams);
 	}
 
-	public static void imageRLViewReset(ImageView imageView, int bitmapW, int bitmapH, boolean isFull) {
+	public static void imageRLViewReset(View imageView, int bitmapW, int bitmapH, boolean isFull) {
 		RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) imageView.getLayoutParams();
 		HashMap<String, Integer> data = Handler_System.getDisplayMetrics();
 		int width = data.get(Handler_System.systemWidth);
@@ -151,7 +151,7 @@ public class Handler_Ui {
 		imageView.setLayoutParams(layoutParams);
 	}
 
-	public static void imageFLViewReset(ImageView imageView, int bitmapW, int bitmapH, boolean isFull) {
+	public static void imageFLViewReset(View imageView, int bitmapW, int bitmapH, boolean isFull) {
 		FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) imageView.getLayoutParams();
 		HashMap<String, Integer> data = Handler_System.getDisplayMetrics();
 		int width = data.get(Handler_System.systemWidth);

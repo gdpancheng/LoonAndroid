@@ -14,7 +14,7 @@ import com.android.pc.ioc.inject.InjectLayer;
 import com.android.pc.ioc.inject.InjectView;
 import com.wash.activity.R;
 
-@InjectLayer(value = R.layout.activity_main2, parent = R.id.common, isFull = true, isTitle = true)
+@InjectLayer(value = R.layout.activity_main2, parent = R.id.common)
 public class SecondActivity extends BaseActivity {
 
 	@InjectView

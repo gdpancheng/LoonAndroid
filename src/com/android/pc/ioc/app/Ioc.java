@@ -34,7 +34,6 @@ public class Ioc {
 	private InstrumentationBean instrumentation;
 	private HashMap<String, DbUtils> dbMap = new HashMap<String, DbUtils>();
 	private String dbName = "db";
-	private List<Activity> activitys = new ArrayList<Activity>();
 
 	public Application getApplication() {
 		return application;
@@ -151,15 +150,5 @@ public class Ioc {
 		db.configDebug(true);
 		db.configAllowTransaction(true);
 		return db;
-	}
-
-	/**
-	 * 避免由于InjectAll是静态的导致永远保留的是最后一次的
-	 * 
-	 * @author gdpancheng@gmail.com 2014-5-4 下午2:21:48
-	 * @return HashMap<String,Object>
-	 */
-	public List<Activity> getActivity() {
-		return activitys;
 	}
 }

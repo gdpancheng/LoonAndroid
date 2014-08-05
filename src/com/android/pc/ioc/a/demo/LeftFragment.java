@@ -59,6 +59,7 @@ public class LeftFragment extends BaseFragment {
 		menu.add("文件多线程断点下载");
 		menu.add("版本更新");
 		menu.add("下拉刷新上拉加载更多");
+		menu.add("秒杀团购倒计时");
 		home_list.setAdapter(new LeftAdapter(activity, menu));
 		// ------------------------------------------------------------------------
 		eventBus.register(this);
@@ -97,6 +98,9 @@ public class LeftFragment extends BaseFragment {
 			break;
 		case 9:
 			fragment = new TenthFragment();
+			break;
+		case 10:
+			fragment = new ElevenFragment();
 			break;
 		}
 		FragmentEntity entity = new FragmentEntity();

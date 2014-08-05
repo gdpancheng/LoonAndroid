@@ -7,9 +7,9 @@ import java.util.Date;
 /**
  * @ClassName: TimeHandler
  * @Description: 时间工具类
- * @author  潘城 gdpancheng@gmail.com
+ * @author 潘城 gdpancheng@gmail.com
  * @date 2012-6-27 上午9:48:35
- *
+ * 
  */
 public class Handler_Time {
 	private Calendar cal;
@@ -123,10 +123,10 @@ public class Handler_Time {
 		}
 		return str;
 	}
-	
+
 	public String getTimestampSecond() {
 		String str = (new Timestamp(cal.getTimeInMillis())).toString();
-		return str.substring(0,19);
+		return str.substring(0, 19);
 	}
 
 	public Timestamp getTimestampPlus(long timeInMillis) {
@@ -507,7 +507,7 @@ public class Handler_Time {
 	public String toString() {
 		return this.getTimestampStr();
 	}
-	
+
 	public static String formatDate(int year, int month, int day) {
 		StringBuffer sbf = new StringBuffer();
 		sbf.append(year);
@@ -517,12 +517,25 @@ public class Handler_Time {
 		sbf.append(Handler_String.addPrefixZero(day));
 		return sbf.toString();
 	}
-	
+
 	public static String formatDuring(long mss) {
 		long days = mss / (1000 * 60 * 60 * 24);
 		long hours = (mss % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60);
 		long minutes = (mss % (1000 * 60 * 60)) / (1000 * 60);
 		long seconds = (mss % (1000 * 60)) / 1000;
-		return days + "天" + hours + "小时" + minutes + "分" + seconds + "秒";
+		String time = "";
+		if (seconds != 0) {
+			time = seconds + "秒";
+		}
+		if (minutes != 0) {
+			time = minutes + "分"+time;
+		}
+		if (hours != 0) {
+			time = hours + "小时"+time;
+		}
+		if (days != 0) {
+			time = days + "天"+time;
+		}
+		return time;
 	}
 }

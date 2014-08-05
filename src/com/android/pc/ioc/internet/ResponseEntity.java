@@ -14,6 +14,7 @@ public class ResponseEntity implements Serializable {
 	private Map<String, String> cookies;
 	private Map<String, String> params;
 	private int key;
+	private InternetConfig config;
 
 	public int getStatus() {
 		return status;
@@ -103,5 +104,13 @@ public class ResponseEntity implements Serializable {
 
 	public void setKey(int key) {
 		this.key = key;
+	}
+
+	public InternetConfig getConfig() {
+		return config;
+	}
+
+	public void setConfig(InternetConfig config) {
+		this.config = config;
 	}
 }

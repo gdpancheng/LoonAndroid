@@ -140,8 +140,9 @@ public class PullToRefreshView extends LinearLayout {
 	private Bitmap upBitmap;
 
 	private PullToRefreshManager manager;
-	
+
 	private EventBus eventBus = EventBus.getDefault();
+
 	/**
 	 * last update time
 	 */
@@ -189,37 +190,37 @@ public class PullToRefreshView extends LinearLayout {
 		try {
 			InputStream down = getResources().getAssets().open("down.png");
 			InputStream up = getResources().getAssets().open("up.png");
-			
+
 			downBitmap = BitmapFactory.decodeStream(down);
 			upBitmap = BitmapFactory.decodeStream(up);
 		} catch (IOException e) {
 		}
-		
+
 		float rote = Handler_System.getPadRoate();
-		downBitmap = Handler_Bitmap.scaleImg(downBitmap,(int)(downBitmap.getWidth()*rote), (int)(downBitmap.getHeight()*rote));
-		upBitmap = Handler_Bitmap.scaleImg(upBitmap,(int)(upBitmap.getWidth()*rote), (int)(upBitmap.getHeight()*rote));
-		
+		downBitmap = Handler_Bitmap.scaleImg(downBitmap, (int) (downBitmap.getWidth() * rote), (int) (downBitmap.getHeight() * rote));
+		upBitmap = Handler_Bitmap.scaleImg(upBitmap, (int) (upBitmap.getWidth() * rote), (int) (upBitmap.getHeight() * rote));
+
 		mHeaderView = new RelativeLayout(getContext());
-		LayoutParams layoutParams = new LayoutParams(LayoutParams.FILL_PARENT, (int) (100*rote));
-		layoutParams.bottomMargin = (int) (15*rote);
-		layoutParams.topMargin = (int) (15*rote);
+		LayoutParams layoutParams = new LayoutParams(LayoutParams.FILL_PARENT, (int) (100 * rote));
+		layoutParams.bottomMargin = (int) (15 * rote);
+		layoutParams.topMargin = (int) (15 * rote);
 		layoutParams.gravity = Gravity.CENTER;
 		mHeaderView.setLayoutParams(layoutParams);
 
 		mHeaderProgressBar = new ProgressBar(getContext());
 		mHeaderProgressBar.setIndeterminate(false);
 		mHeaderProgressBar.setVisibility(View.GONE);
-		RelativeLayout.LayoutParams rl = new RelativeLayout.LayoutParams((int) (40*rote), (int) (40*rote));
-		rl.leftMargin = (int) (30*rote);
-		rl.rightMargin = (int) (20*rote);
+		RelativeLayout.LayoutParams rl = new RelativeLayout.LayoutParams((int) (40 * rote), (int) (40 * rote));
+		rl.leftMargin = (int) (30 * rote);
+		rl.rightMargin = (int) (20 * rote);
 		rl.addRule(RelativeLayout.CENTER_VERTICAL);
 		mHeaderProgressBar.setLayoutParams(rl);
 		mHeaderView.addView(mHeaderProgressBar);
 
 		mHeaderImageView = new ImageView(getContext());
 		rl = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-		rl.leftMargin = (int) (30*rote);
-		rl.rightMargin = (int) (20*rote);
+		rl.leftMargin = (int) (30 * rote);
+		rl.rightMargin = (int) (20 * rote);
 		rl.addRule(RelativeLayout.CENTER_VERTICAL);
 		mHeaderImageView.setLayoutParams(rl);
 		mHeaderImageView.setImageBitmap(downBitmap);
@@ -266,8 +267,8 @@ public class PullToRefreshView extends LinearLayout {
 		mFooterView = new RelativeLayout(getContext());
 		float rote = Handler_System.getPadRoate();
 		LayoutParams layoutParams = new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT);
-		layoutParams.bottomMargin =  (int) (15*rote);
-		layoutParams.topMargin =  (int) (10*rote);
+		layoutParams.bottomMargin = (int) (15 * rote);
+		layoutParams.topMargin = (int) (10 * rote);
 		layoutParams.gravity = Gravity.CENTER;
 		mFooterView.setLayoutParams(layoutParams);
 
@@ -275,16 +276,16 @@ public class PullToRefreshView extends LinearLayout {
 		mFooterProgressBar.setIndeterminate(false);
 		mFooterProgressBar.setVisibility(View.GONE);
 		RelativeLayout.LayoutParams rl = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-		rl.leftMargin =  (int) (30*rote);
-		rl.topMargin =  (int) (10*rote);
-		rl.rightMargin =  (int) (20*rote);
+		rl.leftMargin = (int) (30 * rote);
+		rl.topMargin = (int) (10 * rote);
+		rl.rightMargin = (int) (20 * rote);
 		mFooterProgressBar.setLayoutParams(rl);
 		mFooterView.addView(mFooterProgressBar);
 
 		mFooterImageView = new ImageView(getContext());
 		rl = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-		rl.leftMargin =  (int) (30*rote);
-		rl.rightMargin =  (int) (20*rote);
+		rl.leftMargin = (int) (30 * rote);
+		rl.rightMargin = (int) (20 * rote);
 		mFooterImageView.setLayoutParams(rl);
 		mFooterImageView.setImageBitmap(upBitmap);
 		mFooterView.addView(mFooterImageView);
@@ -319,6 +320,22 @@ public class PullToRefreshView extends LinearLayout {
 		addView(mFooterView, params);
 	}
 
+	public int getmHeaderState() {
+		return mHeaderState;
+	}
+
+	public void setmHeaderState(int mHeaderState) {
+		this.mHeaderState = mHeaderState;
+	}
+
+	public int getmFooterState() {
+		return mFooterState;
+	}
+
+	public void setmFooterState(int mFooterState) {
+		this.mFooterState = mFooterState;
+	}
+
 	public void onFooter() {
 		// footer view 在此添加保证添加到linearlayout中的最后
 		addFooterView();
@@ -336,33 +353,58 @@ public class PullToRefreshView extends LinearLayout {
 				}
 				isGet = true;
 				if (mAdapterView != null) {
-					LayoutParams layoutParams = (LayoutParams) mAdapterView.getLayoutParams();
-					layoutParams.height = mAdapterView.getHeight();
-					if (layoutParams.height <=2) {
-						layoutParams.height = PullToRefreshView.this.getHeight();
-                    }
-					
-					mAdapterView.setLayoutParams(layoutParams);
 					if (LinearLayout.LayoutParams.class.isAssignableFrom(PullToRefreshView.this.getLayoutParams().getClass())) {
+						//重置listview的高度
+						LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) mAdapterView.getLayoutParams();
+						layoutParams.height = mAdapterView.getHeight();
+						if (layoutParams.height <= 2) {
+							layoutParams.height = PullToRefreshView.this.getHeight();
+						}
+						mAdapterView.setLayoutParams(layoutParams);
+						//重置下拉组件的高度
 						LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) PullToRefreshView.this.getLayoutParams();
 						params.height = layoutParams.height;
 						PullToRefreshView.this.setLayoutParams(params);
-                    }
+					}
 					if (AbsoluteLayout.LayoutParams.class.isAssignableFrom(PullToRefreshView.this.getLayoutParams().getClass())) {
+						//重置listview的高度
+						AbsoluteLayout.LayoutParams layoutParams = (AbsoluteLayout.LayoutParams) mAdapterView.getLayoutParams();
+						layoutParams.height = mAdapterView.getHeight();
+						if (layoutParams.height <= 2) {
+							layoutParams.height = PullToRefreshView.this.getHeight();
+						}
+						mAdapterView.setLayoutParams(layoutParams);
+						//重置下拉组件的高度
 						AbsoluteLayout.LayoutParams params = (AbsoluteLayout.LayoutParams) PullToRefreshView.this.getLayoutParams();
 						params.height = layoutParams.height;
 						PullToRefreshView.this.setLayoutParams(params);
-                    }
+					}
 					if (RelativeLayout.LayoutParams.class.isAssignableFrom(PullToRefreshView.this.getLayoutParams().getClass())) {
+						//重置listview的高度
+						RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) mAdapterView.getLayoutParams();
+						layoutParams.height = mAdapterView.getHeight();
+						if (layoutParams.height <= 2) {
+							layoutParams.height = PullToRefreshView.this.getHeight();
+						}
+						mAdapterView.setLayoutParams(layoutParams);
+						//重置下拉组件的高度
 						RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) PullToRefreshView.this.getLayoutParams();
 						params.height = layoutParams.height;
 						PullToRefreshView.this.setLayoutParams(params);
-                    }
+					}
 					if (FrameLayout.LayoutParams.class.isAssignableFrom(PullToRefreshView.this.getLayoutParams().getClass())) {
+						//重置listview的高度
+						FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) mAdapterView.getLayoutParams();
+						layoutParams.height = mAdapterView.getHeight();
+						if (layoutParams.height <= 2) {
+							layoutParams.height = PullToRefreshView.this.getHeight();
+						}
+						mAdapterView.setLayoutParams(layoutParams);
+						//重置下拉组件的高度
 						FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) PullToRefreshView.this.getLayoutParams();
 						params.height = layoutParams.height;
 						PullToRefreshView.this.setLayoutParams(params);
-                    }
+					}
 				}
 				return true;
 			}
@@ -785,7 +827,6 @@ public class PullToRefreshView extends LinearLayout {
 			break;
 		}
 	}
-	
 
 	public AdapterView<?> getAdapterView() {
 		return mAdapterView;
@@ -806,7 +847,7 @@ public class PullToRefreshView extends LinearLayout {
 	public void setFooter(boolean isFooter) {
 		this.isFooter = isFooter;
 	}
-	
+
 	public void onEventMainThread(RefershEntity entity) {
 		switch (entity.getType()) {
 		case InjectView.PULL_CLOSE:

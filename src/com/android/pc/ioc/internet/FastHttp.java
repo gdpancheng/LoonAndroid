@@ -27,6 +27,7 @@ import javax.net.ssl.SSLSession;
 import org.xmlpull.v1.XmlSerializer;
 
 import android.annotation.SuppressLint;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Xml;
@@ -132,10 +133,10 @@ public class FastHttp {
 	public static ResponseEntity get(String url, LinkedHashMap<String, String> params, InternetConfig config) {
 		config.setRequest_type(InternetConfig.request_get);
 		if (params != null) {
-			if (url.indexOf("\\?")!=-1) {
+			if (url.indexOf("\\?") != -1) {
 				url = url + "?";
-            }else {
-            	url = url + "&";
+			} else {
+				url = url + "&";
 			}
 			for (Map.Entry<String, String> entry : params.entrySet()) {
 				url = url + entry.getKey() + "=" + entry.getValue() + "&";
@@ -165,6 +166,7 @@ public class FastHttp {
 			InputStream inStream = conn.getInputStream();
 			getCookies(config, responseEntity, conn);
 			responseEntity.setContent(inputStreamToString(inStream, config.getCharset()), config.isSave());
+			responseEntity.setConfig(config);
 			conn.disconnect();
 			responseEntity.setStatus(result_ok);
 			if (responseEntity.getContentAsString().length() == 0) {
@@ -257,6 +259,7 @@ public class FastHttp {
 			getCookies(config, responseEntity, conn);
 
 			responseEntity.setContent(inputStreamToString(inStream, config.getCharset()), config.isSave());
+			responseEntity.setConfig(config);
 			conn.disconnect();
 			responseEntity.setStatus(result_ok);
 			if (responseEntity.getContentAsString().length() == 0) {
@@ -594,6 +597,7 @@ public class FastHttp {
 				getCookies(config, responseEntity, conn);
 				responseEntity.setContent(inputStreamToString(in, config.getCharset()), config.isSave());
 				responseEntity.setKey(config.getKey());
+				responseEntity.setConfig(config);
 				outStream.close();
 				conn.disconnect();
 				responseEntity.setStatus(result_ok);
@@ -893,6 +897,7 @@ public class FastHttp {
 			getCookies(config, responseEntity, conn);
 			responseEntity.setContent(XMLtoJsonUtil.XMLtoJson(inputStreamToString(inStream, config.getCharset()), method, config.getCharset()), config.isSave());
 			responseEntity.setKey(config.getKey());
+			responseEntity.setConfig(config);
 			conn.disconnect();
 			responseEntity.setStatus(result_ok);
 			if (responseEntity.getContentAsString().length() == 0) {
@@ -1236,7 +1241,11 @@ public class FastHttp {
 			conn.setFixedLengthStreamingMode((int) config.getAll_length());
 		}
 		conn.setConnectTimeout(config.getTimeout());
+		conn.setReadTimeout(config.getTimeout());
 		String method = "POST";
+		if (Build.VERSION.SDK!=null&&Build.VERSION.SDK_INT>13) {
+			conn.setRequestProperty("Connection", "close");
+        }
 		if (config.getRequest_type() == InternetConfig.request_get) {
 			method = "GET";
 			conn.setRequestMethod(method);
@@ -1261,6 +1270,9 @@ public class FastHttp {
 			conn.setRequestProperty("Charsert", config.getCharset());
 			conn.setRequestProperty("Content-Type", MULTIPART_FROM_DATA + ";boundary=" + BOUNDARY);
 		}
+		
+		
+		
 		conn.setRequestProperty("User-Agent", InternetConfig.UA);
 		if (config.isCookies() && cookies != null) {
 			conn.setRequestProperty("cookie", cookies);
