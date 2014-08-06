@@ -353,56 +353,84 @@ public class PullToRefreshView extends LinearLayout {
 				}
 				isGet = true;
 				if (mAdapterView != null) {
-					if (LinearLayout.LayoutParams.class.isAssignableFrom(PullToRefreshView.this.getLayoutParams().getClass())) {
-						//重置listview的高度
+
+					int heigth = 0;
+
+					if (LinearLayout.LayoutParams.class.isAssignableFrom(mAdapterView.getLayoutParams().getClass())) {
+						// 重置listview的高度
 						LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) mAdapterView.getLayoutParams();
 						layoutParams.height = mAdapterView.getHeight();
 						if (layoutParams.height <= 2) {
 							layoutParams.height = PullToRefreshView.this.getHeight();
 						}
 						mAdapterView.setLayoutParams(layoutParams);
-						//重置下拉组件的高度
+						heigth = layoutParams.height;
+					}
+
+					if (LinearLayout.LayoutParams.class.isAssignableFrom(PullToRefreshView.this.getLayoutParams().getClass())) {
+						// 重置下拉组件的高度
 						LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) PullToRefreshView.this.getLayoutParams();
-						params.height = layoutParams.height;
+						if (heigth!=0) {
+							params.height = heigth;
+                        }
 						PullToRefreshView.this.setLayoutParams(params);
 					}
-					if (AbsoluteLayout.LayoutParams.class.isAssignableFrom(PullToRefreshView.this.getLayoutParams().getClass())) {
-						//重置listview的高度
+					
+					if (AbsoluteLayout.LayoutParams.class.isAssignableFrom(mAdapterView.getLayoutParams().getClass())) {
+						// 重置listview的高度
 						AbsoluteLayout.LayoutParams layoutParams = (AbsoluteLayout.LayoutParams) mAdapterView.getLayoutParams();
 						layoutParams.height = mAdapterView.getHeight();
 						if (layoutParams.height <= 2) {
 							layoutParams.height = PullToRefreshView.this.getHeight();
 						}
 						mAdapterView.setLayoutParams(layoutParams);
-						//重置下拉组件的高度
+						heigth = layoutParams.height;
+					}
+					
+					if (AbsoluteLayout.LayoutParams.class.isAssignableFrom(PullToRefreshView.this.getLayoutParams().getClass())) {
+						// 重置下拉组件的高度
 						AbsoluteLayout.LayoutParams params = (AbsoluteLayout.LayoutParams) PullToRefreshView.this.getLayoutParams();
-						params.height = layoutParams.height;
+						if (heigth!=0) {
+							params.height = heigth;
+                        }
 						PullToRefreshView.this.setLayoutParams(params);
 					}
-					if (RelativeLayout.LayoutParams.class.isAssignableFrom(PullToRefreshView.this.getLayoutParams().getClass())) {
-						//重置listview的高度
+					
+					if (RelativeLayout.LayoutParams.class.isAssignableFrom(mAdapterView.getLayoutParams().getClass())) {
+						// 重置listview的高度
 						RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) mAdapterView.getLayoutParams();
 						layoutParams.height = mAdapterView.getHeight();
 						if (layoutParams.height <= 2) {
 							layoutParams.height = PullToRefreshView.this.getHeight();
 						}
 						mAdapterView.setLayoutParams(layoutParams);
-						//重置下拉组件的高度
+						heigth = layoutParams.height;
+					}
+					
+					if (RelativeLayout.LayoutParams.class.isAssignableFrom(PullToRefreshView.this.getLayoutParams().getClass())) {
+						// 重置下拉组件的高度
 						RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) PullToRefreshView.this.getLayoutParams();
-						params.height = layoutParams.height;
+						if (heigth!=0) {
+							params.height = heigth;
+                        }
 						PullToRefreshView.this.setLayoutParams(params);
 					}
-					if (FrameLayout.LayoutParams.class.isAssignableFrom(PullToRefreshView.this.getLayoutParams().getClass())) {
-						//重置listview的高度
+					if (FrameLayout.LayoutParams.class.isAssignableFrom(mAdapterView.getLayoutParams().getClass())) {
+						// 重置listview的高度
 						FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) mAdapterView.getLayoutParams();
 						layoutParams.height = mAdapterView.getHeight();
 						if (layoutParams.height <= 2) {
 							layoutParams.height = PullToRefreshView.this.getHeight();
 						}
 						mAdapterView.setLayoutParams(layoutParams);
-						//重置下拉组件的高度
+						heigth = layoutParams.height;
+					}
+					if (FrameLayout.LayoutParams.class.isAssignableFrom(PullToRefreshView.this.getLayoutParams().getClass())) {
+						// 重置下拉组件的高度
 						FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) PullToRefreshView.this.getLayoutParams();
-						params.height = layoutParams.height;
+						if (heigth!=0) {
+							params.height = heigth;
+                        }
 						PullToRefreshView.this.setLayoutParams(params);
 					}
 				}

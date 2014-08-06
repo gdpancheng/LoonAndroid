@@ -157,6 +157,7 @@
                 android:id="@+id/touch"
                 android:background="@android:color/holo_blue_dark"
                 android:layout_width="fill_parent"
+                android:longClickable="true"
                 android:layout_height="80dp" 
                 android:text="触摸此区域"/>
 

@@ -129,6 +129,7 @@ public class FirstFragment extends BaseFragment {
 
 	@InjectMethod(@InjectListener(ids = { R.id.touch }, listeners = { OnTouch.class }))
 	public boolean onTouch(View v, MotionEvent event) {
+		System.out.println(event.getAction());
 		MakeToast("触摸");
 		return true;
 	}
