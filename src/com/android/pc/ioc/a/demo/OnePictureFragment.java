@@ -44,7 +44,7 @@ public class OnePictureFragment extends BaseFragment {
 	private void init() {
 		ImageDownloader mImageFetcher = new ImageDownloader(getActivity(),800);
 		mImageFetcher.setLoadingImage(R.drawable.ic_launcher);
-		mImageFetcher.loadImage("http://bcs.duapp.com/question-image/20121231055637429.jpg" , photo,new DisplayerLister() {
+		mImageFetcher.loadImage("http://pic11.nipic.com/20101110/3320946_160215810000_2.jpg" , photo,new DisplayerLister() {
 			@Override
 			public void startLoader(ImageView imageView) {
 				System.out.println("开始下载:"+imageView);

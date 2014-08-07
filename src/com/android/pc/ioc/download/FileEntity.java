@@ -121,9 +121,9 @@ public class FileEntity {
 	}
 
 	@Override
-	public String toString() {
-		return "FileEntity [id=" + id + ", url=" + url + ", path=" + path + ", length=" + length + ", threads=" + threads + ", range=" + range + ", isSucess=" + isSucess + ", again=" + again + ", threadsEntities=" + threadsEntities + "]";
-	}
+    public String toString() {
+	    return "FileEntity [id=" + id + ", url=" + url + ", path=" + path + ", length=" + length + ", threads=" + threads + ", range=" + range + ", isSucess=" + isSucess + ", again=" + again + ", isUpdate=" + isUpdate + ", notfi=" + notfi + ", loadedLength=" + loadedLength + ", real_url=" + real_url + ", threadsEntities=" + threadsEntities + ", helper=" + helper + "]";
+    }
 
 	
 	public long getLoadedLength() {

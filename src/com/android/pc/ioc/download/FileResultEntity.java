@@ -81,7 +81,7 @@ public class FileResultEntity {
 		this.loadedLength = loadedLength;
 	}
 	@Override
-	public String toString() {
-		return "FileResultEntity [url=" + url + ", progress=" + progress + ", status=" + status + "]";
-	}
+    public String toString() {
+	    return "FileResultEntity [url=" + url + ", progress=" + progress + ", status=" + status + ", length=" + length + ", loadedLength=" + loadedLength + ", file=" + file + ", range=" + range + "]";
+    }
 }

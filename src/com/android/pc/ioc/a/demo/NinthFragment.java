@@ -28,7 +28,7 @@ public class NinthFragment extends BaseFragment {
 	@InjectView
 	TextView content;
 	// 支持断点下载的链接
-	String url = "http://gdown.baidu.com/data/wisegame/2072ac9b5ed7dcf0/WeChat_380.apk";
+	String url = "http://gd.yyjzt.com/KingPharmacist.apk ";
 
 	EventBus eventBus = EventBus.getDefault();
 
@@ -119,7 +119,7 @@ public class NinthFragment extends BaseFragment {
 	// 这里接收下载进度和状态广播 这个方法名固定和参数固定 只要有这个方法
 	// 并且注册了eventBus.register(this); 那么任何文件下载 在该方法都可以监听到
 	public void onEventMainThread(FileResultEntity entity) {
-
+		System.out.println(entity);
 		if (entity.getStatus() == FileResultEntity.status_sucess) {
 			content.setText("成功下载......");
 			down1.setEnabled(true);

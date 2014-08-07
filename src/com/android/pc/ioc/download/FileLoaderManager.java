@@ -68,15 +68,6 @@ public class FileLoaderManager {
 			switch (msg.what) {
 			case stuts_finish:
 				loadingMap.remove(entity.getUrl());
-
-				// 因为这种情况下 得显示通知栏
-				if (entity.getNotfi() != null) {
-					NotfiEntity notfiEntity = entity.getNotfi();
-					NotificationHelper helper = new NotificationHelper(Ioc.getIoc().getApplication(), notfiEntity.getLayout_id(), notfiEntity.getIcon_id(), notfiEntity.getProgress_id(), notfiEntity.getProgress_txt_id(), notfiEntity.getClazz());
-					helper.initNotif();
-					entity.setHelper(helper);
-				}
-
 				sendMsg(entity, FileResultEntity.status_sucess, 100);
 				break;
 			case stuts_start:
@@ -461,6 +452,12 @@ public class FileLoaderManager {
 
 		fileEntities.put(url, fileEntity);
 
+		if (notfi != null) {
+			NotificationHelper helper = new NotificationHelper(Ioc.getIoc().getApplication(), notfi.getLayout_id(), notfi.getIcon_id(), notfi.getProgress_id(), notfi.getProgress_txt_id(), notfi.getClazz());
+			helper.initNotif();
+			fileEntity.setHelper(helper);
+		}
+
 		fileEntity.setNotfi(notfi);
 		fileEntity.setUpdate(update);
 		// 如果下载的文件不存在 那么表示要重新下载
@@ -539,7 +536,7 @@ public class FileLoaderManager {
 					return;
 				}
 				sendMsg(fileEntity, FileResultEntity.status_start, 0);
-				
+
 				HttpURLConnection connection = getHttpConnection(0, fileEntity.getUrl());
 
 				// --------------------------------------------------------------------------------------
@@ -656,9 +653,14 @@ public class FileLoaderManager {
 			@Override
 			public void run() {
 				super.run();
+				int number = -1;
 				while (DownloadThreadGroup.this.activeCount() > 0) {
 					entity.setLoadedLength(getSize());
-					sendMsg(entity, FileResultEntity.status_loading, (int) (entity.getLoadedLength() * 100 / entity.getLength()));
+					int progress = (int) (entity.getLoadedLength() * 100 / entity.getLength());
+					if (number != progress) {
+						sendMsg(entity, FileResultEntity.status_loading, progress);
+					}
+					number = progress;
 					Ioc.getIoc().getDb().saveOrUpdateAll(entitysList);
 					try {
 						Thread.sleep(1000);
@@ -800,7 +802,7 @@ public class FileLoaderManager {
 				HttpURLConnection httpConnection = getHttpConnection(-1, entity.getReal_url() != null ? entity.getReal_url() : entity.getUrl());
 				inputStream = new BufferedInputStream(httpConnection.getInputStream());
 
-				if (entity.getNotfi() != null&&entity.getLength()==0) {
+				if (entity.getNotfi() != null && entity.getLength() == 0) {
 					NotfiEntity notfiEntity = entity.getNotfi();
 					NotificationHelper helper = new NotificationHelper(Ioc.getIoc().getApplication(), notfiEntity.getLayout_id(), notfiEntity.getIcon_id(), notfiEntity.getProgress_id(), notfiEntity.getProgress_txt_id(), notfiEntity.getClazz());
 					helper.downNotification("下载中...");
@@ -809,6 +811,7 @@ public class FileLoaderManager {
 
 				byte[] b = new byte[blockSize];
 				int read = 0;
+				int number = -1;
 				while ((read = inputStream.read(b)) > 0) {
 					if (!loadingMap.get(entity.getUrl())) {
 						// 发送下载失败
@@ -824,16 +827,26 @@ public class FileLoaderManager {
 					}
 					readCount = readCount + read;
 					destFile.write(b, 0, read);
-					
+
 					entity.setLoadedLength(readCount);
-					sendMsg(entity, FileResultEntity.status_loading, (int) (entity.getLoadedLength() * 100 / entity.getLength()));
+
+					int progress = (int) ((int) (entity.getLoadedLength() * 100 / entity.getLength()));
+					if (number != progress) {
+						sendMsg(entity, FileResultEntity.status_loading, progress);
+					}
+					number = progress;
+
 				}
 				// 发送下载完成通知
 				sendMsg(entity, FileResultEntity.status_sucess, 100);
 				if (entity.getNotfi() != null) {
 					NotificationHelper helper = entity.getHelper();
-					helper.downShowNotification("下载成功");
-					entity.setHelper(helper);
+					if (entity.isUpdate()) {
+						helper.notifyUpdateFinish(new File(entity.getPath()));
+					} else {
+						helper.downShowNotification("下载成功");
+						entity.setHelper(helper);
+					}
 				}
 				loadingMap.remove(entity.getUrl());
 				entity.setSucess(true);

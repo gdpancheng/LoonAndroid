@@ -231,23 +231,28 @@ public class ImageCache {
 	 *            Unique identifier for which item to get
 	 * @return The bitmap if found in cache, null otherwise
 	 */
-	public Bitmap getBitmapFromDiskCache(String data, int w, int h,ImageWorker imWorker) {
-		final String key = hashKeyForDisk(data);
+	public Bitmap getBitmapFromDiskCache(String data, int w, int h, ImageWorker imWorker) {
+		Bitmap bitmap = null;
+		File file = null;
+		if (data.startsWith("http")) {
+			final String key = hashKeyForDisk(data);
 
-		synchronized (mDiskCacheLock) {
-			while (mDiskCacheStarting) {
-				try {
-					mDiskCacheLock.wait();
-				} catch (InterruptedException e) {
+			synchronized (mDiskCacheLock) {
+				while (mDiskCacheStarting) {
+					try {
+						mDiskCacheLock.wait();
+					} catch (InterruptedException e) {
+					}
 				}
+				file = getFromFileCache(key);
 			}
-			File file = getFromFileCache(key);
-			Bitmap bitmap = null;
-			if (file != null && file.exists()) {
-				bitmap = imWorker.decodeSampledBitmapFromFile(data,file.getPath(), w, h, this);
-			}
-			return bitmap;
+		} else {
+			file = new File(data);
 		}
+		if (file != null && file.exists()) {
+			bitmap = imWorker.decodeSampledBitmapFromFile(data, file.getPath(), w, h, this);
+		}
+		return bitmap;
 	}
 
 	/**
@@ -294,7 +299,7 @@ public class ImageCache {
 	public void clearCache() {
 		if (mMemoryCache != null) {
 			mMemoryCache.evictAll();
-				Ioc.getIoc().getLogger().d("缓存清理成功");
+			Ioc.getIoc().getLogger().d("缓存清理成功");
 		}
 
 		synchronized (mDiskCacheLock) {

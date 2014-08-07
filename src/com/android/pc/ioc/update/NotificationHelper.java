@@ -62,7 +62,6 @@ public class NotificationHelper {
 		Intent intent = new Intent(Intent.ACTION_VIEW);
 		intent.setDataAndType(Uri.fromFile(file), "application/vnd.android.package-archive");
 		PendingIntent pendingIntent = PendingIntent.getActivity(mContext, 0, intent, 0);
-
 		Notification noti = new Notification();
 		noti.setLatestEventInfo(mContext, mPackageHelper.getAppName(), "下载完成,点击安装", pendingIntent);
 		noti.icon = android.R.drawable.stat_sys_download_done;

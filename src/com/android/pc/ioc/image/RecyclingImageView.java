@@ -21,6 +21,10 @@ public class RecyclingImageView extends ImageView {
         super(context, attrs);
     }
 
+    public RecyclingImageView(Context context, AttributeSet attrs, int defStyle) {
+        super(context, attrs,defStyle);
+    }
+    
     /**
      * @see android.widget.ImageView#onDetachedFromWindow()
      */

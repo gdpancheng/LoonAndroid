@@ -27,7 +27,7 @@ import com.android.pc.util.Handler_System;
 /**
  * 图片下载工具类
  */
-public  class ImageWorker {
+public class ImageWorker {
 	private static final int FADE_IN_TIME = 200;
 
 	private static final int start = 0;
@@ -48,7 +48,7 @@ public  class ImageWorker {
 	protected ImageWorker(Context context) {
 		mResources = context.getResources();
 	}
-	
+
 	protected int mImageWidth;
 	protected int mImageHeight;
 
@@ -74,12 +74,12 @@ public  class ImageWorker {
 		setImageSize(imageSize);
 		mResources = context.getResources();
 	}
-	
-	public void useDecode(boolean isDecode){
+
+	public void useDecode(boolean isDecode) {
 		this.isDecode = isDecode;
 	}
-	
-	public boolean isDecode(){
+
+	public boolean isDecode() {
 		return isDecode;
 	}
 
@@ -98,23 +98,31 @@ public  class ImageWorker {
 			return;
 		}
 
-		if (data.toString().indexOf("?") != -1) {
-			data = data + "&w=" + getW() + "&h=" + getH();
-		} else {
-			data = data + "?w=" + getW() + "&h=" + getH();
+		if (data.toString().startsWith("http")) {
+			if (data.toString().indexOf("?") != -1) {
+				data = data + "&w=" + getW() + "&h=" + getH();
+			} else {
+				data = data + "?w=" + getW() + "&h=" + getH();
+			}
 		}
 		BitmapDrawable value = null;
 		mImageCache = ImageLoadManager.instance().getmImageCache();
 		if (mImageCache != null) {
 			value = mImageCache.getBitmapFromMemCache(String.valueOf(data));
+			if (value!=null) {
+				if (value.getBitmap().getConfig() == null) {
+					Ioc.getIoc().getLogger().d("图片解析错误-----重新下载");
+					value = null;
+                }
+            }
 		}
 		// 如果图片为空
 		if (value != null) {
-			// 如果图片不为空 则直接设置
-			if (value.getBitmap()!=null) {
-				finish(value.getBitmap(), imageView, lister);
-            }
 			imageView.setImageDrawable(value);
+			// 如果图片不为空 则直接设置
+			if (value.getBitmap() != null) {
+				finish(value.getBitmap(), imageView, lister);
+			}
 		} else if (cancelPotentialWork(data, imageView)) {
 			final BitmapWorkerTask task = new BitmapWorkerTask(data, imageView, lister);
 			final AsyncDrawable asyncDrawable = new AsyncDrawable(mResources, mLoadingBitmap, task);
@@ -158,7 +166,6 @@ public  class ImageWorker {
 		mExitTasksEarly = exitTasksEarly;
 		setPauseWork(false);
 	}
-
 
 	private class Entity {
 		public int process;
@@ -341,7 +348,13 @@ public  class ImageWorker {
 
 			// 如果缓存不为空 没有被取消 当前显示的imageview不为空 则去从本地缓存中获取
 			if (mImageCache != null && !isCancelled() && getAttachedImageView() != null && !mExitTasksEarly) {
-				bitmap = mImageCache.getBitmapFromDiskCache(dataString, getW(), getH(),ImageWorker.this);
+				bitmap = mImageCache.getBitmapFromDiskCache(dataString, getW(), getH(), ImageWorker.this);
+				if (bitmap!=null) {
+					if (bitmap.getConfig() == null) {
+						Ioc.getIoc().getLogger().d("图片解析错误-----重新下载");
+						bitmap = null;
+                    }
+                }
 			}
 			// 下载图片 通过自定义下载模块
 			if (bitmap == null && !isCancelled() && getAttachedImageView() != null && !mExitTasksEarly) {
@@ -351,13 +364,13 @@ public  class ImageWorker {
 			// 如果图片不为空
 			if (bitmap != null) {
 
-				if (Utils.hasHoneycomb()) {
-					// 如果版本大于3.0则把bitmap包裹到BitmapDrawable中
-					drawable = new BitmapDrawable(mResources, bitmap);
-				} else {
-					// 小于3.0的情况下 自定义一个BitmapDrawable用来自动回收图片
-					drawable = new RecyclingBitmapDrawable(mResources, bitmap);
-				}
+				// if (Utils.hasHoneycomb()) {
+				// // 如果版本大于3.0则把bitmap包裹到BitmapDrawable中
+				// drawable = new BitmapDrawable(mResources, bitmap);
+				// } else {
+				// 小于3.0的情况下 自定义一个BitmapDrawable用来自动回收图片
+				drawable = new RecyclingBitmapDrawable(mResources, bitmap);
+				// }
 
 				if (mImageCache != null) {
 					mImageCache.addBitmapToCache(dataString, drawable);
@@ -365,7 +378,6 @@ public  class ImageWorker {
 			}
 
 			Ioc.getIoc().getLogger().d("doInBackground - finished work");
-
 			return drawable;
 		}
 
@@ -381,11 +393,11 @@ public  class ImageWorker {
 
 			final ImageView imageView = getAttachedImageView();
 			if (value != null && imageView != null) {
-				if (value.getBitmap()!=null) {
-					finish(value.getBitmap(), imageView, lister);
-                }
 				Ioc.getIoc().getLogger().d("onPostExecute - setting bitmap");
 				setImageDrawable(imageView, value);
+				if (value.getBitmap() != null) {
+					finish(value.getBitmap(), imageView, lister);
+				}
 			}
 			if (value == null) {
 				fail(imageView, lister);
@@ -521,7 +533,7 @@ public  class ImageWorker {
 	 * @param cache
 	 * @return Bitmap
 	 */
-	public  Bitmap decodeSampledBitmapFromResource(Resources res, int resId, int reqWidth, int reqHeight, ImageCache cache) {
+	public Bitmap decodeSampledBitmapFromResource(Resources res, int resId, int reqWidth, int reqHeight, ImageCache cache) {
 
 		final BitmapFactory.Options options = new BitmapFactory.Options();
 		options.inJustDecodeBounds = true;
@@ -547,28 +559,28 @@ public  class ImageWorker {
 	 * @param cache
 	 * @return Bitmap
 	 */
-	public  Bitmap decodeSampledBitmapFromFile(String url,String filename, int reqWidth, int reqHeight, ImageCache cache) {
+	public Bitmap decodeSampledBitmapFromFile(String url, String filename, int reqWidth, int reqHeight, ImageCache cache) {
 
 		final BitmapFactory.Options options = new BitmapFactory.Options();
 		options.inJustDecodeBounds = true;
 		Coding coding = ImageLoadManager.instance().getCoding();
-		if (coding == null||isDecode == false) {
+		byte[] buffer = null;
+		if (coding == null || isDecode == false) {
 			BitmapFactory.decodeFile(filename, options);
-        }else if (isDecode&&coding!=null) {
-        	try {
-	            InputStream in = new FileInputStream(filename);
-	            byte[] buffer;
-	            if (url.toLowerCase().indexOf(".jpg")!=-1) {
-	            	buffer= coding.decodeJPG(in.available(), in);
-                }else {
-                	buffer= coding.decodePNG(in.available(), in);
+		} else if (isDecode && coding != null) {
+			InputStream in = null;
+			try {
+				in = new FileInputStream(filename);
+				if (url.toLowerCase().indexOf(".jpg") != -1||url.toLowerCase().indexOf(".jpeg") != -1) {
+					buffer = coding.decodeJPG(in.available(), in);
+				} else {
+					buffer = coding.decodePNG(in.available(), in);
 				}
-	            in.close();
-	            BitmapFactory.decodeByteArray(buffer, 0, buffer.length, options);
-	            buffer = null;
-            } catch (Exception e) {
-	            e.printStackTrace();
-            } 
+				in.close();
+				BitmapFactory.decodeByteArray(buffer, 0, buffer.length, options);
+			} catch (Exception e) {
+				e.printStackTrace();
+			} 
 		}
 
 		options.inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight);
@@ -578,28 +590,22 @@ public  class ImageWorker {
 		}
 
 		options.inJustDecodeBounds = false;
-		
-		if (coding == null||isDecode == false) {
+
+		if (coding == null || isDecode == false) {
 			return BitmapFactory.decodeFile(filename, options);
-		}else if(isDecode && coding!=null) {
+		} else if (isDecode && coding != null) {
 			try {
-				InputStream in = new FileInputStream(filename);
-				byte[] buffer;
-				if (url.toLowerCase().indexOf(".jpg")!=-1) {
-					buffer= coding.decodeJPG(in.available(), in);
-				}else {
-					buffer= coding.decodePNG(in.available(), in);
-				}
-				in.close();
 				return BitmapFactory.decodeByteArray(buffer, 0, buffer.length, options);
 			} catch (Exception e) {
 				e.printStackTrace();
+			} finally{
+				buffer = null;
 			}
 		}
 		return null;
 	}
 
-	public  Bitmap decodeSampledBitmapFromDescriptor(FileDescriptor fileDescriptor, int reqWidth, int reqHeight, ImageCache cache) {
+	public Bitmap decodeSampledBitmapFromDescriptor(FileDescriptor fileDescriptor, int reqWidth, int reqHeight, ImageCache cache) {
 		final BitmapFactory.Options options = new BitmapFactory.Options();
 		options.inJustDecodeBounds = true;
 		BitmapFactory.decodeFileDescriptor(fileDescriptor, null, options);
@@ -615,7 +621,7 @@ public  class ImageWorker {
 	}
 
 	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
-	private  void addInBitmapOptions(BitmapFactory.Options options, ImageCache cache) {
+	private void addInBitmapOptions(BitmapFactory.Options options, ImageCache cache) {
 		options.inMutable = true;
 
 		if (cache != null) {
@@ -636,7 +642,7 @@ public  class ImageWorker {
 	 * @param reqHeight
 	 * @return int
 	 */
-	public  int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight) {
+	public int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight) {
 		final int height = options.outHeight;
 		final int width = options.outWidth;
 		int inSampleSize = 1;

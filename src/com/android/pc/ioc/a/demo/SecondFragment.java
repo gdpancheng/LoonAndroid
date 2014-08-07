@@ -57,7 +57,7 @@ public class SecondFragment extends BaseFragment {
 		mImageFetcher = new ImageDownloader(getActivity(),300);
 		mImageFetcher.setLoadingImage(R.drawable.ic_launcher);
 		for (int i = 0; i < 1000; i++) {
-			image.add("http://bcs.duapp.com/question-image/201212310556374291.jpg?b=a" + i);
+			image.add("http://pic11.nipic.com/20101110/3320946_160215810000_2.jpg?b=a" + i);
 		}
 		listView.setAdapter(new ImageListAdapter(activity, image));
 		listView.setOnScrollListener(new AbsListView.OnScrollListener() {
