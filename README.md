@@ -1,4 +1,6 @@
 
+##第三个版本 LoonAndroid 3.0 和第一个版本完全不同 感兴趣的可以移步 
+[3.0 版本请点击这里（Please click here）](https://github.com/gdpancheng/LoonAndroid3)
 
 框架的说明
 ===================================
@@ -7,9 +9,6 @@
 有很多框架都含有这个工具集合里的功能，这些不一定都好用，因为这是根据我个人使用喜欢来实现的，如果你们有自己的想法，可以自己把架包解压了以后，源码拉出来改动下。
 目前很多框架都用到了注解，除了androidannotations没有入侵我们应用的代码以外，其他的基本上都有，要么是必须继承框架里面的activity,要么是必须在activity的oncreat里面调用某个方法。
 整个框架式不同于androidannotations，Roboguice等ioc框架，这是一个类似spring的实现方式。在整应用的生命周期中找到切入点，然后对activity的生命周期进行拦截，然后插入自己的功能。
-
-## LoonAndroid 3 
-[3.0 版本请点击这里（Please click here）](https://github.com/gdpancheng/LoonAndroid3)
 
 如果需要混淆 
 第一步 你要先引入你得架包
